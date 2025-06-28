@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Test - {{appName}}</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8fafc;
+        }
+        .container {
+            background: white;
+            border-radius: 8px;
+            padding: 40px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 10px;
+        }
+        .title {
+            color: #10b981;
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .test-info {
+            background: #ecfdf5;
+            border: 1px solid #10b981;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+        .test-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 5px 0;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+            color: #6b7280;
+            font-size: 14px;
+        }
+        .success-badge {
+            background: #10b981;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">{{appName}}</div>
+            <div class="success-badge">✅ Email Service Test</div>
+            <h1 class="title">Email System Working!</h1>
+        </div>
+
+        <p>Congratulations! Your email notification system is working correctly.</p>
+
+        <div class="test-info">
+            <h3 style="margin-top: 0; color: #1f2937;">Test Information</h3>
+            <div class="test-row">
+                <span>Test Message:</span>
+                <span><strong>{{testMessage}}</strong></span>
+            </div>
+            <div class="test-row">
+                <span>Timestamp:</span>
+                <span>{{timestamp}}</span>
+            </div>
+            <div class="test-row">
+                <span>Email Service:</span>
+                <span><strong>Active & Functional</strong></span>
+            </div>
+        </div>
+
+        <div style="background: #f3f4f6; border-radius: 6px; padding: 15px; margin: 20px 0;">
+            <h4 style="margin-top: 0; color: #1f2937;">✅ System Status</h4>
+            <ul style="margin-bottom: 0; color: #4b5563;">
+                <li>SMTP Connection: Working</li>
+                <li>Email Templates: Loaded</li>
+                <li>Notification Service: Active</li>
+                <li>Database Integration: Connected</li>
+            </ul>
+        </div>
+
+        <p>Your notification system is ready to send purchase confirmations, sale notifications, and admin alerts to your users.</p>
+
+        <div class="footer">
+            <p>{{appName}} Email Service Test</p>
+            <p>&copy; {{currentYear}} {{appName}}. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

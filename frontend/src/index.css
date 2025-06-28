@@ -1,0 +1,911 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Fix for SVG attribute validation errors with Framer Motion */
+svg[width="auto"] {
+  width: unset !important;
+}
+
+svg[height="auto"] {
+  height: unset !important;
+}
+
+/* Ensure SVG elements don't receive invalid auto values */
+svg {
+  width: auto;
+  height: auto;
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+  }
+}
+
+/* Modern Dashboard Styles */
+.line-clamp-1 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.bg-gray-750 {
+  background-color: #374151;
+}
+
+/* Custom scrollbar styles */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1f2937;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
+
+/* Professional Black Modal Theme */
+.project-modal-black {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+.project-modal-black * {
+  border-color: #374151 !important;
+}
+
+.project-modal-black h1,
+.project-modal-black h2,
+.project-modal-black h3,
+.project-modal-black h4 {
+  color: #ffffff !important;
+}
+
+.project-modal-black p,
+.project-modal-black span {
+  color: #d1d5db !important;
+}
+
+.project-modal-black .bg-white,
+.project-modal-black .bg-gray-50,
+.project-modal-black .bg-gray-100 {
+  background-color: #111827 !important;
+}
+
+.project-modal-black .bg-gray-800,
+.project-modal-black .bg-gray-900 {
+  background-color: #000000 !important;
+}
+
+.project-modal-black .text-gray-900 {
+  color: #ffffff !important;
+}
+
+.project-modal-black .text-gray-600,
+.project-modal-black .text-gray-500 {
+  color: #9ca3af !important;
+}
+
+.project-modal-black .border-gray-200,
+.project-modal-black .border-gray-300 {
+  border-color: #374151 !important;
+}
+
+/* Badge and Button Overrides */
+.project-modal-black .bg-orange-100 {
+  background-color: rgba(194, 65, 12, 0.3) !important;
+  color: #fed7aa !important;
+}
+
+.project-modal-black .bg-green-100 {
+  background-color: rgba(21, 128, 61, 0.3) !important;
+  color: #bbf7d0 !important;
+}
+
+.project-modal-black .bg-blue-100,
+.project-modal-black .bg-blue-50 {
+  background-color: rgba(29, 78, 216, 0.3) !important;
+  color: #bfdbfe !important;
+}
+
+.project-modal-black .bg-yellow-100 {
+  background-color: rgba(161, 98, 7, 0.3) !important;
+  color: #fef3c7 !important;
+}
+
+.project-modal-black .bg-red-100 {
+  background-color: rgba(185, 28, 28, 0.3) !important;
+  color: #fecaca !important;
+}
+
+.project-modal-black .bg-purple-100 {
+  background-color: rgba(126, 34, 206, 0.3) !important;
+  color: #e9d5ff !important;
+}
+
+.project-modal-black .bg-indigo-50 {
+  background-color: rgba(67, 56, 202, 0.3) !important;
+  color: #c7d2fe !important;
+}
+
+/* Text Color Overrides */
+.project-modal-black .text-orange-800 {
+  color: #fed7aa !important;
+}
+
+.project-modal-black .text-green-800 {
+  color: #bbf7d0 !important;
+}
+
+.project-modal-black .text-blue-800,
+.project-modal-black .text-blue-700 {
+  color: #bfdbfe !important;
+}
+
+.project-modal-black .text-yellow-800 {
+  color: #fef3c7 !important;
+}
+
+.project-modal-black .text-red-800 {
+  color: #fecaca !important;
+}
+
+.project-modal-black .text-purple-800 {
+  color: #e9d5ff !important;
+}
+
+.project-modal-black .text-indigo-800 {
+  color: #c7d2fe !important;
+}
+
+/* Force all modal content to be dark */
+[data-modal="project-details"] {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+[data-modal="project-details"] * {
+  color: inherit !important;
+}
+
+[data-modal="project-details"] h1,
+[data-modal="project-details"] h2,
+[data-modal="project-details"] h3,
+[data-modal="project-details"] h4 {
+  color: #ffffff !important;
+}
+
+[data-modal="project-details"] .bg-white {
+  background-color: #111827 !important;
+}
+
+/* Override any remaining light backgrounds */
+.fixed.inset-0.z-50 div[class*="bg-white"],
+.fixed.inset-0.z-50 div[class*="bg-gray-50"],
+.fixed.inset-0.z-50 div[class*="bg-gray-100"] {
+  background-color: #111827 !important;
+  color: #ffffff !important;
+}
+
+/* Comprehensive text visibility fixes for project modal */
+[data-modal="project-details"] h1,
+[data-modal="project-details"] h2,
+[data-modal="project-details"] h3,
+[data-modal="project-details"] h4,
+[data-modal="project-details"] h5,
+[data-modal="project-details"] h6 {
+  color: #ffffff !important;
+}
+
+[data-modal="project-details"] p,
+[data-modal="project-details"] span:not([style*="color"]),
+[data-modal="project-details"] div:not([style*="color"]) {
+  color: #d1d5db !important;
+}
+
+[data-modal="project-details"] .text-gray-400,
+[data-modal="project-details"] .text-gray-500,
+[data-modal="project-details"] .text-gray-600 {
+  color: #9ca3af !important;
+}
+
+[data-modal="project-details"] .text-gray-300 {
+  color: #d1d5db !important;
+}
+
+[data-modal="project-details"] .text-white {
+  color: #ffffff !important;
+}
+
+/* Force visibility for any remaining invisible text */
+[data-modal="project-details"] * {
+  color: inherit !important;
+}
+
+/* Ensure buttons have proper text color */
+[data-modal="project-details"] button {
+  color: #ffffff !important;
+}
+
+/* Fix any remaining text color issues */
+.fixed.inset-0.z-50 * {
+  color: inherit;
+}
+
+.fixed.inset-0.z-50 h1,
+.fixed.inset-0.z-50 h2,
+.fixed.inset-0.z-50 h3,
+.fixed.inset-0.z-50 h4 {
+  color: #ffffff !important;
+}
+
+.fixed.inset-0.z-50 p,
+.fixed.inset-0.z-50 span {
+  color: #d1d5db !important;
+}
+
+/* Ultra-aggressive text visibility fixes */
+.fixed.inset-0.z-50 .overflow-y-auto * {
+  color: inherit !important;
+}
+
+.fixed.inset-0.z-50 .overflow-y-auto h1,
+.fixed.inset-0.z-50 .overflow-y-auto h2,
+.fixed.inset-0.z-50 .overflow-y-auto h3,
+.fixed.inset-0.z-50 .overflow-y-auto h4 {
+  color: #ffffff !important;
+}
+
+.fixed.inset-0.z-50 .overflow-y-auto p,
+.fixed.inset-0.z-50 .overflow-y-auto span:not([style*="color"]),
+.fixed.inset-0.z-50 .overflow-y-auto div:not([style*="color"]) {
+  color: #d1d5db !important;
+}
+
+/* Force all text in modal to be visible */
+.fixed.inset-0.z-50 .max-w-7xl * {
+  color: inherit !important;
+}
+
+.fixed.inset-0.z-50 .max-w-7xl h1,
+.fixed.inset-0.z-50 .max-w-7xl h2,
+.fixed.inset-0.z-50 .max-w-7xl h3,
+.fixed.inset-0.z-50 .max-w-7xl h4 {
+  color: #ffffff !important;
+}
+
+.fixed.inset-0.z-50 .max-w-7xl p,
+.fixed.inset-0.z-50 .max-w-7xl span,
+.fixed.inset-0.z-50 .max-w-7xl div {
+  color: #d1d5db !important;
+}
+
+/* Override any remaining invisible text */
+.fixed.inset-0.z-50 .max-w-7xl .text-black,
+.fixed.inset-0.z-50 .max-w-7xl .text-gray-900,
+.fixed.inset-0.z-50 .max-w-7xl .text-gray-800 {
+  color: #ffffff !important;
+}
+
+/* Final catch-all for any remaining invisible text */
+.fixed.inset-0.z-50 .rounded-2xl * {
+  color: inherit !important;
+}
+
+.fixed.inset-0.z-50 .rounded-2xl h1,
+.fixed.inset-0.z-50 .rounded-2xl h2,
+.fixed.inset-0.z-50 .rounded-2xl h3,
+.fixed.inset-0.z-50 .rounded-2xl h4,
+.fixed.inset-0.z-50 .rounded-2xl h5,
+.fixed.inset-0.z-50 .rounded-2xl h6 {
+  color: #ffffff !important;
+}
+
+.fixed.inset-0.z-50 .rounded-2xl p,
+.fixed.inset-0.z-50 .rounded-2xl span,
+.fixed.inset-0.z-50 .rounded-2xl div,
+.fixed.inset-0.z-50 .rounded-2xl label,
+.fixed.inset-0.z-50 .rounded-2xl a {
+  color: #d1d5db !important;
+}
+
+/* Ensure button text is always visible */
+.fixed.inset-0.z-50 .rounded-2xl button {
+  color: #ffffff !important;
+}
+
+/* Force visibility for any text that might still be hidden */
+.fixed.inset-0.z-50 .rounded-2xl [class*="text-"] {
+  color: #d1d5db !important;
+}
+
+.fixed.inset-0.z-50 .rounded-2xl [class*="text-"] h1,
+.fixed.inset-0.z-50 .rounded-2xl [class*="text-"] h2,
+.fixed.inset-0.z-50 .rounded-2xl [class*="text-"] h3,
+.fixed.inset-0.z-50 .rounded-2xl [class*="text-"] h4 {
+  color: #ffffff !important;
+}
+
+/* Universal text visibility fixes for all projects */
+.fixed.inset-0.z-50 [style*="color: #22c55e"] {
+  color: #22c55e !important;
+}
+
+.fixed.inset-0.z-50 [style*="color: #bbf7d0"] {
+  color: #bbf7d0 !important;
+}
+
+.fixed.inset-0.z-50 [style*="color: #dcfce7"] {
+  color: #dcfce7 !important;
+}
+
+.fixed.inset-0.z-50 [style*="color: #ffffff"] {
+  color: #ffffff !important;
+}
+
+.fixed.inset-0.z-50 [style*="color: #d1d5db"] {
+  color: #d1d5db !important;
+}
+
+.fixed.inset-0.z-50 [style*="color: #e5e7eb"] {
+  color: #e5e7eb !important;
+}
+
+.fixed.inset-0.z-50 [style*="color: #9ca3af"] {
+  color: #9ca3af !important;
+}
+
+/* Force visibility for specific green text elements */
+.fixed.inset-0.z-50 .text-green-300,
+.fixed.inset-0.z-50 .text-green-400,
+.fixed.inset-0.z-50 .text-green-500 {
+  color: #22c55e !important;
+}
+
+/* Systematic text visibility for all projects */
+.fixed.inset-0.z-50 .text-white {
+  color: #ffffff !important;
+}
+
+.fixed.inset-0.z-50 .font-medium {
+  color: #ffffff !important;
+}
+
+.fixed.inset-0.z-50 .font-bold {
+  color: #ffffff !important;
+}
+
+.fixed.inset-0.z-50 .font-semibold {
+  color: #ffffff !important;
+}
+
+/* Remove text shadows and ensure visibility */
+.fixed.inset-0.z-50 * {
+  text-shadow: none !important;
+}
+
+.fixed.inset-0.z-50 .whitespace-pre-wrap {
+  color: #e5e7eb !important;
+}
+
+/* Fix for installation and usage instruction text */
+.fixed.inset-0.z-50 div[style*="color: #e5e7eb"] {
+  color: #e5e7eb !important;
+}
+
+.fixed.inset-0.z-50 div[style*="color: #f3e8ff"] {
+  color: #f3e8ff !important;
+}
+
+/* Content section fixes for all projects */
+.fixed.inset-0.z-50 .p-4.rounded-lg h4 {
+  color: #ffffff !important;
+}
+
+.fixed.inset-0.z-50 .p-4.rounded-lg .text-sm {
+  color: #e5e7eb !important;
+}
+
+.fixed.inset-0.z-50 .p-4.rounded-lg .whitespace-pre-wrap {
+  color: #e5e7eb !important;
+}
+
+/* Specific fix for installation instructions */
+.fixed.inset-0.z-50 div[style*="backgroundColor: '#111827'"] .text-sm {
+  color: #e5e7eb !important;
+}
+
+.fixed.inset-0.z-50 div[style*="backgroundColor: '#111827'"] h4 {
+  color: #d1d5db !important;
+}
+
+/* Specific fix for usage instructions */
+.fixed.inset-0.z-50
+  div[style*="backgroundColor: 'rgba(126, 34, 206, 0.3)'"]
+  .text-sm {
+  color: #f3e8ff !important;
+}
+
+.fixed.inset-0.z-50
+  div[style*="backgroundColor: 'rgba(126, 34, 206, 0.3)'"]
+  h4 {
+  color: #e9d5ff !important;
+}
+
+/* Universal project modal text visibility system */
+/* This system works for ALL projects regardless of content type */
+
+/* Primary text colors - headings and titles */
+.fixed.inset-0.z-50 h1,
+.fixed.inset-0.z-50 h2,
+.fixed.inset-0.z-50 h3,
+.fixed.inset-0.z-50 h4,
+.fixed.inset-0.z-50 h5,
+.fixed.inset-0.z-50 h6 {
+  color: #ffffff !important;
+}
+
+/* Body text and descriptions */
+.fixed.inset-0.z-50 p,
+.fixed.inset-0.z-50 .text-sm,
+.fixed.inset-0.z-50 .text-lg {
+  color: #d1d5db !important;
+}
+
+/* Green text elements - success states and downloads */
+.fixed.inset-0.z-50 .text-green-300,
+.fixed.inset-0.z-50 .text-green-400,
+.fixed.inset-0.z-50 .text-green-500,
+.fixed.inset-0.z-50 span[style*="color: #22c55e"],
+.fixed.inset-0.z-50 span[style*="color: #bbf7d0"],
+.fixed.inset-0.z-50 p[style*="color: #22c55e"] {
+  color: #22c55e !important;
+}
+
+/* White text elements - important content */
+.fixed.inset-0.z-50 .text-white,
+.fixed.inset-0.z-50 .font-medium,
+.fixed.inset-0.z-50 .font-bold,
+.fixed.inset-0.z-50 .font-semibold,
+.fixed.inset-0.z-50 span[style*="color: #ffffff"],
+.fixed.inset-0.z-50 p[style*="color: #ffffff"] {
+  color: #ffffff !important;
+}
+
+/* Content in instruction boxes */
+.fixed.inset-0.z-50 .whitespace-pre-wrap,
+.fixed.inset-0.z-50 div[style*="color: #e5e7eb"],
+.fixed.inset-0.z-50 div[style*="color: #f3e8ff"] {
+  color: #e5e7eb !important;
+}
+
+/* Secondary text - stats, dates, file info */
+.fixed.inset-0.z-50 .text-gray-400,
+.fixed.inset-0.z-50 .text-gray-500,
+.fixed.inset-0.z-50 span[style*="color: #9ca3af"] {
+  color: #9ca3af !important;
+}
+
+/* Ensure all text is visible and readable */
+.fixed.inset-0.z-50 * {
+  text-shadow: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Button text visibility */
+.fixed.inset-0.z-50 button {
+  color: #ffffff !important;
+}
+
+/* Override any remaining invisible text */
+.fixed.inset-0.z-50 .overflow-y-auto * {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Additional coverage for all project types */
+/* Badge text visibility */
+.fixed.inset-0.z-50 .px-2.py-1,
+.fixed.inset-0.z-50 .px-3.py-1 {
+  color: inherit !important;
+}
+
+/* Technology tags and badges */
+.fixed.inset-0.z-50 .bg-blue-100,
+.fixed.inset-0.z-50 .bg-green-100,
+.fixed.inset-0.z-50 .bg-orange-100,
+.fixed.inset-0.z-50 .bg-purple-100,
+.fixed.inset-0.z-50 .bg-yellow-100 {
+  color: inherit !important;
+}
+
+/* File and documentation text */
+.fixed.inset-0.z-50 .text-xs {
+  color: #9ca3af !important;
+}
+
+.fixed.inset-0.z-50 .capitalize {
+  color: inherit !important;
+}
+
+/* Project description and content */
+.fixed.inset-0.z-50 .leading-relaxed {
+  color: #d1d5db !important;
+}
+
+/* Stats and numbers */
+.fixed.inset-0.z-50 .text-2xl {
+  color: inherit !important;
+}
+
+/* ===== COMPREHENSIVE MODAL SYSTEM - NO CONFLICTS ===== */
+
+/* Z-Index Hierarchy:
+   - Critical Modals (Negotiation): 99999-100000
+   - Payment Modals: 50000-50001
+   - Standard Modals (Share, etc): 40000-40001
+   - Image Modals: 30000-30001
+   - Project Detail Modals: 20000-20001
+   - Project Cards: 1
+*/
+
+/* Critical Priority Modals (Negotiation) */
+.modal-critical-backdrop {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  z-index: 99999 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 1rem !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.modal-critical-content {
+  position: relative !important;
+  z-index: 100000 !important;
+  max-height: 90vh !important;
+  overflow-y: auto !important;
+  width: 100% !important;
+  max-width: 28rem !important;
+  margin: 0 auto !important;
+  transform: none !important;
+  box-sizing: border-box !important;
+}
+
+/* Payment Modals */
+.modal-payment-backdrop {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  z-index: 50000 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.modal-payment-content {
+  position: relative;
+  z-index: 50001 !important;
+  max-height: 90vh;
+  overflow-y: auto;
+  width: 100%;
+  max-width: 48rem;
+}
+
+/* Standard Modals (Share, etc) */
+.modal-standard-backdrop {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  z-index: 40000 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.modal-standard-content {
+  position: relative;
+  z-index: 40001 !important;
+  max-height: 90vh;
+  overflow-y: auto;
+  width: 100%;
+  max-width: 28rem;
+}
+
+/* Image Modals */
+.modal-image-backdrop {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  z-index: 30000 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.modal-image-content {
+  position: relative;
+  z-index: 30001 !important;
+  max-height: 90vh;
+  overflow-y: auto;
+  width: 100%;
+  max-width: 80rem;
+}
+
+/* Project Detail Modals */
+.modal-detail-backdrop {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  z-index: 20000 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.modal-detail-content {
+  position: relative;
+  z-index: 20001 !important;
+  max-height: 90vh;
+  overflow-y: auto;
+  width: 100%;
+  max-width: 80rem;
+}
+
+/* Legacy support - redirect to payment modals */
+.modal-backdrop {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  z-index: 50000 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.modal-content {
+  position: relative;
+  z-index: 50001 !important;
+  max-height: 90vh;
+  overflow-y: auto;
+  width: 100%;
+  max-width: 48rem;
+}
+
+/* Prevent body scroll when modal is open */
+body.modal-open {
+  overflow: hidden !important;
+}
+
+/* Project cards - low z-index to stay below modals */
+.project-card {
+  position: relative;
+  z-index: 1;
+  /* Ensure project cards don't create stacking contexts that interfere with modals */
+  isolation: auto;
+  contain: none;
+}
+
+/* Project grid containers - ensure they don't interfere with modal positioning */
+.homepage-projects-grid,
+.project-card-container {
+  /* Prevent grid containers from creating stacking contexts */
+  position: relative;
+  z-index: auto;
+  isolation: auto;
+  contain: none;
+  /* Ensure overflow doesn't clip modals */
+  overflow: visible;
+}
+
+/* Ensure no stacking context conflicts */
+.project-card-container {
+  position: relative;
+  z-index: 1;
+  isolation: auto;
+}
+
+/* Ensure modals are completely isolated from parent containers */
+.modal-critical-backdrop,
+.modal-payment-backdrop,
+.modal-standard-backdrop,
+.modal-image-backdrop,
+.modal-detail-backdrop {
+  /* Force modal to be positioned relative to viewport, not parent */
+  position: fixed !important;
+  /* Ensure modal covers entire viewport */
+  inset: 0 !important;
+  /* Remove any inherited transforms or positioning */
+  transform: none !important;
+  /* Ensure proper stacking */
+  isolation: isolate !important;
+  /* Prevent any parent overflow from affecting modal */
+  contain: layout style paint !important;
+}
+
+/* Ensure modal content is properly centered regardless of parent */
+.modal-critical-content,
+.modal-payment-content,
+.modal-standard-content,
+.modal-image-content,
+.modal-detail-content {
+  /* Remove any inherited positioning */
+  position: relative !important;
+  /* Ensure proper centering */
+  margin: 0 auto !important;
+  /* Remove any transforms that might offset positioning */
+  transform: none !important;
+  /* Ensure content doesn't inherit parent constraints */
+  max-width: none !important;
+  /* Reset any inherited dimensions */
+  left: auto !important;
+  right: auto !important;
+  top: auto !important;
+  bottom: auto !important;
+}
+
+/* Specific sizing for each modal type */
+.modal-critical-content {
+  max-width: 28rem !important;
+}
+
+.modal-payment-content {
+  max-width: 48rem !important;
+}
+
+.modal-standard-content {
+  max-width: 28rem !important;
+}
+
+.modal-image-content {
+  max-width: 80rem !important;
+}
+
+.modal-detail-content {
+  max-width: 80rem !important;
+}
+
+/* Ensure grid layouts don't interfere with modal positioning */
+.grid {
+  /* Prevent grid containers from creating stacking contexts */
+  isolation: auto;
+  contain: none;
+}
+
+/* Specific fix for homepage and dashboard grids */
+.homepage-projects-grid.grid,
+.grid.grid-cols-1,
+.grid.grid-cols-2,
+.grid.grid-cols-3,
+.grid.grid-cols-4 {
+  /* Ensure grid containers don't clip or constrain modals */
+  overflow: visible !important;
+  position: relative;
+  z-index: auto;
+  isolation: auto;
+  contain: none;
+}
+
+/* Ensure modal portals are never clipped by any parent container */
+body > div[class*="modal-critical-backdrop"],
+body > div[class*="modal-payment-backdrop"],
+body > div[class*="modal-standard-backdrop"],
+body > div[class*="modal-image-backdrop"],
+body > div[class*="modal-detail-backdrop"] {
+  /* Force modals to be completely independent of any parent styling */
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 99999 !important;
+  isolation: isolate !important;
+  contain: layout style paint !important;
+}
+
+/* Essential project detail modal text visibility */
+.fixed.inset-0.z-50 {
+  color: #ffffff;
+}
+
+.fixed.inset-0.z-50 * {
+  color: inherit;
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Clean project detail modal styling */
+.fixed.inset-0.z-50 .whitespace-pre-wrap {
+  color: #e5e7eb;
+  background-color: transparent;
+}
+
+.fixed.inset-0.z-50 .bg-white,
+.fixed.inset-0.z-50 .bg-gray-50,
+.fixed.inset-0.z-50 .bg-gray-100 {
+  background-color: #111827;
+  color: #e5e7eb;
+}
+
+/* Removed excessive CSS for better performance and fewer conflicts */
+
+/* Essential badge styling for project detail modals */
+.fixed.inset-0.z-50 .px-2.py-1.text-xs.font-medium.rounded {
+  opacity: 1;
+  visibility: visible;
+}
