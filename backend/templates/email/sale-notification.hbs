@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Sale Notification - {{appName}}</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8fafc;
+        }
+        .container {
+            background: white;
+            border-radius: 8px;
+            padding: 40px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 10px;
+        }
+        .title {
+            color: #059669;
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #6b7280;
+            font-size: 16px;
+        }
+        .sale-details {
+            background: #ecfdf5;
+            border: 1px solid #10b981;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+        .sale-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 5px 0;
+        }
+        .sale-row:last-child {
+            margin-bottom: 0;
+            border-top: 1px solid #10b981;
+            padding-top: 15px;
+            font-weight: bold;
+            color: #059669;
+        }
+        .btn {
+            display: inline-block;
+            background: #000000;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            margin: 20px 0;
+        }
+        .btn:hover {
+            background: #374151;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+            color: #6b7280;
+            font-size: 14px;
+        }
+        .celebration {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .celebration-title {
+            font-weight: bold;
+            color: #92400e;
+            margin-bottom: 5px;
+            font-size: 18px;
+        }
+        .celebration-text {
+            color: #92400e;
+            font-size: 14px;
+        }
+        .earnings {
+            font-size: 24px;
+            font-weight: bold;
+            color: #059669;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">{{appName}}</div>
+            <h1 class="title">🎉 New Sale!</h1>
+            <p class="subtitle">Congratulations, {{sellerName}}!</p>
+        </div>
+
+        <div class="celebration">
+            <div class="celebration-title">💰 You've Made a Sale!</div>
+            <div class="celebration-text">
+                Your project has been purchased. Keep up the great work!
+            </div>
+        </div>
+
+        <p>Great news! Someone just purchased your project. Here are the details:</p>
+
+        <div class="sale-details">
+            <h3 style="margin-top: 0; color: #1f2937;">Sale Details</h3>
+            <div class="sale-row">
+                <span>Order ID:</span>
+                <span><strong>{{orderId}}</strong></span>
+            </div>
+            <div class="sale-row">
+                <span>Project:</span>
+                <span><strong>{{projectTitle}}</strong></span>
+            </div>
+            <div class="sale-row">
+                <span>Buyer:</span>
+                <span>{{buyerName}}</span>
+            </div>
+            <div class="sale-row">
+                <span>Sale Date:</span>
+                <span>{{saleDate}}</span>
+            </div>
+            <div class="sale-row">
+                <span>Your Earnings:</span>
+                <span class="earnings">₹{{saleAmount}}</span>
+            </div>
+        </div>
+
+        <div style="text-align: center;">
+            <a href="{{dashboardUrl}}" class="btn">View Dashboard</a>
+        </div>
+
+        <p>Your earnings will be processed according to our payment schedule. You can track all your sales and earnings in your seller dashboard.</p>
+
+        <div style="background: #f3f4f6; border-radius: 6px; padding: 15px; margin: 20px 0;">
+            <h4 style="margin-top: 0; color: #1f2937;">💡 Tips to Increase Sales:</h4>
+            <ul style="margin-bottom: 0; color: #4b5563;">
+                <li>Add more high-quality project images</li>
+                <li>Write detailed project descriptions</li>
+                <li>Keep your projects updated with latest technologies</li>
+                <li>Respond to buyer questions promptly</li>
+            </ul>
+        </div>
+
+        <div class="footer">
+            <p>Thank you for being part of {{appName}}!</p>
+            <p>
+                <a href="{{appUrl}}" style="color: #6b7280;">Visit {{appName}}</a> | 
+                <a href="mailto:{{supportEmail}}" style="color: #6b7280;">Contact Support</a>
+            </p>
+            <p>&copy; {{currentYear}} {{appName}}. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,35 @@
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: projectbuzz-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: projectbuzz
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - projectbuzz-network
+
+  # Optional: MongoDB Express (Web-based MongoDB admin interface)
+  mongo-express:
+    image: mongo-express:1.0.0
+    container_name: projectbuzz-mongo-express
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://mongodb:27017/
+      ME_CONFIG_BASICAUTH: false
+    depends_on:
+      - mongodb
+    networks:
+      - projectbuzz-network
+
+volumes:
+  mongodb_data:
+
+networks:
+  projectbuzz-network:
+    driver: bridge

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Successful - {{appName}}</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8fafc;
+        }
+        .container {
+            background: white;
+            border-radius: 8px;
+            padding: 40px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 10px;
+        }
+        .title {
+            color: #059669;
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #6b7280;
+            font-size: 16px;
+        }
+        .payment-details {
+            background: #ecfdf5;
+            border: 1px solid #10b981;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+        .payment-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 5px 0;
+        }
+        .payment-row:last-child {
+            margin-bottom: 0;
+            border-top: 1px solid #10b981;
+            padding-top: 15px;
+            font-weight: bold;
+        }
+        .btn {
+            display: inline-block;
+            background: #000000;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            margin: 20px 0;
+        }
+        .btn:hover {
+            background: #374151;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+            color: #6b7280;
+            font-size: 14px;
+        }
+        .success-badge {
+            background: #10b981;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">{{appName}}</div>
+            <div class="success-badge">✅ Payment Successful</div>
+            <h1 class="title">Payment Confirmed</h1>
+            <p class="subtitle">Your payment has been processed successfully, {{userName}}!</p>
+        </div>
+
+        <p>Thank you for your payment. Your transaction has been completed and you now have access to your purchased project.</p>
+
+        <div class="payment-details">
+            <h3 style="margin-top: 0; color: #1f2937;">Payment Details</h3>
+            <div class="payment-row">
+                <span>Order ID:</span>
+                <span><strong>{{orderId}}</strong></span>
+            </div>
+            <div class="payment-row">
+                <span>Project:</span>
+                <span><strong>{{projectTitle}}</strong></span>
+            </div>
+            {{#if transactionId}}
+            <div class="payment-row">
+                <span>Transaction ID:</span>
+                <span>{{transactionId}}</span>
+            </div>
+            {{/if}}
+            <div class="payment-row">
+                <span>Payment Method:</span>
+                <span>{{paymentMethod}}</span>
+            </div>
+            <div class="payment-row">
+                <span>Amount Paid:</span>
+                <span><strong>₹{{amount}}</strong></span>
+            </div>
+        </div>
+
+        <div style="text-align: center;">
+            <a href="{{downloadUrl}}" class="btn">Download Your Project</a>
+        </div>
+
+        <div style="background: #f3f4f6; border-radius: 6px; padding: 15px; margin: 20px 0;">
+            <h4 style="margin-top: 0; color: #1f2937;">📋 What's Next?</h4>
+            <ul style="margin-bottom: 0; color: #4b5563;">
+                <li>Access your purchased project from your dashboard</li>
+                <li>Download all project files and documentation</li>
+                <li>Follow the setup instructions included with the project</li>
+                <li>Contact support if you need any assistance</li>
+            </ul>
+        </div>
+
+        <p>Your purchase receipt and project files are available in your account dashboard. You can download them anytime.</p>
+
+        <div class="footer">
+            <p>Thank you for choosing {{appName}}!</p>
+            <p>
+                <a href="{{appUrl}}" style="color: #6b7280;">Visit {{appName}}</a> | 
+                <a href="mailto:{{supportEmail}}" style="color: #6b7280;">Contact Support</a>
+            </p>
+            <p>&copy; {{currentYear}} {{appName}}. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

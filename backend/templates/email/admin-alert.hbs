@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Alert - {{appName}}</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8fafc;
+        }
+        .container {
+            background: white;
+            border-radius: 8px;
+            padding: 40px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 10px;
+        }
+        .title {
+            color: #f59e0b;
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #6b7280;
+            font-size: 16px;
+        }
+        .alert-details {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+        .alert-row {
+            margin-bottom: 15px;
+            padding: 5px 0;
+        }
+        .alert-label {
+            font-weight: bold;
+            color: #92400e;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .alert-value {
+            color: #1f2937;
+            background: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            border: 1px solid #d1d5db;
+        }
+        .btn {
+            display: inline-block;
+            background: #000000;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            margin: 20px 0;
+        }
+        .btn:hover {
+            background: #374151;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+            color: #6b7280;
+            font-size: 14px;
+        }
+        .alert-badge {
+            background: #f59e0b;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        .data-section {
+            background: #f9fafb;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 4px solid #f59e0b;
+        }
+        .data-title {
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 10px;
+        }
+        .data-content {
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #4b5563;
+            background: white;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #d1d5db;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">{{appName}} Admin</div>
+            <div class="alert-badge">🚨 Admin Alert</div>
+            <h1 class="title">{{alertType}}</h1>
+            <p class="subtitle">Hello {{adminName}}, this requires your attention</p>
+        </div>
+
+        <p>A system event has occurred that requires administrative attention. Please review the details below and take appropriate action if necessary.</p>
+
+        <div class="alert-details">
+            <h3 style="margin-top: 0; color: #1f2937;">Alert Information</h3>
+            
+            <div class="alert-row">
+                <span class="alert-label">Alert Type:</span>
+                <div class="alert-value">{{alertType}}</div>
+            </div>
+            
+            <div class="alert-row">
+                <span class="alert-label">Timestamp:</span>
+                <div class="alert-value">{{timestamp}}</div>
+            </div>
+            
+            {{#if alertData}}
+            <div class="data-section">
+                <div class="data-title">Alert Data:</div>
+                <div class="data-content">{{#each alertData}}{{@key}}: {{this}}
+{{/each}}</div>
+            </div>
+            {{/if}}
+        </div>
+
+        <div style="text-align: center;">
+            <a href="{{dashboardUrl}}" class="btn">Go to Admin Dashboard</a>
+        </div>
+
+        <div style="background: #fef2f2; border: 1px solid #f87171; border-radius: 6px; padding: 15px; margin: 20px 0;">
+            <h4 style="margin-top: 0; color: #dc2626;">⚠️ Action Required</h4>
+            <p style="margin-bottom: 0; color: #7f1d1d;">
+                Please log into the admin dashboard to review this alert and take any necessary actions. 
+                Some alerts may require immediate attention to maintain system security and performance.
+            </p>
+        </div>
+
+        <div style="background: #f3f4f6; border-radius: 6px; padding: 15px; margin: 20px 0;">
+            <h4 style="margin-top: 0; color: #1f2937;">📋 Common Admin Actions:</h4>
+            <ul style="margin-bottom: 0; color: #4b5563;">
+                <li>Review system logs for additional context</li>
+                <li>Check user activity and permissions</li>
+                <li>Verify payment and transaction records</li>
+                <li>Monitor system performance metrics</li>
+                <li>Update security settings if needed</li>
+            </ul>
+        </div>
+
+        <div class="footer">
+            <p>{{appName}} Administrative System</p>
+            <p>
+                <a href="{{appUrl}}" style="color: #6b7280;">Visit {{appName}}</a> | 
+                <a href="mailto:{{supportEmail}}" style="color: #6b7280;">Contact Support</a>
+            </p>
+            <p>&copy; {{currentYear}} {{appName}}. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

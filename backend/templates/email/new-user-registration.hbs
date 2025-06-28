@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New User Registration - {{appName}}</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8fafc;
+        }
+        .container {
+            background: white;
+            border-radius: 8px;
+            padding: 40px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 10px;
+        }
+        .title {
+            color: #3b82f6;
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #6b7280;
+            font-size: 16px;
+        }
+        .user-details {
+            background: #eff6ff;
+            border: 1px solid #3b82f6;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+        .user-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 5px 0;
+        }
+        .user-row:last-child {
+            margin-bottom: 0;
+            border-top: 1px solid #3b82f6;
+            padding-top: 15px;
+            font-weight: bold;
+        }
+        .btn {
+            display: inline-block;
+            background: #000000;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            margin: 20px 0;
+        }
+        .btn:hover {
+            background: #374151;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+            color: #6b7280;
+            font-size: 14px;
+        }
+        .info-badge {
+            background: #3b82f6;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        .role-badge {
+            background: #10b981;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .stats-section {
+            background: #f9fafb;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .stats-title {
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 10px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .stat-item {
+            background: white;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #d1d5db;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 18px;
+            font-weight: bold;
+            color: #3b82f6;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #6b7280;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">{{appName}} Admin</div>
+            <div class="info-badge">👤 New User</div>
+            <h1 class="title">New Registration</h1>
+            <p class="subtitle">Hello {{adminName}}, a new user has joined the platform</p>
+        </div>
+
+        <p>A new user has successfully registered on {{appName}}. Here are their details for your review:</p>
+
+        <div class="user-details">
+            <h3 style="margin-top: 0; color: #1f2937;">User Information</h3>
+            
+            <div class="user-row">
+                <span>Email:</span>
+                <span><strong>{{newUserEmail}}</strong></span>
+            </div>
+            
+            <div class="user-row">
+                <span>Display Name:</span>
+                <span>{{newUserName}}</span>
+            </div>
+            
+            <div class="user-row">
+                <span>Role:</span>
+                <span><span class="role-badge">{{newUserRole}}</span></span>
+            </div>
+            
+            <div class="user-row">
+                <span>Registration Date:</span>
+                <span><strong>{{registrationDate}}</strong></span>
+            </div>
+        </div>
+
+        <div style="text-align: center;">
+            <a href="{{userManagementUrl}}" class="btn">Manage Users</a>
+        </div>
+
+        <div class="stats-section">
+            <div class="stats-title">📊 Platform Statistics</div>
+            <p style="color: #6b7280; font-size: 14px; margin-bottom: 15px;">
+                Current user activity on {{appName}}
+            </p>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number">{{totalUsers}}</div>
+                    <div class="stat-label">Total Users</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">{{newUsersToday}}</div>
+                    <div class="stat-label">New Today</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">{{activeProjects}}</div>
+                    <div class="stat-label">Active Projects</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">{{totalSales}}</div>
+                    <div class="stat-label">Total Sales</div>
+                </div>
+            </div>
+        </div>
+
+        <div style="background: #fef3c7; border: 1px solid #f59e0b; border-radius: 6px; padding: 15px; margin: 20px 0;">
+            <h4 style="margin-top: 0; color: #92400e;">💡 Admin Actions</h4>
+            <ul style="margin-bottom: 0; color: #92400e; font-size: 14px;">
+                <li>Review the new user's profile and activity</li>
+                <li>Verify their email and account information</li>
+                <li>Monitor their initial platform interactions</li>
+                <li>Ensure they comply with platform guidelines</li>
+                <li>Welcome them if they're a seller with quality projects</li>
+            </ul>
+        </div>
+
+        <p>You can manage this user and all other platform users through the admin dashboard. Regular monitoring helps maintain platform quality and user satisfaction.</p>
+
+        <div class="footer">
+            <p>{{appName}} Administrative System</p>
+            <p>
+                <a href="{{appUrl}}" style="color: #6b7280;">Visit {{appName}}</a> | 
+                <a href="mailto:{{supportEmail}}" style="color: #6b7280;">Contact Support</a>
+            </p>
+            <p>&copy; {{currentYear}} {{appName}}. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

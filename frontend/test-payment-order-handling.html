@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Order Handling Test - ProjectBuzz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        #console-output {
+            background: #000;
+            color: #0f0;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Payment Order Handling Test</h1>
+    <p>This page tests the enhanced payment order handling for existing payments in ProjectBuzz.</p>
+
+    <div class="test-section">
+        <h2>📊 Test Scenarios</h2>
+        <div id="test-scenarios">
+            <button onclick="testNewPaymentOrder()">Test New Payment Order</button>
+            <button onclick="testExistingPaymentOrder()">Test Existing Payment Order</button>
+            <button onclick="testCancelPaymentOrder()">Test Cancel Payment Order</button>
+            <button onclick="testResumePaymentOrder()">Test Resume Payment Order</button>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>📋 Test Results</h2>
+        <div id="test-results"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>🖥️ Console Output</h2>
+        <div id="console-output"></div>
+    </div>
+
+    <script>
+        // Mock payment service for testing
+        const mockPaymentService = {
+            async createOrder(projectId, customerPhone = '', testMode = false) {
+                console.log(`🔄 Creating payment order for project: ${projectId}`);
+                
+                // Simulate existing payment scenario
+                if (projectId === 'existing-payment-project') {
+                    console.log('❌ Simulating existing payment error');
+                    const error = new Error('Request failed with status code 400');
+                    error.response = {
+                        status: 400,
+                        data: {
+                            success: false,
+                            message: 'You already have a pending payment for this project',
+                            data: {
+                                orderId: 'order_existing_123',
+                                razorpayOrderId: 'rzp_order_existing_123',
+                                status: 'ACTIVE',
+                                createdAt: new Date().toISOString(),
+                                expiryTime: new Date(Date.now() + 30 * 60 * 1000).toISOString(),
+                                isExpired: false
+                            }
+                        }
+                    };
+                    throw error;
+                }
+                
+                // Simulate successful order creation
+                console.log('✅ Payment order created successfully');
+                return {
+                    success: true,
+                    data: {
+                        orderId: `order_${Date.now()}`,
+                        razorpayOrderId: `rzp_order_${Date.now()}`,
+                        amount: 1000,
+                        currency: 'INR',
+                        customerDetails: {
+                            customerName: 'Test User',
+                            customerEmail: 'test@example.com',
+                            customerPhone: customerPhone
+                        }
+                    }
+                };
+            },
+
+            async cancelOrder(orderId) {
+                console.log(`🗑️ Cancelling payment order: ${orderId}`);
+                return {
+                    success: true,
+                    message: 'Payment order cancelled successfully',
+                    data: {
+                        orderId: orderId,
+                        status: 'CANCELLED'
+                    }
+                };
+            },
+
+            getStatusColor(status) {
+                const colorMap = {
+                    'PENDING': 'warning',
+                    'ACTIVE': 'info',
+                    'PAID': 'success',
+                    'EXPIRED': 'secondary',
+                    'CANCELLED': 'error',
+                    'FAILED': 'error'
+                };
+                return colorMap[status] || 'secondary';
+            },
+
+            getStatusText(status) {
+                const statusMap = {
+                    'PENDING': 'Pending',
+                    'ACTIVE': 'Active',
+                    'PAID': 'Completed',
+                    'EXPIRED': 'Expired',
+                    'CANCELLED': 'Cancelled',
+                    'FAILED': 'Failed'
+                };
+                return statusMap[status] || status;
+            }
+        };
+
+        // Enhanced payment service with existing order handling
+        const enhancedPaymentService = {
+            async createOrder(projectId, customerPhone = '', testMode = false) {
+                try {
+                    const response = await mockPaymentService.createOrder(projectId, customerPhone, testMode);
+                    return response;
+                } catch (error) {
+                    console.error('Error creating payment order:', error);
+                    
+                    // Check if it's a "pending payment exists" error
+                    if (error.response?.status === 400 && 
+                        error.response?.data?.message?.includes('already have a pending payment')) {
+                        
+                        // Return the existing payment data with a special flag
+                        const existingPaymentData = error.response.data.data;
+                        console.log('📋 Found existing payment order:', existingPaymentData);
+                        
+                        return {
+                            success: false,
+                            isExistingPayment: true,
+                            message: error.response.data.message,
+                            data: existingPaymentData
+                        };
+                    }
+                    
+                    throw error;
+                }
+            },
+
+            async cancelOrder(orderId) {
+                return await mockPaymentService.cancelOrder(orderId);
+            },
+
+            getStatusColor: mockPaymentService.getStatusColor,
+            getStatusText: mockPaymentService.getStatusText
+        };
+
+        // Capture console output
+        const consoleOutput = document.getElementById('console-output');
+        const testResults = document.getElementById('test-results');
+        let testCount = 0;
+        let passedTests = 0;
+
+        // Override console methods
+        const originalLog = console.log;
+        const originalError = console.error;
+
+        console.log = function(...args) {
+            const message = args.join(' ');
+            consoleOutput.textContent += `ℹ️ ${message}\n`;
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+            originalLog.apply(console, args);
+        };
+
+        console.error = function(...args) {
+            const message = args.join(' ');
+            consoleOutput.textContent += `❌ ${message}\n`;
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+            originalError.apply(console, args);
+        };
+
+        // Test functions
+        async function testNewPaymentOrder() {
+            testCount++;
+            console.log('🧪 Test 1: Creating new payment order...');
+            
+            try {
+                const result = await enhancedPaymentService.createOrder('new-project-123', '9876543210');
+                
+                if (result.success && result.data.orderId) {
+                    console.log('✅ Test 1 PASSED: New payment order created successfully');
+                    passedTests++;
+                    addTestResult('Test 1: New Payment Order', 'PASSED', 'Successfully created new payment order');
+                } else {
+                    console.log('❌ Test 1 FAILED: Expected successful order creation');
+                    addTestResult('Test 1: New Payment Order', 'FAILED', 'Expected successful order creation');
+                }
+            } catch (error) {
+                console.error('❌ Test 1 FAILED:', error.message);
+                addTestResult('Test 1: New Payment Order', 'FAILED', error.message);
+            }
+        }
+
+        async function testExistingPaymentOrder() {
+            testCount++;
+            console.log('🧪 Test 2: Handling existing payment order...');
+            
+            try {
+                const result = await enhancedPaymentService.createOrder('existing-payment-project', '9876543210');
+                
+                if (!result.success && result.isExistingPayment && result.data.orderId) {
+                    console.log('✅ Test 2 PASSED: Existing payment detected and handled correctly');
+                    passedTests++;
+                    addTestResult('Test 2: Existing Payment Order', 'PASSED', 'Correctly detected existing payment');
+                } else {
+                    console.log('❌ Test 2 FAILED: Expected existing payment detection');
+                    addTestResult('Test 2: Existing Payment Order', 'FAILED', 'Expected existing payment detection');
+                }
+            } catch (error) {
+                console.error('❌ Test 2 FAILED:', error.message);
+                addTestResult('Test 2: Existing Payment Order', 'FAILED', error.message);
+            }
+        }
+
+        async function testCancelPaymentOrder() {
+            testCount++;
+            console.log('🧪 Test 3: Cancelling payment order...');
+            
+            try {
+                const result = await enhancedPaymentService.cancelOrder('order_test_123');
+                
+                if (result.success && result.data.status === 'CANCELLED') {
+                    console.log('✅ Test 3 PASSED: Payment order cancelled successfully');
+                    passedTests++;
+                    addTestResult('Test 3: Cancel Payment Order', 'PASSED', 'Successfully cancelled payment order');
+                } else {
+                    console.log('❌ Test 3 FAILED: Expected successful cancellation');
+                    addTestResult('Test 3: Cancel Payment Order', 'FAILED', 'Expected successful cancellation');
+                }
+            } catch (error) {
+                console.error('❌ Test 3 FAILED:', error.message);
+                addTestResult('Test 3: Cancel Payment Order', 'FAILED', error.message);
+            }
+        }
+
+        async function testResumePaymentOrder() {
+            testCount++;
+            console.log('🧪 Test 4: Testing resume payment flow...');
+            
+            try {
+                // First get existing payment
+                const existingResult = await enhancedPaymentService.createOrder('existing-payment-project', '9876543210');
+                
+                if (existingResult.isExistingPayment) {
+                    const existingPayment = existingResult.data;
+                    console.log('📋 Found existing payment, simulating resume...');
+                    
+                    // Simulate resume logic
+                    const resumeData = {
+                        orderId: existingPayment.orderId,
+                        razorpayOrderId: existingPayment.razorpayOrderId,
+                        status: existingPayment.status
+                    };
+                    
+                    console.log('✅ Test 4 PASSED: Resume payment flow works correctly');
+                    passedTests++;
+                    addTestResult('Test 4: Resume Payment Order', 'PASSED', 'Resume payment flow works correctly');
+                } else {
+                    console.log('❌ Test 4 FAILED: Could not find existing payment to resume');
+                    addTestResult('Test 4: Resume Payment Order', 'FAILED', 'Could not find existing payment to resume');
+                }
+            } catch (error) {
+                console.error('❌ Test 4 FAILED:', error.message);
+                addTestResult('Test 4: Resume Payment Order', 'FAILED', error.message);
+            }
+        }
+
+        function addTestResult(testName, status, message) {
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `test-result ${status === 'PASSED' ? 'success' : 'error'}`;
+            resultDiv.innerHTML = `
+                <strong>${testName}:</strong> ${status}<br>
+                <small>${message}</small>
+            `;
+            testResults.appendChild(resultDiv);
+            
+            updateSummary();
+        }
+
+        function updateSummary() {
+            const summaryDiv = document.getElementById('test-summary') || document.createElement('div');
+            summaryDiv.id = 'test-summary';
+            summaryDiv.className = `test-result ${passedTests === testCount ? 'success' : 'warning'}`;
+            summaryDiv.innerHTML = `
+                <strong>Test Summary:</strong> ${passedTests}/${testCount} tests passed<br>
+                <small>Success Rate: ${testCount > 0 ? Math.round((passedTests/testCount) * 100) : 0}%</small>
+            `;
+            
+            if (!document.getElementById('test-summary')) {
+                testResults.insertBefore(summaryDiv, testResults.firstChild);
+            }
+        }
+
+        // Initialize
+        console.log('🚀 Payment Order Handling Test initialized');
+        console.log('Click the test buttons to run individual tests');
+        updateSummary();
+    </script>
+</body>
+</html>

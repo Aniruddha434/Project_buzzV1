@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Failed - {{appName}}</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8fafc;
+        }
+        .container {
+            background: white;
+            border-radius: 8px;
+            padding: 40px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 10px;
+        }
+        .title {
+            color: #dc2626;
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #6b7280;
+            font-size: 16px;
+        }
+        .payment-details {
+            background: #fef2f2;
+            border: 1px solid #f87171;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+        .payment-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 5px 0;
+        }
+        .payment-row:last-child {
+            margin-bottom: 0;
+            border-top: 1px solid #f87171;
+            padding-top: 15px;
+            font-weight: bold;
+        }
+        .btn {
+            display: inline-block;
+            background: #000000;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            margin: 20px 0;
+        }
+        .btn:hover {
+            background: #374151;
+        }
+        .btn-retry {
+            background: #dc2626;
+        }
+        .btn-retry:hover {
+            background: #b91c1c;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+            color: #6b7280;
+            font-size: 14px;
+        }
+        .error-badge {
+            background: #dc2626;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        .help-section {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .help-title {
+            font-weight: bold;
+            color: #92400e;
+            margin-bottom: 10px;
+        }
+        .help-text {
+            color: #92400e;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">{{appName}}</div>
+            <div class="error-badge">❌ Payment Failed</div>
+            <h1 class="title">Payment Unsuccessful</h1>
+            <p class="subtitle">We couldn't process your payment, {{userName}}</p>
+        </div>
+
+        <p>Unfortunately, your payment could not be processed at this time. Don't worry - no charges have been made to your account.</p>
+
+        <div class="payment-details">
+            <h3 style="margin-top: 0; color: #1f2937;">Order Details</h3>
+            <div class="payment-row">
+                <span>Order ID:</span>
+                <span><strong>{{orderId}}</strong></span>
+            </div>
+            <div class="payment-row">
+                <span>Project:</span>
+                <span><strong>{{projectTitle}}</strong></span>
+            </div>
+            <div class="payment-row">
+                <span>Amount:</span>
+                <span><strong>₹{{amount}}</strong></span>
+            </div>
+        </div>
+
+        <div style="text-align: center;">
+            <a href="{{retryUrl}}" class="btn btn-retry">Try Payment Again</a>
+        </div>
+
+        <div class="help-section">
+            <div class="help-title">🔧 Common Solutions</div>
+            <div class="help-text">
+                <ul style="margin: 0; padding-left: 20px;">
+                    <li>Check if your card has sufficient balance</li>
+                    <li>Verify your card details are correct</li>
+                    <li>Try using a different payment method</li>
+                    <li>Contact your bank if the issue persists</li>
+                    <li>Clear your browser cache and try again</li>
+                </ul>
+            </div>
+        </div>
+
+        <p>If you continue to experience issues, please contact our support team at <a href="mailto:{{supportEmail}}" style="color: #dc2626;">{{supportEmail}}</a> and include your order ID for faster assistance.</p>
+
+        <div style="background: #f3f4f6; border-radius: 6px; padding: 15px; margin: 20px 0;">
+            <h4 style="margin-top: 0; color: #1f2937;">💡 Need Help?</h4>
+            <p style="margin-bottom: 0; color: #4b5563;">
+                Our support team is available 24/7 to help you complete your purchase. 
+                We'll work with you to resolve any payment issues quickly.
+            </p>
+        </div>
+
+        <div class="footer">
+            <p>We're here to help you get your project!</p>
+            <p>
+                <a href="{{appUrl}}" style="color: #6b7280;">Visit {{appName}}</a> | 
+                <a href="mailto:{{supportEmail}}" style="color: #6b7280;">Contact Support</a>
+            </p>
+            <p>&copy; {{currentYear}} {{appName}}. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

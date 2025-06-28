@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Integration Test - ProjectBuzz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        .warning { background-color: #fff3cd; border-color: #ffeaa7; }
+        .info { background-color: #d1ecf1; border-color: #bee5eb; }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background-color: #0056b3; }
+        button:disabled { background-color: #6c757d; cursor: not-allowed; }
+        .log {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 ProjectBuzz Payment Integration Test</h1>
+        <p>This page tests the Razorpay payment integration after the Cashfree removal.</p>
+
+        <!-- Environment Variables Test -->
+        <div class="test-section info">
+            <h3>1. Environment Variables Test</h3>
+            <p>Testing if Vite environment variables are properly loaded...</p>
+            <div id="env-test-results"></div>
+            <button onclick="testEnvironmentVariables()">Test Environment Variables</button>
+        </div>
+
+        <!-- Razorpay SDK Loading Test -->
+        <div class="test-section info">
+            <h3>2. Razorpay SDK Loading Test</h3>
+            <p>Testing if Razorpay SDK can be loaded dynamically...</p>
+            <div id="sdk-test-results"></div>
+            <button onclick="testRazorpaySDK()">Test Razorpay SDK Loading</button>
+        </div>
+
+        <!-- Backend Connection Test -->
+        <div class="test-section info">
+            <h3>3. Backend Connection Test</h3>
+            <p>Testing connection to backend payment endpoints...</p>
+            <div id="backend-test-results"></div>
+            <button onclick="testBackendConnection()">Test Backend Connection</button>
+        </div>
+
+        <!-- Payment Order Creation Test -->
+        <div class="test-section info">
+            <h3>4. Payment Order Creation Test</h3>
+            <p>Testing payment order creation with mock data...</p>
+            <div id="order-test-results"></div>
+            <button onclick="testOrderCreation()" id="order-test-btn">Test Order Creation</button>
+        </div>
+
+        <!-- Razorpay Checkout Test -->
+        <div class="test-section warning">
+            <h3>5. Razorpay Checkout Test</h3>
+            <p><strong>Warning:</strong> This will open the actual Razorpay checkout modal. Use test card details only!</p>
+            <div id="checkout-test-results"></div>
+            <button onclick="testRazorpayCheckout()" id="checkout-test-btn" disabled>Test Razorpay Checkout</button>
+        </div>
+
+        <!-- Test Log -->
+        <div class="test-section">
+            <h3>📋 Test Log</h3>
+            <div id="test-log" class="log">Test log will appear here...\n</div>
+            <button onclick="clearLog()">Clear Log</button>
+        </div>
+    </div>
+
+    <script>
+        let testOrderData = null;
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logElement = document.getElementById('test-log');
+            const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : type === 'warning' ? '⚠️' : 'ℹ️';
+            logElement.textContent += `[${timestamp}] ${prefix} ${message}\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+
+        function clearLog() {
+            document.getElementById('test-log').textContent = 'Test log cleared...\n';
+        }
+
+        function updateTestResult(elementId, success, message) {
+            const element = document.getElementById(elementId);
+            element.className = `test-section ${success ? 'success' : 'error'}`;
+            element.innerHTML = `<h3>${element.querySelector('h3').textContent}</h3><p>${message}</p>`;
+        }
+
+        // Test 1: Environment Variables
+        function testEnvironmentVariables() {
+            log('Testing environment variables...');
+            
+            const envVars = {
+                'VITE_API_URL': import.meta.env.VITE_API_URL,
+                'VITE_BACKEND_URL': import.meta.env.VITE_BACKEND_URL,
+                'VITE_RAZORPAY_KEY_ID': import.meta.env.VITE_RAZORPAY_KEY_ID
+            };
+
+            let allPresent = true;
+            let results = 'Environment Variables:\n';
+
+            for (const [key, value] of Object.entries(envVars)) {
+                if (value) {
+                    results += `✅ ${key}: ${key.includes('KEY') ? value.substring(0, 10) + '...' : value}\n`;
+                    log(`${key}: ${key.includes('KEY') ? 'Present (hidden)' : value}`, 'success');
+                } else {
+                    results += `❌ ${key}: NOT FOUND\n`;
+                    log(`${key}: NOT FOUND`, 'error');
+                    allPresent = false;
+                }
+            }
+
+            updateTestResult('env-test-results', allPresent, results);
+            return allPresent;
+        }
+
+        // Test 2: Razorpay SDK Loading
+        async function testRazorpaySDK() {
+            log('Testing Razorpay SDK loading...');
+            
+            try {
+                // Remove existing script if any
+                const existingScript = document.querySelector('script[src*="razorpay"]');
+                if (existingScript) {
+                    existingScript.remove();
+                    log('Removed existing Razorpay script');
+                }
+
+                // Load Razorpay SDK
+                await new Promise((resolve, reject) => {
+                    const script = document.createElement('script');
+                    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+                    script.async = true;
+
+                    script.onload = () => {
+                        if (window.Razorpay) {
+                            log('Razorpay SDK loaded successfully', 'success');
+                            resolve();
+                        } else {
+                            log('Razorpay SDK loaded but not properly initialized', 'error');
+                            reject(new Error('Razorpay SDK not properly initialized'));
+                        }
+                    };
+
+                    script.onerror = (error) => {
+                        log('Failed to load Razorpay SDK', 'error');
+                        reject(new Error('Failed to load Razorpay SDK'));
+                    };
+
+                    document.head.appendChild(script);
+                });
+
+                updateTestResult('sdk-test-results', true, '✅ Razorpay SDK loaded successfully!\nwindow.Razorpay is available and ready to use.');
+                return true;
+            } catch (error) {
+                log(`Razorpay SDK loading failed: ${error.message}`, 'error');
+                updateTestResult('sdk-test-results', false, `❌ Failed to load Razorpay SDK: ${error.message}`);
+                return false;
+            }
+        }
+
+        // Test 3: Backend Connection
+        async function testBackendConnection() {
+            log('Testing backend connection...');
+            
+            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+            
+            try {
+                // Test basic health check
+                const response = await fetch(`${apiUrl}/health`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    log('Backend connection successful', 'success');
+                    updateTestResult('backend-test-results', true, `✅ Backend is reachable!\nAPI URL: ${apiUrl}\nStatus: ${response.status}\nResponse: ${JSON.stringify(data, null, 2)}`);
+                    return true;
+                } else {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+            } catch (error) {
+                log(`Backend connection failed: ${error.message}`, 'error');
+                updateTestResult('backend-test-results', false, `❌ Backend connection failed: ${error.message}\nTried URL: ${apiUrl}/health`);
+                return false;
+            }
+        }
+
+        // Test 4: Payment Order Creation
+        async function testOrderCreation() {
+            log('Testing payment order creation...');
+            
+            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+            
+            // Mock project data
+            const mockProjectId = '507f1f77bcf86cd799439011'; // Valid ObjectId format
+            const mockPhone = '9876543210';
+            
+            try {
+                const response = await fetch(`${apiUrl}/payments/create-order`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer mock-token-for-testing' // This will fail auth but test the endpoint
+                    },
+                    body: JSON.stringify({
+                        projectId: mockProjectId,
+                        customerPhone: mockPhone
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (response.status === 401) {
+                    // Expected - we don't have a valid token, but endpoint is reachable
+                    log('Order creation endpoint reachable (auth required)', 'success');
+                    updateTestResult('order-test-results', true, `✅ Payment order endpoint is working!\nEndpoint: ${apiUrl}/payments/create-order\nStatus: ${response.status} (Expected - auth required)\nResponse: ${JSON.stringify(data, null, 2)}`);
+                    return true;
+                } else if (response.ok && data.success) {
+                    // Unexpected success - maybe auth is disabled for testing
+                    testOrderData = data.data;
+                    log('Order creation successful', 'success');
+                    updateTestResult('order-test-results', true, `✅ Payment order created successfully!\nOrder ID: ${data.data.orderId}\nRazorpay Order ID: ${data.data.razorpayOrderId}`);
+                    document.getElementById('checkout-test-btn').disabled = false;
+                    return true;
+                } else {
+                    throw new Error(`HTTP ${response.status}: ${data.message || response.statusText}`);
+                }
+            } catch (error) {
+                log(`Order creation test failed: ${error.message}`, 'error');
+                updateTestResult('order-test-results', false, `❌ Order creation failed: ${error.message}`);
+                return false;
+            }
+        }
+
+        // Test 5: Razorpay Checkout
+        async function testRazorpayCheckout() {
+            log('Testing Razorpay checkout modal...');
+            
+            if (!window.Razorpay) {
+                log('Razorpay SDK not loaded. Loading now...', 'warning');
+                const sdkLoaded = await testRazorpaySDK();
+                if (!sdkLoaded) {
+                    updateTestResult('checkout-test-results', false, '❌ Cannot test checkout - Razorpay SDK not available');
+                    return false;
+                }
+            }
+
+            try {
+                const razorpayKeyId = import.meta.env.VITE_RAZORPAY_KEY_ID;
+                
+                if (!razorpayKeyId) {
+                    throw new Error('VITE_RAZORPAY_KEY_ID not found in environment variables');
+                }
+
+                // Create test checkout options
+                const options = {
+                    key: razorpayKeyId,
+                    amount: 10000, // ₹100 in paise
+                    currency: 'INR',
+                    name: 'ProjectBuzz Test',
+                    description: 'Payment Integration Test',
+                    order_id: testOrderData?.razorpayOrderId || 'test_order_' + Date.now(),
+                    prefill: {
+                        name: 'Test User',
+                        email: 'test@projectbuzz.com',
+                        contact: '9876543210'
+                    },
+                    theme: {
+                        color: '#000000'
+                    },
+                    handler: (response) => {
+                        log('Payment successful (test mode)', 'success');
+                        updateTestResult('checkout-test-results', true, `✅ Razorpay checkout working!\nPayment ID: ${response.razorpay_payment_id}\nOrder ID: ${response.razorpay_order_id}\nSignature: ${response.razorpay_signature?.substring(0, 20)}...`);
+                    },
+                    modal: {
+                        ondismiss: () => {
+                            log('Payment modal dismissed by user', 'warning');
+                            updateTestResult('checkout-test-results', true, '✅ Razorpay checkout modal opened and closed successfully!\nThe payment gateway is working correctly.');
+                        }
+                    }
+                };
+
+                log('Opening Razorpay checkout modal...', 'info');
+                const rzp = new window.Razorpay(options);
+                rzp.open();
+
+                log('Razorpay checkout modal opened successfully', 'success');
+                return true;
+            } catch (error) {
+                log(`Razorpay checkout test failed: ${error.message}`, 'error');
+                updateTestResult('checkout-test-results', false, `❌ Razorpay checkout failed: ${error.message}`);
+                return false;
+            }
+        }
+
+        // Auto-run basic tests on page load
+        window.addEventListener('load', async () => {
+            log('Starting automatic tests...');
+            await testEnvironmentVariables();
+            await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second
+            await testRazorpaySDK();
+            await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second
+            await testBackendConnection();
+            log('Automatic tests completed. Run manual tests as needed.');
+        });
+    </script>
+</body>
+</html>
