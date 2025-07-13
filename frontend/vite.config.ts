@@ -111,14 +111,6 @@ export default defineConfig(({ command, mode }) => {
           entryFileNames: 'js/[name]-[hash].js',
         },
       },
-
-      // Terser options for production
-      terserOptions: mode === 'production' ? {
-        compress: {
-          drop_console: true,
-          drop_debugger: true,
-        },
-      } : undefined,
     },
 
     // Enhanced environment variables
