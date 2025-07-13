@@ -7,7 +7,9 @@ export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
 
   return {
-    plugins: [react()],
+    plugins: [react({
+      jsxImportSource: 'react'
+    })],
 
     // Path resolution with enhanced aliases
     resolve: {
