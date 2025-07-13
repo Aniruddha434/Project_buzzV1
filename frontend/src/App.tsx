@@ -27,6 +27,7 @@ const TermsAndConditions = lazy(() => import('./pages/TermsAndConditions.tsx'));
 const SellerRegistration = lazy(() => import('./pages/SellerRegistration.tsx'));
 const AdminManagement = lazy(() => import('./pages/AdminManagement.tsx'));
 const Negotiations = lazy(() => import('./pages/Negotiations.tsx'));
+const ConnectionTest = lazy(() => import('./pages/ConnectionTest.jsx'));
 
 import NavbarEnhanced from './components/NavbarEnhanced.tsx';
 import ProtectedRoute from './components/ProtectedRoute.tsx';
@@ -57,6 +58,7 @@ const App: React.FC = () => {
             <Route path="/projects" element={<MarketPage />} /> {/* Legacy redirect */}
             <Route path="/about" element={<About />} />
             <Route path="/negotiations" element={<Negotiations />} />
+            <Route path="/connection-test" element={<ConnectionTest />} />
             <Route path="/payment/success" element={<PaymentSuccess />} />
             <Route path="/modern-dashboard" element={<ModernDashboard />} />
 
