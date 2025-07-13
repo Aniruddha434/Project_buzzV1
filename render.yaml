@@ -1,0 +1,85 @@
+# Render Blueprint for ProjectBuzz Backend
+services:
+  - type: web
+    name: projectbuzz-backend
+    env: node
+    plan: free
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: MONGO_URI
+        value: mongodb+srv://username:password@cluster0.hujehyy.mongodb.net/projectbuzz?retryWrites=true&w=majority
+      - key: MONGODB_ATLAS_DB_NAME
+        value: projectbuzz
+      - key: JWT_SECRET
+        value: projectbuzz-production-jwt-secret-2024-secure-key-for-authentication-and-authorization-system
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: SESSION_SECRET
+        value: projectbuzz-production-session-secret-2024-for-oauth-and-user-sessions
+      - key: FRONTEND_URL
+        value: https://projectbuzz-frontend.vercel.app
+      - key: BACKEND_URL
+        value: https://projectbuzz-backend.onrender.com
+      - key: CORS_ORIGIN
+        value: https://projectbuzz-frontend.vercel.app,https://projectbuzz.vercel.app
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: 587
+      - key: SMTP_SECURE
+        value: false
+      - key: SMTP_USER
+        value: infoprojectbuzz@gmail.com
+      - key: SMTP_PASS
+        value: your-production-email-app-password
+      - key: FROM_NAME
+        value: ProjectBuzz
+      - key: FROM_EMAIL
+        value: infoprojectbuzz@gmail.com
+      - key: SUPPORT_EMAIL
+        value: infoprojectbuzz@gmail.com
+      - key: APP_NAME
+        value: ProjectBuzz
+      - key: BCRYPT_ROUNDS
+        value: 14
+      - key: RAZORPAY_KEY_ID
+        value: rzp_test_71doc1660gWGcy
+      - key: RAZORPAY_KEY_SECRET
+        value: v7FdAKGWN9o6WGtPQVXgGcii
+      - key: RAZORPAY_ENVIRONMENT
+        value: test
+      - key: GOOGLE_CLIENT_ID
+        value: your-production-google-client-id
+      - key: GOOGLE_CLIENT_SECRET
+        value: your-production-google-client-secret
+      - key: GOOGLE_CALLBACK_URL
+        value: https://projectbuzz-backend.onrender.com/auth/google/callback
+      - key: GITHUB_CLIENT_ID
+        value: your-github-client-id
+      - key: GITHUB_CLIENT_SECRET
+        value: your-github-client-secret
+      - key: GITHUB_CALLBACK_URL
+        value: https://projectbuzz-backend.onrender.com/auth/github/callback
+      - key: DB_MAX_POOL_SIZE
+        value: 20
+      - key: DB_SERVER_SELECTION_TIMEOUT
+        value: 10000
+      - key: DB_SOCKET_TIMEOUT
+        value: 60000
+      - key: DB_CONNECT_TIMEOUT
+        value: 15000
+      - key: DB_MAX_IDLE_TIME
+        value: 60000
+      - key: DB_MIN_POOL_SIZE
+        value: 5
+      - key: TRUST_PROXY
+        value: true
+      - key: HELMET_ENABLED
+        value: true
+      - key: COMPRESSION_ENABLED
+        value: true

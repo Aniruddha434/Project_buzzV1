@@ -6,8 +6,7 @@ const walletSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true,
-    unique: true,
-    index: true
+    unique: true
   },
 
   // Wallet balance in INR (stored in paise for precision)

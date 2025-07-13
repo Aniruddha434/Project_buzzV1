@@ -77,8 +77,7 @@ const discountCodeSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Indexes
-discountCodeSchema.index({ code: 1 }, { unique: true });
+// Indexes (code index is already created by unique: true)
 discountCodeSchema.index({ buyer: 1, project: 1 });
 discountCodeSchema.index({ expiresAt: 1 });
 discountCodeSchema.index({ isActive: 1, isUsed: 1 });

@@ -144,8 +144,7 @@ const projectSchema = new mongoose.Schema({
   seller: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true,
-    index: true
+    required: true
   },
   // Buyers who purchased this project
   buyers: [{

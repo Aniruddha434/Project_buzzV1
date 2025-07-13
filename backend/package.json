@@ -11,6 +11,7 @@
     "dev": "NODE_ENV=development nodemon server.js",
     "dev:debug": "NODE_ENV=development DEBUG=* nodemon server.js",
     "build": "npm install",
+    "deploy:prep": "node ../scripts/deploy-production.js",
     "test": "NODE_ENV=test node test-server.js",
     "test-email": "node test-email-simple.js",
     "health-check": "node health-check.js",

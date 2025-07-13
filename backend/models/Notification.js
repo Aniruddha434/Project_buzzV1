@@ -5,8 +5,7 @@ const notificationSchema = new mongoose.Schema({
   recipient: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true,
-    index: true
+    required: true
   },
 
   // Notification content
@@ -43,8 +42,7 @@ const notificationSchema = new mongoose.Schema({
   category: {
     type: String,
     required: true,
-    enum: ['payment', 'purchase', 'sale', 'admin', 'system', 'account'],
-    index: true
+    enum: ['payment', 'purchase', 'sale', 'admin', 'system', 'account']
   },
 
   // Priority level
@@ -58,8 +56,7 @@ const notificationSchema = new mongoose.Schema({
   status: {
     type: String,
     enum: ['unread', 'read', 'archived'],
-    default: 'unread',
-    index: true
+    default: 'unread'
   },
 
   // Related entities

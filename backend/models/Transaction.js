@@ -5,24 +5,21 @@ const transactionSchema = new mongoose.Schema({
   wallet: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Wallet',
-    required: true,
-    index: true
+    required: true
   },
 
   // User reference (for easier queries)
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true,
-    index: true
+    required: true
   },
 
   // Transaction type
   type: {
     type: String,
     enum: ['credit', 'debit', 'platform_commission'],
-    required: true,
-    index: true
+    required: true
   },
 
   // Amount in paise
@@ -41,8 +38,7 @@ const transactionSchema = new mongoose.Schema({
 
   // External transaction ID (payment ID, payout ID, etc.)
   transactionId: {
-    type: String,
-    index: true
+    type: String
   },
 
   // Related entities

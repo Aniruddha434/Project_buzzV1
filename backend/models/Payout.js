@@ -5,24 +5,21 @@ const payoutSchema = new mongoose.Schema({
   payoutId: {
     type: String,
     required: true,
-    unique: true,
-    index: true
+    unique: true
   },
-  
+
   // User requesting payout (seller)
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true,
-    index: true
+    required: true
   },
-  
+
   // Wallet reference
   wallet: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Wallet',
-    required: true,
-    index: true
+    required: true
   },
   
   // Payout amount in paise
@@ -36,8 +33,7 @@ const payoutSchema = new mongoose.Schema({
   status: {
     type: String,
     enum: ['pending', 'approved', 'processing', 'completed', 'failed', 'cancelled', 'rejected'],
-    default: 'pending',
-    index: true
+    default: 'pending'
   },
   
   // Bank account details for this payout
@@ -153,11 +149,10 @@ const payoutSchema = new mongoose.Schema({
   }
 });
 
-// Indexes for better performance
+// Indexes for better performance (payoutId index is already created by unique: true)
 payoutSchema.index({ user: 1, status: 1, createdAt: -1 });
 payoutSchema.index({ wallet: 1, status: 1 });
 payoutSchema.index({ status: 1, createdAt: -1 });
-payoutSchema.index({ payoutId: 1 });
 payoutSchema.index({ 'razorpayDetails.payoutId': 1 });
 payoutSchema.index({ requestedAt: -1 });
 payoutSchema.index({ approvedAt: -1 });
