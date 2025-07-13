@@ -1,9 +1,19 @@
+// Load environment variables FIRST before any other imports
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config({ path: path.join(__dirname, '.env') });
+
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import helmet from 'helmet';
-import path from 'path';
+import session from 'express-session';
+import passport from 'passport';
 // import { getOptimalPort, PortManager } from './utils/portManager.js';
 
 // Import routes
@@ -18,10 +28,144 @@ import notificationRoutes from './routes/notifications.js';
 import adminManagementRoutes from './routes/adminManagement.js';
 import negotiationRoutes from './routes/negotiations.js';
 
-// Load environment variables first
-dotenv.config();
+// Configure Passport after environment variables are loaded
+import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
+import { Strategy as GitHubStrategy } from 'passport-github2';
+import User from './models/User.js';
 
-// Services will be imported dynamically after environment variables are loaded
+// Serialize user for session
+passport.serializeUser((user, done) => {
+  done(null, user._id);
+});
+
+// Deserialize user from session
+passport.deserializeUser(async (id, done) => {
+  try {
+    const user = await User.findById(id);
+    done(null, user);
+  } catch (error) {
+    done(error, null);
+  }
+});
+
+// Debug environment variables
+console.log('🔍 Environment variables check:');
+console.log('GOOGLE_CLIENT_ID:', process.env.GOOGLE_CLIENT_ID ? 'SET' : 'NOT SET');
+console.log('GOOGLE_CLIENT_SECRET:', process.env.GOOGLE_CLIENT_SECRET ? 'SET' : 'NOT SET');
+console.log('GITHUB_CLIENT_ID:', process.env.GITHUB_CLIENT_ID ? 'SET' : 'NOT SET');
+console.log('GITHUB_CLIENT_SECRET:', process.env.GITHUB_CLIENT_SECRET ? 'SET' : 'NOT SET');
+
+// Only configure OAuth strategies if credentials are available
+if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+  // Google OAuth Strategy
+  passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: "/api/auth/google/callback"
+  }, async (accessToken, refreshToken, profile, done) => {
+    try {
+      console.log('🔍 Google OAuth profile:', profile);
+
+      // Check if user already exists with this Google ID
+      let user = await User.findOne({ googleId: profile.id });
+
+      if (user) {
+        console.log('✅ Existing Google user found:', user.email);
+        return done(null, user);
+      }
+
+      // Check if user exists with the same email
+      user = await User.findOne({ email: profile.emails[0].value });
+
+      if (user) {
+        // Link Google account to existing user
+        user.googleId = profile.id;
+        user.avatar = profile.photos[0]?.value || user.avatar;
+        await user.save();
+        console.log('🔗 Linked Google account to existing user:', user.email);
+        return done(null, user);
+      }
+
+      // Create new user
+      user = new User({
+        googleId: profile.id,
+        email: profile.emails[0].value,
+        displayName: profile.displayName,
+        avatar: profile.photos[0]?.value,
+        role: 'buyer',
+        emailVerified: true, // Google emails are pre-verified
+        authProvider: 'google'
+      });
+
+      await user.save();
+      console.log('✅ New Google user created:', user.email);
+      return done(null, user);
+
+    } catch (error) {
+      console.error('❌ Google OAuth error:', error);
+      return done(error, null);
+    }
+  }));
+} else {
+  console.log('⚠️ Google OAuth credentials not found, skipping Google strategy');
+}
+
+if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
+  // GitHub OAuth Strategy
+  passport.use(new GitHubStrategy({
+    clientID: process.env.GITHUB_CLIENT_ID,
+    clientSecret: process.env.GITHUB_CLIENT_SECRET,
+    callbackURL: "/api/auth/github/callback"
+  }, async (accessToken, refreshToken, profile, done) => {
+    try {
+      console.log('🔍 GitHub OAuth profile:', profile);
+
+      // Check if user already exists with this GitHub ID
+      let user = await User.findOne({ githubId: profile.id });
+
+      if (user) {
+        console.log('✅ Existing GitHub user found:', user.email);
+        return done(null, user);
+      }
+
+      // Check if user exists with the same email
+      const email = profile.emails?.[0]?.value || `${profile.username}@github.local`;
+      user = await User.findOne({ email: email });
+
+      if (user) {
+        // Link GitHub account to existing user
+        user.githubId = profile.id;
+        user.githubProfile = profile.username;
+        user.avatar = profile.photos[0]?.value || user.avatar;
+        await user.save();
+        console.log('🔗 Linked GitHub account to existing user:', user.email);
+        return done(null, user);
+      }
+
+      // Create new user
+      user = new User({
+        githubId: profile.id,
+        email: email,
+        displayName: profile.displayName || profile.username,
+        githubProfile: profile.username,
+        avatar: profile.photos[0]?.value,
+        role: 'buyer',
+        emailVerified: profile.emails?.[0]?.value ? true : false,
+        authProvider: 'github'
+      });
+
+      await user.save();
+      console.log('✅ New GitHub user created:', user.email);
+      return done(null, user);
+
+    } catch (error) {
+      console.error('❌ GitHub OAuth error:', error);
+      return done(error, null);
+    }
+  }));
+} else {
+  console.log('⚠️ GitHub OAuth credentials not found, skipping GitHub strategy');
+}
 
 const app = express();
 
@@ -152,6 +296,21 @@ app.use((req, res, next) => {
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+// Session middleware (required for passport)
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'your-fallback-session-secret',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }
+}));
+
+// Passport middleware
+app.use(passport.initialize());
+app.use(passport.session());
+
 // Serve static images with CORS headers as fallback
 app.use('/api/projects/images', (req, res, next) => {
   // Set CORS headers for static image serving
@@ -206,7 +365,7 @@ const connectMongoDB = async () => {
     console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
     console.log(`🗄️  Database: ${process.env.MONGODB_ATLAS_DB_NAME || 'projectbuzz'}`);
 
-    await mongoose.connect(process.env.MONGO_URI, connectionOptions);
+    await mongoose.connect(process.env.MONGODB_URI || process.env.MONGO_URI, connectionOptions);
 
     console.log('✅ MongoDB connected successfully');
     console.log(`🏊 Connection pool: ${connectionOptions.minPoolSize}-${connectionOptions.maxPoolSize} connections`);
@@ -420,7 +579,7 @@ const startServer = () => {
       console.log('\n📋 Development URLs:');
       console.log(`   Frontend: ${process.env.FRONTEND_URL || 'http://localhost:5173'}`);
       console.log(`   Backend API: http://localhost:${PORT}/api`);
-      console.log(`   MongoDB: ${process.env.MONGO_URI || 'mongodb://localhost:27017/projectbuzz'}`);
+      console.log(`   MongoDB: ${process.env.MONGODB_URI || process.env.MONGO_URI || 'mongodb://localhost:27017/projectbuzz'}`);
       console.log('');
     }
   });
