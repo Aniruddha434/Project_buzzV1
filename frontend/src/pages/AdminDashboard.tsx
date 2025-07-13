@@ -17,6 +17,7 @@ import Modal from '../components/ui/Modal';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import AdminProjectModal from '../components/AdminProjectModal';
 import AdminPayoutManagement from '../components/AdminPayoutManagement';
+import AdminThemeWrapper from '../components/AdminThemeWrapper';
 
 // Interface for Project data
 interface Project {
@@ -269,42 +270,47 @@ const AdminDashboard: FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center pt-20">
-        <LoadingSpinner size="xl" variant="static" text="Loading admin dashboard..." />
-      </div>
+      <AdminThemeWrapper>
+        <div className="min-h-screen bg-black flex items-center justify-center pt-20">
+          <LoadingSpinner size="xl" variant="static" text="Loading admin dashboard..." />
+        </div>
+      </AdminThemeWrapper>
     );
   }
 
   if (!adminUser || adminRole !== 'admin') {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center pt-20">
-        <Card variant="default" className="p-8 text-center max-w-md border border-gray-200 dark:border-gray-700" animate={false} hover={false}>
-          <div className="w-16 h-16 mx-auto mb-4 bg-red-500 rounded-full flex items-center justify-center">
-            <Shield className="h-8 w-8 text-white" />
-          </div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Access Denied</h1>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">
-            {error || 'You do not have permission to view this page.'}
-          </p>
-          <Link to="/">
-            <Button variant="static-primary">Go to Homepage</Button>
-          </Link>
-        </Card>
-      </div>
+      <AdminThemeWrapper>
+        <div className="min-h-screen bg-black flex items-center justify-center pt-20">
+          <Card variant="default" className="p-8 text-center max-w-md border border-gray-700 bg-gray-900" animate={false} hover={false}>
+            <div className="w-16 h-16 mx-auto mb-4 bg-red-500 rounded-full flex items-center justify-center">
+              <Shield className="h-8 w-8 text-white" />
+            </div>
+            <h1 className="text-2xl font-bold text-white mb-4">Access Denied</h1>
+            <p className="text-gray-400 mb-6">
+              {error || 'You do not have permission to view this page.'}
+            </p>
+            <Link to="/">
+              <Button variant="static-primary">Go to Homepage</Button>
+            </Link>
+          </Card>
+        </div>
+      </AdminThemeWrapper>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-24">
+    <AdminThemeWrapper>
+      <div className="min-h-screen bg-black dashboard-navbar-fix">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
+              <h1 className="text-4xl font-bold text-white">
                 Admin Dashboard
               </h1>
-              <p className="mt-2 text-lg text-gray-600 dark:text-gray-400">
+              <p className="mt-2 text-lg text-gray-400">
                 Manage platform data, users, and projects
               </p>
             </div>
@@ -332,11 +338,11 @@ const AdminDashboard: FC = () => {
         {/* Alerts */}
         {error && (
           <div className="mb-6">
-            <Card variant="default" className="border-l-4 border-red-500 bg-red-50 dark:bg-red-900/20" animate={false} hover={false}>
+            <Card variant="default" className="border-l-4 border-red-500 bg-red-900/20" animate={false} hover={false}>
               <div className="p-4">
                 <div className="flex items-center">
                   <AlertTriangle className="h-5 w-5 text-red-500 mr-3" />
-                  <p className="text-red-700 dark:text-red-400">{error}</p>
+                  <p className="text-red-400">{error}</p>
                   <button
                     onClick={() => setError(null)}
                     className="ml-auto text-red-500 hover:text-red-700"
@@ -351,11 +357,11 @@ const AdminDashboard: FC = () => {
 
         {success && (
           <div className="mb-6">
-            <Card variant="default" className="border-l-4 border-green-500 bg-green-50 dark:bg-green-900/20" animate={false} hover={false}>
+            <Card variant="default" className="border-l-4 border-green-500 bg-green-900/20" animate={false} hover={false}>
               <div className="p-4">
                 <div className="flex items-center">
                   <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
-                  <p className="text-green-700 dark:text-green-400">{success}</p>
+                  <p className="text-green-400">{success}</p>
                   <button
                     onClick={() => setSuccess(null)}
                     className="ml-auto text-green-500 hover:text-green-700"
@@ -402,14 +408,14 @@ const AdminDashboard: FC = () => {
               }
             ].map((stat, index) => (
               <div key={stat.title}>
-                <Card variant="default" className="border border-gray-200 dark:border-gray-700" animate={false} hover={false}>
+                <Card variant="default" className="border border-gray-700 bg-gray-900" animate={false} hover={false}>
                   <div className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                        <p className="text-sm font-medium text-gray-400">
                           {stat.title}
                         </p>
-                        <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">
+                        <p className="text-3xl font-bold text-white mt-2">
                           {stat.value}
                         </p>
                         <p className="text-xs text-gray-500 mt-1">
@@ -429,7 +435,7 @@ const AdminDashboard: FC = () => {
 
         {/* Tab Navigation */}
         <div className="mb-8">
-          <div className="border-b border-gray-200 dark:border-gray-700">
+          <div className="border-b border-gray-700">
             <nav className="-mb-px flex space-x-8">
               {tabs.map((tab) => (
                 <button
@@ -437,8 +443,8 @@ const AdminDashboard: FC = () => {
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex items-center space-x-2 py-2 px-1 border-b-2 font-medium text-sm ${
                     activeTab === tab.id
-                      ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
+                      ? 'border-blue-500 text-blue-400'
+                      : 'border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-500'
                   }`}
                 >
                   {tab.icon}
@@ -453,9 +459,9 @@ const AdminDashboard: FC = () => {
         {activeTab === 'overview' && (
           <div className="space-y-6">
             {/* Quick Actions */}
-            <Card variant="default" className="border border-gray-200 dark:border-gray-700" animate={false} hover={false}>
+            <Card variant="default" className="border border-gray-700 bg-gray-900" animate={false} hover={false}>
               <div className="p-6">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
                   <Settings className="h-5 w-5 mr-2" />
                   Quick Actions
                 </h3>
@@ -493,19 +499,19 @@ const AdminDashboard: FC = () => {
               </Card>
 
               {/* Recent Activity */}
-              <Card variant="default" className="border border-gray-200 dark:border-gray-700" animate={false} hover={false}>
+              <Card variant="default" className="border border-gray-700 bg-gray-900" animate={false} hover={false}>
                 <div className="p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                  <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
                     <Activity className="h-5 w-5 mr-2" />
                     Recent Activity
                   </h3>
                   <div className="space-y-4">
                     {allProjects.slice(0, 5).map((project) => (
-                      <div key={project._id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                      <div key={project._id} className="flex items-center justify-between p-3 bg-gray-800 rounded-lg">
                         <div className="flex items-center space-x-3">
                           <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                           <div>
-                            <p className="text-sm font-medium text-gray-900 dark:text-white">
+                            <p className="text-sm font-medium text-white">
                               {project.title}
                             </p>
                             <p className="text-xs text-gray-500">
@@ -530,10 +536,10 @@ const AdminDashboard: FC = () => {
         {/* Users Tab */}
         {activeTab === 'users' && (
           <div>
-            <Card variant="default" className="border border-gray-200 dark:border-gray-700" animate={false} hover={false}>
+            <Card variant="default" className="border border-gray-700 bg-gray-900" animate={false} hover={false}>
               <div className="p-6">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  <h3 className="text-lg font-semibold text-white">
                     User Management ({filteredUsers.length})
                   </h3>
                     <div className="mt-4 sm:mt-0 flex items-center space-x-3">
@@ -547,7 +553,7 @@ const AdminDashboard: FC = () => {
                       <select
                         value={filterRole}
                         onChange={(e) => setFilterRole(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                        className="px-3 py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-800 text-white"
                       >
                         <option value="all">All Roles</option>
                         <option value="buyer">Buyers</option>
@@ -558,27 +564,27 @@ const AdminDashboard: FC = () => {
                   </div>
 
                   <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                      <thead className="bg-gray-50 dark:bg-gray-800">
+                    <table className="min-w-full divide-y divide-gray-700">
+                      <thead className="bg-gray-800">
                         <tr>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                             User
                           </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                             Role
                           </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                             Stats
                           </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                             Joined
                           </th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                             Actions
                           </th>
                         </tr>
                       </thead>
-                      <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+                      <tbody className="bg-gray-900 divide-y divide-gray-700">
                         {filteredUsers.map((user) => (
                           <tr key={user._id}>
                             <td className="px-6 py-4 whitespace-nowrap">
@@ -591,10 +597,10 @@ const AdminDashboard: FC = () => {
                                   />
                                 </div>
                                 <div className="ml-4">
-                                  <div className="text-sm font-medium text-gray-900 dark:text-white">
+                                  <div className="text-sm font-medium text-white">
                                     {user.displayName || user.email || 'Unknown User'}
                                   </div>
-                                  <div className="text-sm text-gray-500 dark:text-gray-400">
+                                  <div className="text-sm text-gray-400">
                                     {user.email || 'No email'}
                                   </div>
                                 </div>
@@ -622,7 +628,7 @@ const AdminDashboard: FC = () => {
                                 <select
                                   value={user.role}
                                   onChange={(e) => handleUserRoleChange(user._id, e.target.value as AdminUser['role'])}
-                                  className="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded text-xs focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                                  className="px-2 py-1 border border-gray-600 rounded text-xs focus:ring-blue-500 focus:border-blue-500 bg-gray-800 text-white"
                                 >
                                   <option value="buyer">Buyer</option>
                                   <option value="seller">Seller</option>
@@ -642,10 +648,10 @@ const AdminDashboard: FC = () => {
         {/* Projects Tab */}
         {activeTab === 'projects' && (
           <div>
-            <Card variant="default" className="border border-gray-200 dark:border-gray-700" animate={false} hover={false}>
+            <Card variant="default" className="border border-gray-700 bg-gray-900" animate={false} hover={false}>
               <div className="p-6">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  <h3 className="text-lg font-semibold text-white">
                     Project Management ({filteredProjects.length})
                   </h3>
                     <div className="mt-4 sm:mt-0 flex items-center space-x-3">
@@ -659,7 +665,7 @@ const AdminDashboard: FC = () => {
                       <select
                         value={filterStatus}
                         onChange={(e) => setFilterStatus(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                        className="px-3 py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-800 text-white"
                       >
                         <option value="all">All Status</option>
                         <option value="pending">Pending</option>
@@ -710,10 +716,10 @@ const AdminDashboard: FC = () => {
                             </div>
                           </div>
 
-                          <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 line-clamp-1">
+                          <h4 className="text-lg font-semibold text-white mb-2 line-clamp-1">
                             {project.title}
                           </h4>
-                          <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">
+                          <p className="text-gray-400 text-sm mb-4 line-clamp-2">
                             {project.description}
                           </p>
 
@@ -779,17 +785,17 @@ const AdminDashboard: FC = () => {
         {/* Analytics Tab */}
         {activeTab === 'analytics' && (
           <div>
-            <Card variant="default" className="border border-gray-200 dark:border-gray-700" animate={false} hover={false}>
+            <Card variant="default" className="border border-gray-700 bg-gray-900" animate={false} hover={false}>
               <div className="p-6">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
+                <h3 className="text-lg font-semibold text-white mb-6">
                   Platform Analytics
                 </h3>
                 <div className="text-center py-12">
                   <Database className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                  <h3 className="text-lg font-medium text-white mb-2">
                     Analytics Coming Soon
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-400">
+                  <p className="text-gray-400">
                     Advanced analytics and reporting features will be available here.
                   </p>
                 </div>
@@ -812,7 +818,8 @@ const AdminDashboard: FC = () => {
           onDelete={handleDeleteProject}
         />
       )}
-    </div>
+      </div>
+    </AdminThemeWrapper>
   );
 };
 

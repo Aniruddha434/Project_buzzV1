@@ -16,6 +16,7 @@ import Button from './ui/Button';
 import Badge from './ui/Badge';
 import LoadingSpinner from './ui/LoadingSpinner';
 import walletService from '../services/walletService.js';
+import InlineError from './ui/InlineError';
 
 interface WalletData {
   balance: number;
@@ -79,6 +80,7 @@ const WalletDashboard: React.FC = () => {
     bankName: ''
   });
   const [payoutLoading, setPayoutLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string>('');
 
   useEffect(() => {
     fetchWalletData();
@@ -170,7 +172,9 @@ const WalletDashboard: React.FC = () => {
         await fetchWalletData();
         await fetchPayoutRequests();
 
-        alert('Payout request submitted successfully!');
+        setSuccessMessage('Payout request submitted successfully!');
+        // Clear success message after 5 seconds
+        setTimeout(() => setSuccessMessage(''), 5000);
       }
     } catch (error: any) {
       console.error('Error requesting payout:', error);
@@ -478,6 +482,26 @@ const WalletDashboard: React.FC = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
+
+              {/* Error Display */}
+              {error && (
+                <InlineError
+                  message={error}
+                  variant="error"
+                  dismissible
+                  onDismiss={() => setError(null)}
+                />
+              )}
+
+              {/* Success Display */}
+              {successMessage && (
+                <InlineError
+                  message={successMessage}
+                  variant="info"
+                  dismissible
+                  onDismiss={() => setSuccessMessage('')}
+                />
+              )}
 
               <div className="flex gap-3 pt-4">
                 <Button

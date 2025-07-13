@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
+// Using custom modal instead of Dialog component for better control
 import { Button } from './ui/button-shadcn';
-import { Share2, Copy, Check, ExternalLink } from 'lucide-react';
+import { Share2, Copy, Check, ExternalLink, X } from 'lucide-react';
 import { copyToClipboard, generateShareableUrl } from '../utils/clipboard';
 import { cn } from '../utils/cn';
 
@@ -40,15 +40,38 @@ const ShareModal: React.FC<ShareModalProps> = ({
     window.open(shareableUrl, '_blank', 'noopener,noreferrer');
   };
 
+  if (!isOpen) return null;
+
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md bg-gray-900 border-gray-700 text-white">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-white">
+    <div
+      className="modal-standard-backdrop bg-black/80 flex items-center justify-center p-4"
+      onClick={handleBackdropClick}
+    >
+      <div className="modal-standard-content bg-gray-900 border border-gray-700 text-white rounded-xl shadow-2xl p-6 w-full max-w-md relative">
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
+        >
+          <X className="h-5 w-5" />
+        </button>
+
+        {/* Header */}
+        <div className="mb-6">
+          <h2 className="flex items-center gap-2 text-white text-lg font-semibold mb-2">
             <Share2 className="h-5 w-5" />
             Share Project
-          </DialogTitle>
-        </DialogHeader>
+          </h2>
+          <p className="text-gray-400 text-sm">
+            Share this project with others using a public link. Anyone with the link can view the project details.
+          </p>
+        </div>
 
         <div className="space-y-4">
           {/* Project Info */}
@@ -136,8 +159,8 @@ const ShareModal: React.FC<ShareModalProps> = ({
             </p>
           </div>
         </div>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>
   );
 };
 

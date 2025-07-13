@@ -21,10 +21,15 @@ interface AuthContextType {
   role: string | null;
   loading: boolean;
   error: string | null;
+  isAuthenticating: boolean;
   login: (email: string, password: string) => Promise<boolean>;
   register: (email: string, password: string, displayName: string, role: string) => Promise<boolean>;
   logout: () => void;
   clearError: () => void;
+  handleAuthSuccess: (userData: User, token: string) => void;
+  loginWithGoogle: () => void;
+  loginWithGitHub: () => void;
+  handleOAuthCallback: (token: string, provider: string) => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -37,59 +42,103 @@ export const useAuth = () => {
   return context;
 };
 
+// Global flag to prevent multiple authentication processes
+let globalAuthInProgress = false;
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [role, setRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   // Check if user is logged in on app start
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      // Set token in API headers
-      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    const initializeAuth = async () => {
+      if (isInitialized || globalAuthInProgress) {
+        console.log('🔄 Auth already initialized or in progress, skipping');
+        return;
+      }
 
-      // Fetch user profile
-      fetchUserProfile();
-    } else {
-      setLoading(false);
-    }
+      globalAuthInProgress = true;
+      console.log('🚀 Initializing authentication...');
+      setIsInitialized(true);
+
+      const token = localStorage.getItem('token');
+      if (token) {
+        console.log('🔑 Found existing token, verifying...');
+        // Set token in API headers
+        api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+        // Fetch user profile
+        await fetchUserProfile();
+      } else {
+        console.log('❌ No token found, user not authenticated');
+        setLoading(false);
+      }
+
+      globalAuthInProgress = false;
+    };
+
+    initializeAuth();
   }, []);
 
   const fetchUserProfile = async () => {
     try {
-      console.log('Fetching user profile...');
+      console.log('🔍 Fetching user profile...');
       const response = await api.get('/users/me');
 
       if (response.data.success) {
         const userData = response.data.data;
+
+        console.log('📋 User data received:', {
+          email: userData.email,
+          role: userData.role,
+          emailVerified: userData.emailVerified
+        });
+
+        // Batch state updates to prevent multiple re-renders
         setUser(userData);
         setRole(userData.role);
         setError(null);
-        console.log('✅ User profile loaded:', userData.email, 'Role:', userData.role);
+
+        console.log('✅ User profile loaded successfully:', userData.email, 'Role:', userData.role);
+      } else {
+        throw new Error('Failed to fetch user profile');
       }
     } catch (error: any) {
-      console.error('❌ Error fetching user profile:', error);
+      console.error('❌ Error fetching user profile:', error.message);
 
-      // If token is invalid, clear it
+      // If token is invalid, clear it and reset auth state
       if (error.response?.status === 401) {
+        console.log('🔑 Token invalid, clearing authentication...');
         localStorage.removeItem('token');
         delete api.defaults.headers.common['Authorization'];
+        setUser(null);
+        setRole(null);
       }
 
       setError('Failed to load user profile');
     } finally {
+      console.log('🏁 Profile fetch completed, setting loading to false');
       setLoading(false);
     }
   };
 
   const login = async (email: string, password: string): Promise<boolean> => {
+    if (isAuthenticating || globalAuthInProgress) {
+      console.log('⚠️ Authentication already in progress, skipping login...');
+      return false;
+    }
+
     try {
+      globalAuthInProgress = true;
+      setIsAuthenticating(true);
       setLoading(true);
       setError(null);
 
-      console.log('Attempting login for:', email);
+      console.log('🔍 Attempting login for:', email);
       const response = await api.post('/auth/login', { email, password });
 
       if (response.data.success) {
@@ -99,9 +148,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         localStorage.setItem('token', token);
         api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-        // Set user data
+        // Batch state updates
         setUser(userData);
         setRole(userData.role);
+        setError(null);
 
         console.log('✅ Login successful:', userData.email, 'Role:', userData.role);
         return true;
@@ -114,11 +164,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return false;
     } finally {
       setLoading(false);
+      setIsAuthenticating(false);
+      globalAuthInProgress = false;
     }
   };
 
   const register = async (email: string, password: string, displayName: string, role: string): Promise<boolean> => {
+    if (isAuthenticating || globalAuthInProgress) {
+      console.log('⚠️ Authentication already in progress, skipping registration...');
+      return false;
+    }
+
     try {
+      globalAuthInProgress = true;
+      setIsAuthenticating(true);
       setLoading(true);
       setError(null);
 
@@ -158,9 +217,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         localStorage.setItem('token', token);
         api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-        // Set user data
+        // Batch state updates to prevent multiple re-renders
         setUser(userData);
         setRole(userData.role);
+        setError(null);
 
         console.log('✅ Registration successful:', userData.email, 'Role:', userData.role);
         return true;
@@ -189,6 +249,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return false;
     } finally {
       setLoading(false);
+      setIsAuthenticating(false);
+      globalAuthInProgress = false;
     }
   };
 
@@ -211,15 +273,78 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setError(null);
   };
 
+  const handleAuthSuccess = (userData: User, token: string) => {
+    // Store token
+    localStorage.setItem('token', token);
+    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+    // Batch state updates to prevent multiple re-renders
+    setUser(userData);
+    setRole(userData.role);
+    setError(null);
+    setLoading(false);
+    setIsAuthenticating(false);
+    globalAuthInProgress = false;
+
+    console.log('✅ Authentication successful:', userData.email, 'Role:', userData.role);
+  };
+
+  // OAuth methods
+  const loginWithGoogle = () => {
+    const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+    window.location.href = `${backendUrl}/api/auth/google`;
+  };
+
+  const loginWithGitHub = () => {
+    // GitHub login is temporarily disabled - handled by UI components
+    return;
+
+    // TODO: Re-enable when GitHub OAuth is ready
+    // const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+    // window.location.href = `${backendUrl}/api/auth/github`;
+  };
+
+  const handleOAuthCallback = async (token: string, provider: string): Promise<boolean> => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      console.log(`🔍 Handling ${provider} OAuth callback with token`);
+
+      // Fetch user data using the token
+      const response = await api.get(`/auth/oauth/user?token=${token}`);
+
+      if (response.data.success) {
+        const { user: userData, token: authToken } = response.data.data;
+        handleAuthSuccess(userData, authToken);
+        console.log(`✅ ${provider} OAuth login successful:`, userData.email);
+        return true;
+      } else {
+        throw new Error(response.data.message || `${provider} OAuth login failed`);
+      }
+    } catch (error: any) {
+      console.error(`❌ ${provider} OAuth callback error:`, error);
+      setError(error.response?.data?.message || `${provider} login failed`);
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const value: AuthContextType = {
     user,
     role,
     loading,
     error,
+    isAuthenticating,
     login,
     register,
     logout,
-    clearError
+    clearError,
+    handleAuthSuccess,
+    loginWithGoogle,
+    loginWithGitHub,
+    handleOAuthCallback
   };
 
   return (

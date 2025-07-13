@@ -4,6 +4,9 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 // Lazy load page components
 const LandingPage = lazy(() => import('./pages/LandingPage.tsx'));
 const LoginPage = lazy(() => import('./pages/LoginPage.tsx'));
+const EnhancedLoginPage = lazy(() => import('./pages/EnhancedLoginPage.tsx'));
+const EnhancedSellerRegistration = lazy(() => import('./pages/EnhancedSellerRegistration.tsx'));
+const OAuthCallback = lazy(() => import('./pages/OAuthCallback.tsx'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard.tsx'));
 const ProjectDetails = lazy(() => import('./pages/ProjectDetails.tsx'));
 const ProjectShare = lazy(() => import('./pages/ProjectShare.tsx'));
@@ -15,22 +18,20 @@ const UnauthorizedPage = lazy(() => import('./pages/UnauthorizedPage.tsx'));
 import HomePro from './pages/HomePro';
 // const HomePro = lazy(() => import('./pages/HomePro.tsx'));
 const SellerDashboardPro = lazy(() => import('./pages/SellerDashboardPro.tsx'));
-const CardsStackTest = lazy(() => import('./pages/CardsStackTest.tsx'));
 const BuyerDashboardNew = lazy(() => import('./pages/BuyerDashboardNew.tsx'));
-const UIShowcase = lazy(() => import('./pages/UIShowcase.tsx'));
 const PaymentSuccess = lazy(() => import('./pages/PaymentSuccess.tsx'));
-const ProjectsPage = lazy(() => import('./pages/ProjectsPage.tsx'));
+const MarketPage = lazy(() => import('./pages/MarketPage.tsx'));
 const ModernDashboard = lazy(() => import('./pages/ModernDashboard.tsx'));
 const About = lazy(() => import('./pages/About.tsx'));
 const TermsAndConditions = lazy(() => import('./pages/TermsAndConditions.tsx'));
 const SellerRegistration = lazy(() => import('./pages/SellerRegistration.tsx'));
 const AdminManagement = lazy(() => import('./pages/AdminManagement.tsx'));
-const TestPins = lazy(() => import('./pages/TestPins.tsx'));
 const Negotiations = lazy(() => import('./pages/Negotiations.tsx'));
 
 import NavbarEnhanced from './components/NavbarEnhanced.tsx';
 import ProtectedRoute from './components/ProtectedRoute.tsx';
 import ErrorBoundary from './components/ErrorBoundary.tsx';
+
 import { AuthProvider } from './context/AuthContext.tsx';
 
 
@@ -52,19 +53,20 @@ const App: React.FC = () => {
             <Routes>
             {/* Enhanced UI Routes */}
             <Route path="/" element={<HomePro />} />
-            <Route path="/projects" element={<ProjectsPage />} />
+            <Route path="/market" element={<MarketPage />} />
+            <Route path="/projects" element={<MarketPage />} /> {/* Legacy redirect */}
             <Route path="/about" element={<About />} />
-            <Route path="/ui-showcase" element={<UIShowcase />} />
-            <Route path="/test-pins" element={<TestPins />} />
             <Route path="/negotiations" element={<Negotiations />} />
             <Route path="/payment/success" element={<PaymentSuccess />} />
             <Route path="/modern-dashboard" element={<ModernDashboard />} />
-            <Route path="/cards-stack-test" element={<CardsStackTest />} />
 
             {/* Original Routes */}
             <Route path="/old-home" element={<LandingPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/seller-registration" element={<SellerRegistration />} />
+            <Route path="/login" element={<EnhancedLoginPage />} />
+            <Route path="/login-old" element={<LoginPage />} />
+            <Route path="/auth/callback" element={<OAuthCallback />} />
+            <Route path="/seller-registration" element={<EnhancedSellerRegistration />} />
+            <Route path="/seller-registration-old" element={<SellerRegistration />} />
             <Route path="/unauthorized" element={<UnauthorizedPage />} />
             <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
 
@@ -78,6 +80,7 @@ const App: React.FC = () => {
 
             <Route element={<ProtectedRoute allowedRoles={['buyer']} />}>
               <Route path="/dashboard/buyer" element={<BuyerDashboardNew />} />
+              <Route path="/dashboard/purchases" element={<BuyerDashboardNew />} />
             </Route>
 
             <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
@@ -90,10 +93,13 @@ const App: React.FC = () => {
               <Route path="/project/:id" element={<ProjectDetails />} />
             </Route>
 
+
+
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </Suspense>
       </ErrorBoundary>
+
     </Router>
     </AuthProvider>
   );

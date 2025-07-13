@@ -45,7 +45,7 @@ interface Project {
   }>;
 }
 
-const ProjectsPage: React.FC = () => {
+const MarketPage: React.FC = () => {
   const { user } = useAuth();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
@@ -106,7 +106,7 @@ const ProjectsPage: React.FC = () => {
     window.location.reload();
   };
 
-  const handlePaymentError = (error: string) => {
+  const handlePaymentError = (error: any) => {
     console.error('Payment error:', error);
     alert(`Payment failed: ${error}`);
   };
@@ -120,41 +120,43 @@ const ProjectsPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-24">
+    <div className="min-h-screen bg-black page-with-navbar-extra">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-            Browse Projects
+          <h1 className="text-3xl font-bold text-white mb-4">
+            Digital Market
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-400">
             Discover amazing digital projects from talented developers
           </p>
         </div>
 
-        {/* Filters */}
-        <Card className="p-6 mb-8">
-          <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
-            <div className="flex flex-col sm:flex-row gap-4 flex-1">
-              {/* Search */}
-              <div className="relative flex-1 max-w-md">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+        {/* Search and Filters */}
+        <div className="mb-8 space-y-4">
+          <div className="flex flex-col md:flex-row gap-4">
+            {/* Search */}
+            <div className="flex-1">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                 <Input
                   type="text"
                   placeholder="Search projects..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 bg-gray-800 border-gray-700 text-white placeholder-gray-400"
                 />
               </div>
+            </div>
 
-              {/* Category Filter */}
+            {/* Category Filter */}
+            <div className="md:w-64">
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                {categories.map(category => (
+                {categories.map((category) => (
                   <option key={category.value} value={category.value}>
                     {category.label}
                   </option>
@@ -163,32 +165,30 @@ const ProjectsPage: React.FC = () => {
             </div>
 
             {/* View Mode Toggle */}
-            <div className="flex items-center space-x-2">
+            <div className="flex bg-gray-800 rounded-md p-1">
               <Button
                 variant={viewMode === 'grid' ? 'primary' : 'ghost'}
                 size="sm"
                 onClick={() => setViewMode('grid')}
-                leftIcon={<Grid className="h-4 w-4" />}
+                className="px-3"
               >
-                Grid
+                <Grid className="h-4 w-4" />
               </Button>
               <Button
                 variant={viewMode === 'list' ? 'primary' : 'ghost'}
                 size="sm"
                 onClick={() => setViewMode('list')}
-                leftIcon={<List className="h-4 w-4" />}
+                className="px-3"
               >
-                List
+                <List className="h-4 w-4" />
               </Button>
             </div>
           </div>
-        </Card>
 
-        {/* Results Count */}
-        <div className="mb-6">
-          <p className="text-gray-600 dark:text-gray-400">
-            {loading ? 'Loading...' : `${filteredProjects.length} projects found`}
-          </p>
+          {/* Results Count */}
+          <div className="text-sm text-gray-400">
+            {loading ? 'Loading...' : `${filteredProjects.length} project${filteredProjects.length !== 1 ? 's' : ''} found`}
+          </div>
         </div>
 
         {/* Projects Grid */}
@@ -196,10 +196,10 @@ const ProjectsPage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <Card key={i} className="p-6 animate-pulse">
-                <div className="h-48 bg-gray-300 rounded mb-4"></div>
-                <div className="h-4 bg-gray-300 rounded mb-2"></div>
-                <div className="h-4 bg-gray-300 rounded mb-4 w-3/4"></div>
-                <div className="h-8 bg-gray-300 rounded"></div>
+                <div className="h-48 bg-gray-800 rounded mb-4"></div>
+                <div className="h-4 bg-gray-800 rounded mb-2"></div>
+                <div className="h-4 bg-gray-800 rounded mb-4 w-3/4"></div>
+                <div className="h-8 bg-gray-800 rounded"></div>
               </Card>
             ))}
           </div>
@@ -211,7 +211,7 @@ const ProjectsPage: React.FC = () => {
             <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
               No projects found
             </h3>
-            <p className="text-gray-600 dark:text-gray-400">
+            <p className="text-gray-400">
               Try adjusting your search terms or filters
             </p>
           </Card>
@@ -259,4 +259,4 @@ const ProjectsPage: React.FC = () => {
   );
 };
 
-export default ProjectsPage;
+export default MarketPage;

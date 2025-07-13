@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Eye, ShoppingCart, CheckCircle, Code, ExternalLink, Github, X, ZoomIn, ChevronLeft, ChevronRight, Share2 } from 'lucide-react';
-import Button from './ui/Button';
-import Card from './ui/Card';
-import PaymentModal from './PaymentModal';
+import { Eye, ShoppingCart, CheckCircle, Code, ExternalLink, Github, X, ChevronLeft, ChevronRight, Share2, User, Download, Star, Heart } from 'lucide-react';
+
 import { NegotiationButton } from './NegotiationButton';
 import ShareModal from './ShareModal';
 import { getImageUrl } from '../utils/imageUtils.js';
@@ -91,14 +89,14 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   if (!project || !project._id || !project.title) {
     console.warn('ProjectCard: Invalid project data received', project);
     return (
-      <Card variant="default" className={`h-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 flex flex-col ${className}`}>
+      <div className={`h-full border border-gray-800 bg-gray-900 flex flex-col rounded-lg ${className}`}>
         <div className="p-4 flex items-center justify-center h-48">
           <div className="text-center text-gray-500">
             <Code className="h-12 w-12 mx-auto mb-2 text-gray-400" />
             <p className="text-sm">Invalid project data</p>
           </div>
         </div>
-      </Card>
+      </div>
     );
   }
 
@@ -205,16 +203,29 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
 
   return (
     <>
-      <Card
-        variant="default"
-        hover
-        className={`project-card group h-full max-h-[480px] border border-border bg-card flex flex-col transition-all duration-300 hover:shadow-2xl hover:border-primary/30 ${onClick ? 'cursor-pointer' : ''} ${className}`}
+      <div
+        className={`project-card group h-full bg-gray-900 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-800 hover:border-gray-700 flex flex-col ${onClick ? 'cursor-pointer' : ''} ${className}`}
         style={{ position: 'relative', zIndex: 1 }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         onClick={handleCardClick}
       >
-        {/* Enhanced Project Image with Hover Effects - Image Dominant Design */}
+        {/* Header with Category and Price - More Compact */}
+        <div className="bg-gradient-to-r from-gray-800 to-gray-700 px-4 py-2.5 border-b border-gray-600">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-medium text-blue-400 uppercase tracking-wide">
+              {project.category || 'Development'}
+            </span>
+            <div className="text-right">
+              <div className="text-lg font-bold text-white">
+                ₹{project.price?.toLocaleString() || '0'}
+              </div>
+              <div className="text-xs text-gray-400">One-time</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Enhanced Project Image with Hover Effects - Increased Height for Image Dominance */}
         <div className="relative h-56 bg-muted overflow-hidden cursor-pointer" onClick={handleImageClick}>
           {currentImage?.url ? (
             <div className="relative w-full h-full group">
@@ -222,23 +233,13 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                 key={`${project._id}-${currentImageIndex}`} // Unique key for smooth transitions
                 src={getImageUrl(currentImage.url)}
                 alt={`${project.title} - Image ${currentImageIndex + 1}`}
-              className="w-full h-full object-cover transition-all duration-500 ease-in-out transform hover:scale-105"
-              onError={(e) => {
-                e.currentTarget.style.display = 'none';
-                e.currentTarget.nextElementSibling?.classList.remove('hidden');
-              }}
-            />
-              {/* Zoom Overlay on Hover */}
-              <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                <div className="bg-white/90 backdrop-blur-sm rounded-full p-3 transform scale-75 group-hover:scale-100 transition-transform duration-300">
-                  <ZoomIn className="h-6 w-6 text-gray-800" />
-                </div>
-              </div>
-
-              {/* Subtle overlay to indicate hover state */}
-              {isHovered && images.length > 1 && (
-                <div className="absolute inset-0 bg-black/5 transition-opacity duration-300" />
-              )}
+                className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-500"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                  e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                }}
+              />
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
           </div>
         ) : null}
 
@@ -271,43 +272,43 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
           </div>
         )}
 
-        {/* Image count badge */}
+        {/* Image count badge - Smaller */}
         {images.length > 1 && (
-          <div className={`absolute top-2 right-2 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-full transition-all duration-300 ${
-            isHovered ? 'bg-blue-600/80 scale-110' : 'bg-black/50'
+          <div className={`absolute top-1.5 right-1.5 backdrop-blur-sm text-white text-xs px-1.5 py-0.5 rounded-full transition-all duration-300 ${
+            isHovered ? 'bg-blue-600/80 scale-105' : 'bg-black/50'
           }`}>
             {currentImageIndex + 1}/{images.length}
-            {isHovered && <span className="ml-1 animate-pulse">●</span>}
+            {isHovered && <span className="ml-0.5 animate-pulse">●</span>}
           </div>
         )}
 
-          {/* Category badge */}
-          <div className="absolute top-2 left-2">
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/90 text-primary-foreground backdrop-blur-sm capitalize">
+          {/* Category badge - Smaller */}
+          <div className="absolute top-1.5 left-1.5">
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/90 text-primary-foreground backdrop-blur-sm capitalize">
               {project.category}
             </span>
           </div>
 
-        {/* Completion Status Badge */}
+        {/* Completion Status Badge - Smaller */}
         {project.completionStatus !== undefined && project.completionStatus < 100 && (
-          <div className="absolute bottom-2 left-2">
-            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100/90 text-yellow-800 backdrop-blur-sm">
-              {project.completionStatus}% Complete
+          <div className="absolute bottom-1.5 left-1.5">
+            <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100/90 text-yellow-800 backdrop-blur-sm">
+              {project.completionStatus}%
             </span>
           </div>
         )}
 
-        {/* Documentation Available Badge */}
+        {/* Documentation Available Badge - Smaller */}
         {project.documentationFiles && project.documentationFiles.length > 0 && (
-          <div className="absolute bottom-2 right-2">
-            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100/90 text-blue-800 backdrop-blur-sm">
-              📚 Docs
+          <div className="absolute bottom-1.5 right-1.5">
+            <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-blue-100/90 text-blue-800 backdrop-blur-sm">
+              📚
             </span>
           </div>
         )}
 
-        {/* Quick action buttons - Share, Demo, GitHub */}
-        <div className={`absolute ${images.length > 1 ? 'top-8 right-2' : 'top-2 right-2'} flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300`}>
+        {/* Quick action buttons - Share, Demo, GitHub - Smaller */}
+        <div className={`absolute ${images.length > 1 ? 'top-7 right-1.5' : 'top-1.5 right-1.5'} flex space-x-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300`}>
           {/* Share Button - Always visible */}
           {showShareIcon && (
             <button
@@ -316,10 +317,10 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                 console.log('Share button clicked for project:', project._id);
                 setShowShareModal(true);
               }}
-              className="p-1.5 bg-white/90 rounded-full text-gray-700 hover:bg-white transition-colors"
+              className="p-1 bg-white/90 rounded-full text-gray-700 hover:bg-white transition-colors"
               title="Share this project"
             >
-              <Share2 className="h-3 w-3" />
+              <Share2 className="h-2.5 w-2.5" />
             </button>
           )}
           {isPurchased && project.githubRepo && (
@@ -327,11 +328,11 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
               href={project.githubRepo}
               target="_blank"
               rel="noopener noreferrer"
-              className="p-1.5 bg-white/90 rounded-full text-gray-700 hover:bg-white transition-colors"
+              className="p-1 bg-white/90 rounded-full text-gray-700 hover:bg-white transition-colors"
               onClick={(e) => e.stopPropagation()}
               title="View Source Code (Purchased)"
             >
-              <Github className="h-3 w-3" />
+              <Github className="h-2.5 w-2.5" />
             </a>
           )}
           {project.demoUrl && (
@@ -339,131 +340,133 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
               href={project.demoUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="p-1.5 bg-white/90 rounded-full text-gray-700 hover:bg-white transition-colors"
+              className="p-1 bg-white/90 rounded-full text-gray-700 hover:bg-white transition-colors"
               onClick={(e) => e.stopPropagation()}
               title="View Live Demo"
             >
-              <ExternalLink className="h-3 w-3" />
+              <ExternalLink className="h-2.5 w-2.5" />
             </a>
           )}
         </div>
       </div>
 
-        {/* Card Content - Minimal layout with essential info only */}
-        <div className="p-3 flex-1 flex flex-col">
-          {/* Title - Prominent */}
-          <div className="mb-2">
-            <h3 className="text-base font-semibold text-foreground line-clamp-2 leading-tight hover:text-primary cursor-pointer transition-colors">
-              {project.title}
-            </h3>
-          </div>
+        {/* Content Section - More Compact */}
+        <div className="p-4 flex-1 flex flex-col">
+          <p className="text-gray-300 text-xs mb-3 line-clamp-2">
+            {truncateDescription(project.description)}
+          </p>
 
-          {/* Tags - Prominent */}
-          <div className="mb-3">
-            {project.tags && project.tags.length > 0 && (
-              <div className="flex flex-wrap gap-1">
-                {project.tags.slice(0, 3).map((tag, index) => (
-                  <span key={index} className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-primary/10 text-primary border border-primary/20">
-                    {tag}
-                  </span>
-                ))}
-                {project.tags.length > 3 && (
-                  <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-muted text-muted-foreground">
-                    +{project.tags.length - 3}
-                  </span>
-                )}
+          {/* Author and Stats - More Compact */}
+          <div className="flex items-center justify-between mb-3 pb-2 border-b border-gray-700">
+            <div className="flex items-center">
+              <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                <User className="h-3 w-3 text-white" />
               </div>
-            )}
-          </div>
-
-          {/* Price Section - Prominent */}
-          <div className="mt-auto space-y-3">
-            <div className="flex items-center justify-center">
-              <span className="text-xl font-bold text-foreground">
-                ₹{project.price.toLocaleString()}
+              <span className="ml-2 text-xs font-medium text-gray-300">
+                {project.seller?.displayName || 'Anonymous'}
               </span>
             </div>
+            <div className="flex items-center space-x-3 text-xs text-gray-400">
+              <span className="flex items-center">
+                <Eye className="h-2.5 w-2.5 mr-1" />
+                {project.stats?.views || 0}
+              </span>
+              <span className="flex items-center">
+                <Download className="h-2.5 w-2.5 mr-1" />
+                {project.stats?.sales || 0}
+              </span>
+            </div>
+          </div>
 
-          {/* Action Buttons - Prominent */}
+          {/* Action Buttons - Smaller and More Compact */}
           {showBuyButton && (
             <div className="space-y-2">
               {user && user.role === 'buyer' ? (
                 isPurchased ? (
-                  <div className="flex items-center justify-center p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-700">
-                    <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
-                    <span className="text-sm font-medium text-green-800 dark:text-green-400">
+                  <div className="flex items-center justify-center p-2 bg-green-900/20 rounded-lg border border-green-700">
+                    <CheckCircle className="h-3 w-3 text-green-600 mr-1.5" />
+                    <span className="text-xs font-medium text-green-400">
                       Owned
                     </span>
                   </div>
                 ) : (
-                  <div className="space-y-2">
-                    <div className="payment-modal">
-                      <PaymentModal
-                        project={project}
-                        isOpen={false}
-                        onClose={() => {}}
-                        onPaymentSuccess={() => {
-                          console.log('Payment successful');
-                          onPurchase?.(project);
-                        }}
-                        onPaymentError={(error) => {
-                          console.error('Payment error:', error);
-                        }}
-                        trigger={
-                          <Button
-                            variant="primary"
-                            size="sm"
-                            leftIcon={<ShoppingCart className="h-4 w-4" />}
-                            className="w-full bg-black hover:bg-gray-800 text-white font-semibold border-0 shadow-md hover:shadow-lg transition-all duration-200 py-2.5 text-sm"
-                          >
-                            Buy Now
-                          </Button>
-                        }
-                      />
-                    </div>
-                    <div className="negotiation-button">
-                      <NegotiationButton
-                        projectId={project._id}
-                        projectTitle={project.title}
-                        originalPrice={project.price}
-                        onNegotiationStart={() => {
-                          console.log('Negotiation started for project:', project.title);
-                        }}
-                      />
-                    </div>
+                  <div className="flex space-x-2">
+                    <button
+                      className="flex-1 bg-black hover:bg-gray-800 text-white py-2 px-3 rounded-lg text-sm font-medium transition-colors flex items-center justify-center"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onClick?.(project);
+                      }}
+                    >
+                      <ShoppingCart className="h-3 w-3 mr-1.5" />
+                      Purchase
+                    </button>
+                    <button
+                      className="p-2 border border-gray-600 rounded-lg hover:bg-gray-800 transition-colors"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowShareModal(true);
+                      }}
+                    >
+                      <Heart className="h-3 w-3 text-gray-400" />
+                    </button>
+                    <button
+                      className="p-2 border border-gray-600 rounded-lg hover:bg-gray-800 transition-colors"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onClick?.(project);
+                      }}
+                    >
+                      <ExternalLink className="h-3 w-3 text-gray-600 dark:text-gray-400" />
+                    </button>
                   </div>
                 )
               ) : (
-                <div className="space-y-2">
-                  <Link to={user ? `/project/${project._id}` : '/login'} className="block">
-                    <Button
-                      variant="primary"
-                      size="sm"
-                      leftIcon={<ShoppingCart className="h-4 w-4" />}
-                      className="w-full bg-black hover:bg-gray-800 text-white font-semibold border-0 shadow-md hover:shadow-lg transition-all duration-200 py-2.5 text-sm"
-                    >
-                      {user ? 'View Details' : 'Sign in to Buy'}
-                    </Button>
+                <div className="flex space-x-2">
+                  <Link to={user ? `/project/${project._id}` : '/login'} className="flex-1">
+                    <button className="w-full bg-black hover:bg-gray-800 text-white py-2 px-3 rounded-lg text-sm font-medium transition-colors flex items-center justify-center">
+                      <ShoppingCart className="h-3 w-3 mr-1.5" />
+                      {user ? 'View' : 'Sign in'}
+                    </button>
                   </Link>
-                  {/* Show negotiation button for non-authenticated users too */}
-                  {!user && (
-                    <Link to="/login" className="block">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="w-full border-primary text-primary hover:bg-primary hover:text-white transition-all duration-200 py-2.5 text-sm"
-                      >
-                        Negotiate Price
-                      </Button>
-                    </Link>
-                  )}
+                  <button
+                    className="p-2 border border-gray-600 rounded-lg hover:bg-gray-800 transition-colors"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowShareModal(true);
+                    }}
+                  >
+                    <Heart className="h-3 w-3 text-gray-400" />
+                  </button>
+                  <button
+                    className="p-2 border border-gray-600 rounded-lg hover:bg-gray-800 transition-colors"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onClick?.(project);
+                    }}
+                  >
+                    <ExternalLink className="h-3 w-3 text-gray-600 dark:text-gray-400" />
+                  </button>
+                </div>
+              )}
+
+              {/* Negotiation Button */}
+              {user && user.role === 'buyer' && !isPurchased && (
+                <div className="negotiation-button">
+                  <NegotiationButton
+                    projectId={project._id}
+                    projectTitle={project.title}
+                    originalPrice={project.price}
+                    onNegotiationStart={() => {
+                      console.log('Negotiation started for project:', project.title);
+                    }}
+                  />
                 </div>
               )}
             </div>
           )}
-          </div>
         </div>
-      </Card>
+      </div>
 
       {/* Image Modal */}
       {showImageModal && (

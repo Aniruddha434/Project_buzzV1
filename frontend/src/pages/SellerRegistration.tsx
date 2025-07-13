@@ -7,7 +7,8 @@ import {
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
-import ProjectBuzzLogo from '../components/ui/ProjectBuzzLogo';
+
+// import OTPVerificationModal from '../components/OTPVerificationModal';
 import { getCachedApiConfig } from '../config/api.config.js';
 import api from '../api.js';
 
@@ -59,6 +60,8 @@ const SellerRegistration: React.FC = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [showOTPModal, setShowOTPModal] = useState(false);
+  const [pendingUserId, setPendingUserId] = useState('');
 
   const [formData, setFormData] = useState<FormData>({
     email: '',
@@ -210,6 +213,25 @@ const SellerRegistration: React.FC = () => {
     setError(null);
 
     try {
+      // Client-side validation
+      if (!formData.email || !formData.password || !formData.displayName || !formData.fullName) {
+        setError('Please fill in all required fields: Email, Password, Display Name, and Full Name');
+        setIsLoading(false);
+        return;
+      }
+
+      if (formData.password.length < 6) {
+        setError('Password must be at least 6 characters long');
+        setIsLoading(false);
+        return;
+      }
+
+      if (!formData.sellerTermsAccepted) {
+        setError('You must accept the seller terms and conditions');
+        setIsLoading(false);
+        return;
+      }
+
       const requestData = {
         ...formData,
         yearsOfExperience: parseInt(formData.yearsOfExperience) || 0,
@@ -217,23 +239,26 @@ const SellerRegistration: React.FC = () => {
       };
 
       console.log('📝 Sending registration data:', requestData);
+      console.log('📋 Data validation check:');
+      console.log('- Email:', requestData.email);
+      console.log('- Password length:', requestData.password?.length);
+      console.log('- Display name:', requestData.displayName);
+      console.log('- Full name:', requestData.fullName);
+      console.log('- Terms accepted:', requestData.sellerTermsAccepted);
+      console.log('- Specializations:', requestData.specializations);
 
-      const response = await api.post('/auth/register-seller', requestData);
+      // First create seller account and send OTP
+      const response = await api.post('/auth/register-seller-with-otp', requestData);
 
       if (response.data.success) {
-        setSuccess('Seller registration successful! You can start selling immediately. Welcome to ProjectBuzz!');
-        // Store token and user data
-        localStorage.setItem('token', response.data.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.data.user));
-
-        // Redirect to seller dashboard after a short delay
-        setTimeout(() => {
-          navigate('/dashboard/seller');
-        }, 2000);
+        setPendingUserId(response.data.userId);
+        setShowOTPModal(true);
+        setIsLoading(false);
+        return; // Don't proceed with navigation yet
       } else {
         setError(response.data.message || 'Registration failed');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Registration error:', error);
 
       if (error.response?.data?.message) {
@@ -241,7 +266,7 @@ const SellerRegistration: React.FC = () => {
       } else if (error.response?.data?.details) {
         setError(`Validation failed: ${error.response.data.details}`);
       } else if (error.response?.data?.errors) {
-        const errorMessages = error.response.data.errors.map(err => err.msg).join(', ');
+        const errorMessages = error.response.data.errors.map((err: any) => err.msg).join(', ');
         setError(`Validation errors: ${errorMessages}`);
       } else {
         setError('Network error. Please try again.');
@@ -734,59 +759,10 @@ const SellerRegistration: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black flex">
-      {/* Left Side - Branding */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 relative overflow-hidden">
-        <div className="absolute inset-0 bg-black/20"></div>
-        <div className="relative z-10 flex flex-col justify-center px-12 text-white">
-          <div className="mb-8">
-            <ProjectBuzzLogo
-              size="lg"
-              variant="default"
-              showTagline={true}
-              className="text-white [&_*]:text-white mb-6"
-            />
-            <h2 className="text-4xl font-bold mb-4">Become a Seller</h2>
-            <p className="text-xl text-blue-100 mb-8">
-              Join our exclusive community of verified sellers and start monetizing your projects.
-            </p>
-          </div>
-
-          {/* Features */}
-          <div className="space-y-4">
-            <div className="flex items-center">
-              <CheckCircle className="h-5 w-5 mr-3 text-green-400" />
-              <span className="text-blue-100">Verified Seller Status</span>
-            </div>
-            <div className="flex items-center">
-              <CheckCircle className="h-5 w-5 mr-3 text-green-400" />
-              <span className="text-blue-100">85% Revenue Share</span>
-            </div>
-            <div className="flex items-center">
-              <CheckCircle className="h-5 w-5 mr-3 text-green-400" />
-              <span className="text-blue-100">Professional Dashboard</span>
-            </div>
-            <div className="flex items-center">
-              <CheckCircle className="h-5 w-5 mr-3 text-green-400" />
-              <span className="text-blue-100">Marketing Support</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Right Side - Form */}
-      <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8">
-        <div className="max-w-2xl w-full space-y-8">
-          {/* Header */}
-          <div className="text-center">
-            <div className="lg:hidden mb-6">
-              <ProjectBuzzLogo
-                size="md"
-                variant="default"
-                showTagline={true}
-                className="text-white [&_*]:text-white"
-              />
-            </div>
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black flex items-center justify-center px-4 sm:px-6 lg:px-8">
+      <div className="max-w-2xl w-full space-y-8">
+        {/* Header */}
+        <div className="text-center">
             <h2 className="text-3xl font-bold text-white mb-2">
               Seller Registration
             </h2>
@@ -852,7 +828,7 @@ const SellerRegistration: React.FC = () => {
                   Previous
                 </Button>
 
-                {currentStep < 4 ? (
+{currentStep < 4 ? (
                   <Button
                     type="button"
                     variant="primary"
@@ -887,8 +863,17 @@ const SellerRegistration: React.FC = () => {
             </Link>
           </div>
         </div>
+
+        {/* OTP Verification Modal */}
+        {/* <OTPVerificationModal
+          isOpen={showOTPModal}
+          onClose={() => setShowOTPModal(false)}
+          onVerificationSuccess={handleOTPVerificationSuccess}
+          email={formData.email}
+          userId={pendingUserId}
+          verificationType="email"
+        /> */}
       </div>
-    </div>
   );
 };
 

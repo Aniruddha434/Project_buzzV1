@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext.tsx';
 import { userService } from '../services/userService.js';
 import paymentService from '../services/paymentService.js';
 import { projectService } from '../services/projectService.js';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { NegotiationDashboard } from '../components/NegotiationDashboard';
 
 interface Project {
@@ -77,6 +77,7 @@ interface UserProfile {
 
 const BuyerDashboardNew: React.FC = () => {
   const { user } = useAuth();
+  const location = useLocation();
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [purchases, setPurchases] = useState<Project[]>([]);
   const [accuratePurchaseCount, setAccuratePurchaseCount] = useState<number>(0);
@@ -187,6 +188,25 @@ const BuyerDashboardNew: React.FC = () => {
       fetchData();
     }
   }, [user]);
+
+  // Handle URL parameters and pathname for direct navigation to tabs
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const tabParam = urlParams.get('tab');
+
+    // Check if we're on the /dashboard/purchases route
+    if (location.pathname === '/dashboard/purchases') {
+      setActiveTab('purchases');
+    } else if (tabParam === 'settings') {
+      setActiveTab('settings');
+    } else if (tabParam === 'purchases') {
+      setActiveTab('purchases');
+    } else if (tabParam === 'payments') {
+      setActiveTab('payments');
+    } else if (tabParam === 'negotiations') {
+      setActiveTab('negotiations');
+    }
+  }, [location.search, location.pathname]);
 
   const handleDownload = async (projectId: string) => {
     try {
@@ -359,15 +379,15 @@ const BuyerDashboardNew: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen bg-background">
+      <div className="flex justify-center items-center h-screen bg-black">
         <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-primary"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background p-4 sm:p-8 pt-24">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-black dashboard-navbar-fix">
+      <div className="max-w-7xl mx-auto p-4 sm:p-8">
         <header className="mb-8">
           <h1 className="text-4xl font-bold text-foreground">My Account</h1>
           <p className="mt-2 text-lg text-muted-foreground">Manage your purchases, payments, and account settings.</p>
@@ -490,12 +510,12 @@ const BuyerDashboardNew: React.FC = () => {
               <h3 className="text-xl font-semibold text-foreground mb-4">Quick Actions</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <Link
-                  to="/projects"
+                  to="/market"
                   className="flex items-center p-4 bg-primary/10 rounded-lg hover:bg-primary/20 transition-colors duration-200"
                 >
                   <span className="text-2xl mr-3">🔍</span>
                   <div>
-                    <p className="font-medium text-foreground">Browse Projects</p>
+                    <p className="font-medium text-foreground">Browse Market</p>
                     <p className="text-sm text-muted-foreground">Discover new projects</p>
                   </div>
                 </Link>

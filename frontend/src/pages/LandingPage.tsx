@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import type { FC } from 'react'; // Explicitly import FC for React.FC
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.tsx';
-import { db } from '../firebaseConfig.ts';
-import { collection, getDocs, query, where, Timestamp } from 'firebase/firestore';
-import type { DocumentData } from 'firebase/firestore';
+// Firebase imports commented out since we're using MongoDB
+// import { db } from '../firebaseConfig.ts';
+// import { collection, getDocs, query, where, Timestamp } from 'firebase/firestore';
+// import type { DocumentData } from 'firebase/firestore';
 
 // Define a type for the project data
 interface Project {
@@ -27,43 +28,9 @@ const LandingPage: FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchAvailableProjects = async () => {
-      setLoading(true);
-      setError(null);
-
-      // Check if Firebase is available
-      if (!db) {
-        setError('Firebase not configured. Using MongoDB backend instead.');
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const projectsCollectionRef = collection(db, 'projects');
-        const q = query(projectsCollectionRef, where("status", "==", "approved"));
-        const querySnapshot = await getDocs(q);
-        const projects: Project[] = querySnapshot.docs.map(doc => {
-          const data = doc.data() as DocumentData;
-          return {
-            id: doc.id,
-            title: data.title || 'Untitled Project',
-            description: data.description || 'No description available.',
-            price: typeof data.price === 'number' ? data.price : 0,
-            buyers: Array.isArray(data.buyers) ? data.buyers : [],
-            status: data.status || 'pending', // Default status if not present
-            ...data
-          } as Project;
-        });
-        setAvailableProjects(projects);
-      } catch (err: any) {
-        console.error('Error fetching projects:', err);
-        setError('Failed to fetch projects. Please try again later.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAvailableProjects();
+    // Firebase code disabled - using MongoDB backend instead
+    setError('This page uses Firebase. Please use the main home page instead.');
+    setLoading(false);
   }, []);
 
   return (

@@ -2,10 +2,7 @@ import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Code,
-  Users,
-  Globe,
   Shield,
-  TrendingUp,
   Heart,
   Star,
   CheckCircle,
@@ -16,12 +13,13 @@ import {
   Award,
   Target,
   Eye,
-  Zap
+  Zap,
+  Users
 } from 'lucide-react';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import ProjectBuzzLogo from '../components/ui/ProjectBuzzLogo';
-import { DevelopmentProcess, FeaturedProjects, PlatformAchievements } from '../components/ui/cards-stack-demo';
+import { DevelopmentProcess } from '../components/ui/cards-stack-demo';
 
 const About: React.FC = () => {
   // Set page title and meta tags
@@ -55,12 +53,7 @@ const About: React.FC = () => {
     };
   }, []);
 
-  const stats = [
-    { label: 'Active Projects', value: '500+', icon: <Code className="h-6 w-6" /> },
-    { label: 'Happy Developers', value: '1,000+', icon: <Users className="h-6 w-6" /> },
-    { label: 'Countries Served', value: '25+', icon: <Globe className="h-6 w-6" /> },
-    { label: 'Success Rate', value: '98%', icon: <TrendingUp className="h-6 w-6" /> }
-  ];
+
 
   const features = [
     {
@@ -109,7 +102,7 @@ const About: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-black pt-16">
       {/* Hero Section */}
       <section className="py-20 bg-gradient-to-br from-primary/10 to-primary/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -122,9 +115,9 @@ const About: React.FC = () => {
               for high-quality projects, source code, and innovative solutions.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/projects">
+              <Link to="/market">
                 <Button variant="primary" size="lg" rightIcon={<ArrowRight className="h-5 w-5" />}>
-                  Explore Projects
+                  Explore Market
                 </Button>
               </Link>
               <Link to="/login">
@@ -133,23 +126,6 @@ const About: React.FC = () => {
                 </Button>
               </Link>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Stats Section */}
-      <section className="py-16 bg-muted/30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {stats.map((stat, index) => (
-              <Card key={index} className="p-6 text-center border border-border">
-                <div className="w-12 h-12 mx-auto mb-4 bg-primary/10 rounded-lg flex items-center justify-center text-primary">
-                  {stat.icon}
-                </div>
-                <div className="text-3xl font-bold text-foreground mb-2">{stat.value}</div>
-                <div className="text-sm text-muted-foreground">{stat.label}</div>
-              </Card>
-            ))}
           </div>
         </div>
       </section>
@@ -298,9 +274,6 @@ const About: React.FC = () => {
         </div>
       </section>
 
-      {/* Featured Projects Section */}
-      <FeaturedProjects />
-
       {/* Our Values */}
       <section className="py-20 bg-muted/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -385,9 +358,6 @@ const About: React.FC = () => {
         </div>
       </section>
 
-      {/* Platform Achievements Section */}
-      <PlatformAchievements />
-
       {/* Call to Action */}
       <section className="py-20 bg-primary text-primary-foreground">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -400,14 +370,14 @@ const About: React.FC = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Link to="/projects">
+            <Link to="/market">
               <Button
                 variant="primary"
                 size="lg"
                 rightIcon={<ArrowRight className="h-5 w-5" />}
                 className="bg-background text-foreground hover:bg-background/90"
               >
-                Browse Projects
+                Browse Market
               </Button>
             </Link>
             <Link to="/login">
@@ -466,8 +436,8 @@ const About: React.FC = () => {
               <h3 className="text-sm font-semibold text-foreground mb-4">Platform</h3>
               <ul className="space-y-2">
                 <li>
-                  <Link to="/projects" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                    Browse Projects
+                  <Link to="/market" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                    Browse Market
                   </Link>
                 </li>
                 <li>

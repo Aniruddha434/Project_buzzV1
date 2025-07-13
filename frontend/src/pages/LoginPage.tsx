@@ -1,14 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, Mail, Lock, User, UserCheck, Shield, Users, Star } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User, UserCheck, Shield, Users, Star, ArrowLeft } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
-import ProjectBuzzLogo from '../components/ui/ProjectBuzzLogo';
+import EnhancedInput from '../components/ui/EnhancedInput';
+import EnhancedButton from '../components/ui/EnhancedButton';
+import EnhancedOTPInput from '../components/ui/EnhancedOTPInput';
+
+import OTPVerificationModal from '../components/OTPVerificationModal';
+import { CanvasRevealEffect } from '../components/ui/CanvasRevealEffect';
 
 const LoginPage: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const [step, setStep] = useState<'email' | 'code' | 'success'>('email');
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -18,6 +25,13 @@ const LoginPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0);
+  const [showOTPModal, setShowOTPModal] = useState(false);
+  const [pendingUserId, setPendingUserId] = useState('');
+  const [otpCode, setOtpCode] = useState('');
+  const [otpError, setOtpError] = useState('');
+  const [resendCooldown, setResendCooldown] = useState(0);
+  const [initialCanvasVisible, setInitialCanvasVisible] = useState(true);
+  const [reverseCanvasVisible, setReverseCanvasVisible] = useState(false);
 
   const { login, register, error, clearError } = useAuth();
   const navigate = useNavigate();
@@ -104,12 +118,30 @@ const LoginPage: React.FC = () => {
         console.log('Display name:', displayName);
         console.log('Role: buyer (forced)');
 
-        success = await register(
-          formData.email.trim(),
-          formData.password,
-          displayName,
-          'buyer' // Force buyer role for standard registration
-        );
+        // For registration, first create user and send OTP
+        const response = await fetch('/api/auth/register-with-otp', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: formData.email.trim(),
+            password: formData.password,
+            displayName,
+            role: 'buyer'
+          }),
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          setPendingUserId(data.userId);
+          setStep('code');
+          setIsLoading(false);
+          return; // Don't proceed with navigation yet
+        } else {
+          throw new Error(data.message || 'Registration failed');
+        }
       }
 
       if (success) {
@@ -123,107 +155,213 @@ const LoginPage: React.FC = () => {
     }
   };
 
+  const handleOTPVerificationSuccess = async () => {
+    setShowOTPModal(false);
+
+    // OTP verification already completed the registration and returned user data
+    // Just navigate to home page
+    navigate('/');
+  };
+
+  // Enhanced OTP handling for inline flow
+  const handleEnhancedOTPComplete = async (otp: string) => {
+    setOtpCode(otp);
+    setOtpError('');
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('/api/auth/verify-otp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: pendingUserId,
+          otp: otp,
+          type: 'email'
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Show reverse canvas animation
+        setReverseCanvasVisible(true);
+        setTimeout(() => setInitialCanvasVisible(false), 50);
+
+        // Transition to success screen
+        setTimeout(() => {
+          setStep('success');
+          // Handle auth success
+          const { handleAuthSuccess } = useAuth();
+          handleAuthSuccess(data.data.user, data.data.token);
+        }, 2000);
+      } else {
+        setOtpError(data.message || 'Invalid verification code');
+      }
+    } catch (error) {
+      console.error('OTP verification error:', error);
+      setOtpError('Verification failed. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleResendOTP = async () => {
+    if (resendCooldown > 0) return;
+
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/auth/resend-otp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: pendingUserId,
+          type: 'email'
+        }),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setResendCooldown(60);
+        setOtpError('');
+      } else {
+        setOtpError(data.message || 'Failed to resend code');
+      }
+    } catch (error) {
+      console.error('Resend OTP error:', error);
+      setOtpError('Failed to resend code');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Cooldown timer
+  useEffect(() => {
+    if (resendCooldown > 0) {
+      const timer = setTimeout(() => {
+        setResendCooldown(resendCooldown - 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [resendCooldown]);
+
+  const handleBackToEmail = () => {
+    setStep('email');
+    setOtpCode('');
+    setOtpError('');
+    setReverseCanvasVisible(false);
+    setInitialCanvasVisible(true);
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex">
-      {/* Left Side - Branding */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 relative overflow-hidden">
-        <div className="absolute inset-0 bg-black/20"></div>
-        <div className="relative z-10 flex flex-col justify-center px-12 text-white">
-          <div className="mb-8">
-            <div className="mb-6">
-              <ProjectBuzzLogo
-                size="lg"
-                variant="default"
-                showTagline={true}
-                className="text-white [&_*]:text-white"
-              />
-            </div>
-            <h2 className="text-4xl font-bold mb-4">
-              {isLogin ? 'Welcome Back!' : 'Join Our Community'}
-            </h2>
-            <p className="text-xl text-blue-100 mb-8">
-              {isLogin
-                ? 'Access your dashboard and continue building amazing projects.'
-                : 'Start buying and selling incredible projects today.'
-              }
-            </p>
+    <div className="min-h-screen bg-black relative overflow-hidden page-with-navbar">
+      {/* Canvas Background Effects */}
+      <div className="absolute inset-0">
+        {/* Initial canvas (forward animation) */}
+        {initialCanvasVisible && (
+          <div className="absolute inset-0">
+            <CanvasRevealEffect
+              animationSpeed={0.1}
+              opacities={[0.2, 0.2, 0.3, 0.5, 0.5, 0.5, 0.8, 0.8, 0.8, 1]}
+              colors={[[0, 255, 255]]}
+              containerClassName="h-full"
+              dotSize={2}
+              showGradient={true}
+              reverse={false}
+            />
           </div>
+        )}
 
-          {/* Features */}
-          <div className="space-y-4">
-            <div className="flex items-center">
-              <Shield className="h-5 w-5 mr-3 text-blue-200" />
-              <span className="text-blue-100">Secure & Trusted Platform</span>
-            </div>
-            <div className="flex items-center">
-              <Users className="h-5 w-5 mr-3 text-blue-200" />
-              <span className="text-blue-100">Growing Community of Developers</span>
-            </div>
-            <div className="flex items-center">
-              <Star className="h-5 w-5 mr-3 text-blue-200" />
-              <span className="text-blue-100">High-Quality Projects</span>
-            </div>
+        {/* Reverse canvas (appears when code is complete) */}
+        {reverseCanvasVisible && (
+          <div className="absolute inset-0">
+            <CanvasRevealEffect
+              animationSpeed={0.1}
+              opacities={[0.2, 0.2, 0.3, 0.5, 0.5, 0.5, 0.8, 0.8, 0.8, 1]}
+              colors={[[255, 255, 255]]}
+              containerClassName="h-full"
+              dotSize={2}
+              showGradient={true}
+              reverse={true}
+            />
           </div>
-        </div>
-
-        {/* Decorative Elements */}
-        <div className="absolute top-20 right-20 w-32 h-32 bg-white/10 rounded-full"></div>
-        <div className="absolute bottom-20 left-20 w-24 h-24 bg-white/10 rounded-full"></div>
+        )}
       </div>
 
-      {/* Right Side - Form */}
-      <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8">
-        <div className="max-w-md w-full space-y-8">
-          {/* Header */}
-          <div className="text-center">
-            <div className="lg:hidden mb-6">
-              <div className="flex justify-center mb-4">
-                <ProjectBuzzLogo
-                  size="md"
-                  variant="default"
-                  showTagline={true}
-                />
-              </div>
-            </div>
+      {/* Content Layer */}
+      <div className="relative z-10 min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 sm:px-6 lg:px-8">
+          <div className="max-w-md w-full space-y-8">
 
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">
-              {isLogin ? 'Sign In' : 'Create Account'}
-            </h2>
-            <p className="text-gray-600">
-              {isLogin ? 'Welcome back! Please sign in to your account.' : 'Join thousands of developers buying and selling projects.'}
-            </p>
-          </div>
 
-          {/* Form */}
-          <Card className="p-8">
-            <form className="space-y-6" onSubmit={handleSubmit}>
-              {/* Email Field */}
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                  Email Address
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Mail className="h-5 w-5 text-gray-400" />
+            <AnimatePresence mode="wait">
+              {step === 'email' && (
+                <motion.div
+                  key="email-step"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.3 }}
+                  className="space-y-8"
+                >
+                  {/* Header */}
+                  <div className="text-center">
+                    <h2 className="text-3xl font-bold text-white mb-2">
+                      {isLogin ? 'Welcome Developer' : 'Welcome Developer'}
+                    </h2>
+                    <p className="text-gray-300">
+                      {isLogin ? 'Your sign in component' : 'Your sign up component'}
+                    </p>
                   </div>
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    required
-                    className="pl-10"
-                    placeholder="Enter your email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                  />
-                </div>
-              </div>
+
+                  {/* Google Sign In Button */}
+                  <div className="mb-6">
+                    <EnhancedButton
+                      type="button"
+                      variant="enhanced-outline"
+                      size="lg"
+                      fullWidth
+                      leftIcon={
+                        <div className="w-5 h-5 bg-white rounded-sm flex items-center justify-center">
+                          <span className="text-black font-bold text-sm">G</span>
+                        </div>
+                      }
+                      className="mb-4"
+                    >
+                      Sign in with Google
+                    </EnhancedButton>
+                  </div>
+
+                  {/* Divider */}
+                  <div className="relative mb-6">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-white/10"></div>
+                    </div>
+                    <div className="relative flex justify-center text-sm">
+                      <span className="px-2 bg-black text-gray-400">or</span>
+                    </div>
+                  </div>
+
+                  {/* Form */}
+                  <form className="space-y-6" onSubmit={handleSubmit}>
+                    {/* Email Field */}
+                    <EnhancedInput
+                      name="email"
+                      type="email"
+                      placeholder="Enter your email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      variant="enhanced"
+                      required
+                      autoComplete="email"
+                    />
 
               {/* Display Name Field (Registration Only) */}
               {!isLogin && (
                 <div>
-                  <label htmlFor="displayName" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="displayName" className="block text-sm font-medium text-gray-300 mb-2">
                     Display Name
                   </label>
                   <div className="relative">
@@ -235,7 +373,7 @@ const LoginPage: React.FC = () => {
                       name="displayName"
                       type="text"
                       required={!isLogin}
-                      className="pl-10"
+                      className="pl-10 bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500"
                       placeholder="Enter your display name"
                       value={formData.displayName}
                       onChange={handleInputChange}
@@ -246,7 +384,7 @@ const LoginPage: React.FC = () => {
 
               {/* Password Field */}
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
                   Password
                 </label>
                 <div className="relative">
@@ -259,7 +397,7 @@ const LoginPage: React.FC = () => {
                     type={showPassword ? "text" : "password"}
                     autoComplete={isLogin ? "current-password" : "new-password"}
                     required
-                    className="pl-10 pr-10"
+                    className="pl-10 pr-10 bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500"
                     placeholder="Enter your password"
                     value={formData.password}
                     onChange={handleInputChange}
@@ -281,7 +419,7 @@ const LoginPage: React.FC = () => {
                 {!isLogin && formData.password && (
                   <div className="mt-2">
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">Password strength:</span>
+                      <span className="text-gray-400">Password strength:</span>
                       <span className={`font-medium ${getPasswordStrengthColor(passwordStrength)}`}>
                         {getPasswordStrengthText(passwordStrength)}
                       </span>
@@ -299,7 +437,7 @@ const LoginPage: React.FC = () => {
                                 : passwordStrength <= 4
                                 ? 'bg-blue-500'
                                 : 'bg-green-500'
-                              : 'bg-gray-200'
+                              : 'bg-gray-700'
                           }`}
                         />
                       ))}
@@ -310,19 +448,19 @@ const LoginPage: React.FC = () => {
 
               {/* Account Type Info (Registration Only) */}
               {!isLogin && (
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div className="bg-gray-800 border border-gray-600 rounded-lg p-4">
                   <div className="flex items-center">
                     <div className="flex-shrink-0">
                       <UserCheck className="h-5 w-5 text-blue-400" />
                     </div>
                     <div className="ml-3">
-                      <h3 className="text-sm font-medium text-blue-800">
+                      <h3 className="text-sm font-medium text-blue-400">
                         Creating Buyer Account
                       </h3>
-                      <p className="text-sm text-blue-700 mt-1">
+                      <p className="text-sm text-gray-300 mt-1">
                         You're registering as a buyer to purchase projects.
                         <br />
-                        Want to sell projects? <Link to="/seller-registration" className="font-medium underline">Register as a seller</Link>
+                        Want to sell projects? <Link to="/seller-registration" className="font-medium underline text-blue-400 hover:text-blue-300">Register as a seller</Link>
                       </p>
                     </div>
                   </div>
@@ -331,7 +469,7 @@ const LoginPage: React.FC = () => {
 
               {/* Error Display */}
               {error && (
-                <div className="rounded-lg bg-red-50 border border-red-200 p-4">
+                <div className="rounded-lg bg-red-900/20 border border-red-700 p-4">
                   <div className="flex items-center">
                     <div className="flex-shrink-0">
                       <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
@@ -339,7 +477,7 @@ const LoginPage: React.FC = () => {
                       </svg>
                     </div>
                     <div className="ml-3">
-                      <p className="text-sm text-red-700">{error}</p>
+                      <p className="text-sm text-red-300">{error}</p>
                     </div>
                   </div>
                 </div>
@@ -356,12 +494,11 @@ const LoginPage: React.FC = () => {
               >
                 {isLogin ? 'Sign In' : 'Create Account'}
               </Button>
-            </form>
-          </Card>
+                    </form>
 
-          {/* Toggle Login/Register */}
+                    {/* Toggle Login/Register */}
           <div className="text-center">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-400">
               {isLogin ? "Don't have an account?" : "Already have an account?"}
               {' '}
               <button
@@ -372,24 +509,37 @@ const LoginPage: React.FC = () => {
                   setPasswordStrength(0);
                   setShowPassword(false);
                 }}
-                className="font-medium text-blue-600 hover:text-blue-500"
+                className="font-medium text-blue-400 hover:text-blue-300"
               >
                 {isLogin ? 'Sign up' : 'Sign in'}
               </button>
             </p>
           </div>
 
-          {/* Back to Home */}
-          <div className="text-center">
-            <Link
-              to="/"
-              className="inline-flex items-center text-sm text-gray-500 hover:text-gray-700"
-            >
-              ← Back to home
-            </Link>
+                    {/* Back to Home */}
+                    <div className="text-center">
+                      <Link
+                        to="/"
+                        className="inline-flex items-center text-sm text-gray-400 hover:text-gray-300"
+                      >
+                        ← Back to home
+                      </Link>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
-        </div>
-      </div>
+
+      {/* OTP Verification Modal */}
+      <OTPVerificationModal
+        isOpen={showOTPModal}
+        onClose={() => setShowOTPModal(false)}
+        onVerificationSuccess={handleOTPVerificationSuccess}
+        email={formData.email}
+        userId={pendingUserId}
+        verificationType="email"
+      />
     </div>
   );
 };

@@ -70,6 +70,7 @@ const ModernDashboard: React.FC = () => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const [buyingProject, setBuyingProject] = useState<string | null>(null);
+  const [customerPhone, setCustomerPhone] = useState('');
 
   const sidebarItems = [
     { icon: <Home className="h-5 w-5" />, label: 'Home', active: true },
@@ -198,7 +199,7 @@ const ModernDashboard: React.FC = () => {
       </div>
 
       {/* Main Content */}
-      <div className="ml-64">
+      <div className="ml-64 pt-16">
         {/* Header */}
         <header className="bg-gray-800 border-b border-gray-700 px-6 py-4">
           <div className="flex items-center justify-between">
@@ -313,7 +314,10 @@ const ModernDashboard: React.FC = () => {
             <div className="flex items-center justify-between p-6 border-b border-gray-700">
               <h2 className="text-xl font-bold text-white">{selectedProject.title}</h2>
               <button
-                onClick={() => setIsProjectModalOpen(false)}
+                onClick={() => {
+                  setIsProjectModalOpen(false);
+                  setCustomerPhone('');
+                }}
                 className="text-gray-400 hover:text-white transition-colors"
               >
                 <X className="h-6 w-6" />
@@ -394,7 +398,7 @@ const ModernDashboard: React.FC = () => {
                   <div className="border-t border-gray-700 pt-6">
                     <div className="flex items-center justify-between mb-4">
                       <div>
-                        <div className="text-3xl font-bold text-blue-400">${selectedProject.price}</div>
+                        <div className="text-3xl font-bold text-blue-400">₹{selectedProject.price}</div>
                         <div className="text-gray-400 text-sm">One-time purchase</div>
                       </div>
                       <div className="flex space-x-2">
@@ -407,13 +411,33 @@ const ModernDashboard: React.FC = () => {
                       </div>
                     </div>
 
+                    {/* Mobile Number Input */}
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        Mobile Number <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="tel"
+                        placeholder="Enter 10-digit mobile number"
+                        value={customerPhone}
+                        onChange={(e) => setCustomerPhone(e.target.value)}
+                        maxLength={10}
+                        className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        required
+                      />
+                      <p className="text-xs text-gray-400 mt-1">
+                        Required for payment notifications
+                      </p>
+                    </div>
+
                     <PaymentModal
                       project={selectedProject}
-                      isOpen={false}
-                      onClose={() => {}}
+                      phoneNumber={customerPhone}
                       onPaymentSuccess={() => {
                         console.log('Payment successful');
                         handleBuyProject(selectedProject);
+                        setIsProjectModalOpen(false);
+                        setCustomerPhone('');
                       }}
                       onPaymentError={(error) => {
                         console.error('Payment error:', error);

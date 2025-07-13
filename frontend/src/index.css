@@ -42,25 +42,25 @@ svg {
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --background: 0 0% 0%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.9%;
   }
 }
 
@@ -889,6 +889,107 @@ body > div[class*="modal-detail-backdrop"] {
   visibility: visible;
 }
 
+/* ===== NAVBAR SPACING FIX - CHROME COMPATIBLE ===== */
+
+/* Enhanced navbar height compensation with browser-specific fixes */
+.page-with-navbar {
+  padding-top: 4rem; /* 64px - matches navbar h-16 */
+  /* Chrome-specific fix for viewport calculation differences */
+  min-height: calc(100vh - 4rem);
+}
+
+/* For pages that need extra spacing */
+.page-with-navbar-extra {
+  padding-top: 5rem; /* 80px - for pages with dense content */
+  min-height: calc(100vh - 5rem);
+}
+
+/* For dashboard pages with their own headers */
+.dashboard-page {
+  padding-top: 5rem; /* 80px - matches navbar h-16 + extra space for dashboard headers */
+  min-height: calc(100vh - 5rem);
+}
+
+/* Ensure main content areas don't overlap with fixed navbar */
+.main-content {
+  margin-top: 4rem; /* 64px - matches navbar h-16 */
+  position: relative;
+  z-index: 1;
+}
+
+/* Specific fix for dashboard navbar overlap */
+.dashboard-navbar-fix {
+  padding-top: 6rem !important; /* 96px - ensures no overlap with fixed navbar */
+  min-height: calc(100vh - 6rem) !important;
+}
+
+/* Specific fix for login/auth pages */
+.login-page-navbar-fix {
+  padding-top: 4rem; /* 64px - matches navbar h-16 */
+  min-height: calc(100vh - 4rem);
+  /* Ensure proper positioning and prevent overlap */
+  position: relative;
+  z-index: 1;
+}
+
+/* Chrome-specific navbar fixes */
+@supports (-webkit-appearance: none) {
+  /* Chrome/Safari specific styles */
+  .page-with-navbar {
+    padding-top: 4.25rem; /* Slightly more padding for Chrome */
+  }
+
+  .page-with-navbar-extra {
+    padding-top: 5.25rem;
+  }
+
+  .dashboard-page {
+    padding-top: 5.25rem;
+  }
+
+  .main-content {
+    margin-top: 4.25rem;
+  }
+
+  .dashboard-navbar-fix {
+    padding-top: 6.25rem !important;
+  }
+
+  /* Chrome-specific login page fix */
+  .login-page-navbar-fix {
+    padding-top: 4.25rem; /* Slightly more padding for Chrome */
+    min-height: calc(100vh - 4.25rem);
+  }
+}
+
+/* Enhanced mobile responsiveness */
+@media (max-width: 768px) {
+  .page-with-navbar,
+  .page-with-navbar-extra,
+  .dashboard-page,
+  .main-content {
+    padding-top: 4rem; /* Keep consistent on mobile */
+  }
+
+  .dashboard-navbar-fix {
+    padding-top: 5rem !important; /* Slightly less on mobile */
+  }
+
+  /* Chrome mobile fix */
+  @supports (-webkit-appearance: none) {
+    .page-with-navbar,
+    .page-with-navbar-extra,
+    .dashboard-page,
+    .main-content {
+      padding-top: 4.25rem;
+    }
+
+    .dashboard-navbar-fix {
+      padding-top: 5.25rem !important;
+    }
+  }
+}
+
 /* Clean project detail modal styling */
 .fixed.inset-0.z-50 .whitespace-pre-wrap {
   color: #e5e7eb;
@@ -908,4 +1009,31 @@ body > div[class*="modal-detail-backdrop"] {
 .fixed.inset-0.z-50 .px-2.py-1.text-xs.font-medium.rounded {
   opacity: 1;
   visibility: visible;
+}
+
+/* Admin theme wrapper - dark black theme for admin pages */
+.admin-theme-wrapper {
+  --background: 0 0 0; /* black */
+  --foreground: 255 255 255; /* white */
+  --card: 17 17 17; /* #111111 */
+  --card-foreground: 255 255 255; /* white */
+  --popover: 17 17 17; /* #111111 */
+  --popover-foreground: 255 255 255; /* white */
+  --primary: 59 130 246; /* blue-500 */
+  --primary-foreground: 255 255 255; /* white */
+  --secondary: 31 31 31; /* #1f1f1f */
+  --secondary-foreground: 255 255 255; /* white */
+  --muted: 31 31 31; /* #1f1f1f */
+  --muted-foreground: 156 163 175; /* gray-400 */
+  --accent: 31 31 31; /* #1f1f1f */
+  --accent-foreground: 255 255 255; /* white */
+  --destructive: 239 68 68; /* red-500 */
+  --destructive-foreground: 255 255 255; /* white */
+  --border: 55 55 55; /* #373737 */
+  --input: 55 55 55; /* #373737 */
+  --ring: 59 130 246; /* blue-500 */
+}
+
+.admin-theme-wrapper * {
+  color-scheme: dark;
 }

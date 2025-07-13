@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, Github, ExternalLink, Eye, Calendar, Tag, User, ShoppingCart, CheckCircle, Download } from 'lucide-react';
 import Button from './ui/Button';
+import Input from './ui/Input';
 import PaymentModal from './PaymentModal';
 import { NegotiationButton } from './NegotiationButton';
 import { projectService } from '../services/projectService';
@@ -83,6 +84,7 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
   user
 }) => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [customerPhone, setCustomerPhone] = useState('');
 
   if (!isOpen) return null;
 
@@ -458,11 +460,31 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
                         </div>
                       ) : (
                         <div className="space-y-4">
+                          {/* Phone Number Input */}
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                              Mobile Number <span className="text-red-500">*</span>
+                            </label>
+                            <Input
+                              type="tel"
+                              placeholder="Enter 10-digit mobile number"
+                              value={customerPhone}
+                              onChange={(e) => setCustomerPhone(e.target.value)}
+                              maxLength={10}
+                              className="w-full"
+                              required
+                            />
+                            <p className="text-xs text-gray-500 mt-1">
+                              Required for payment notifications
+                            </p>
+                          </div>
+
                           <div className="payment-modal relative z-10">
                             <PaymentModal
                               project={project}
                               isOpen={false}
                               onClose={() => {}}
+                              phoneNumber={customerPhone}
                               onPaymentSuccess={() => {
                                 console.log('Payment successful');
                                 onPurchase?.(project);
