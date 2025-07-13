@@ -273,8 +273,7 @@ userSchema.methods.updateStats = function(type, amount = 0) {
   return this.save();
 };
 
-// Indexes for better query performance
-userSchema.index({ email: 1 });
+// Indexes for better query performance (email index is already created by unique: true)
 userSchema.index({ role: 1 });
 userSchema.index({ createdAt: -1 });
 userSchema.index({ 'stats.projectsSold': -1 });

@@ -6,7 +6,35 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-dotenv.config({ path: path.join(__dirname, '.env') });
+// Load environment configuration with production support
+if (process.env.NODE_ENV === 'production') {
+  // In production, try .env.production first, then .env
+  const prodEnvPath = path.join(__dirname, '.env.production');
+  const envPath = path.join(__dirname, '.env');
+
+  let envLoaded = false;
+  try {
+    const result = dotenv.config({ path: prodEnvPath });
+    if (!result.error) {
+      console.log('✅ Loaded .env.production');
+      envLoaded = true;
+    }
+  } catch (error) {
+    // Fall back to .env
+  }
+
+  if (!envLoaded) {
+    try {
+      dotenv.config({ path: envPath });
+      console.log('✅ Loaded .env');
+    } catch (error) {
+      console.log('⚠️  Using system environment variables');
+    }
+  }
+} else {
+  // Development mode - use .env
+  dotenv.config({ path: path.join(__dirname, '.env') });
+}
 
 import express from 'express';
 import mongoose from 'mongoose';
@@ -360,8 +388,8 @@ const connectMongoDB = async () => {
 
       // Additional production settings
       ...(process.env.NODE_ENV === 'production' && {
-        ssl: true,
-        sslValidate: true,
+        tls: true,
+        tlsAllowInvalidCertificates: false,
         authSource: 'admin'
       })
     };
