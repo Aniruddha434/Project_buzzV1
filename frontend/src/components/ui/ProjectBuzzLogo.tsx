@@ -1,5 +1,6 @@
 import React from 'react';
 import { cn } from '../../utils/cn';
+import { SimpleCubeLogo } from './simple-cube-logo';
 
 interface ProjectBuzzLogoProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
@@ -43,57 +44,17 @@ const ProjectBuzzLogo: React.FC<ProjectBuzzLogoProps> = ({
 
   const currentSize = sizes[size];
 
-  // Custom ProjectBuzz Icon - represents digital marketplace with code/project elements
+  // Professional Corporate ProjectBuzz Icon with Simple Cube
   const ProjectBuzzIcon = () => (
     <div className={cn(
       currentSize.icon,
-      "relative bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105"
+      "relative bg-black rounded-sm flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-300"
     )}>
-      {/* Background pattern */}
-      <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent rounded-xl" />
-
-      {/* Main icon - combination of code brackets and marketplace elements */}
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        width="24"
-        height="24"
-        className="w-1/2 h-1/2 text-white relative z-10"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        {/* Code brackets */}
-        <path
-          d="M8 6L4 12L8 18"
-          stroke="currentColor"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M16 6L20 12L16 18"
-          stroke="currentColor"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        {/* Central element - representing projects/marketplace */}
-        <circle
-          cx="12"
-          cy="12"
-          r="2"
-          fill="currentColor"
-        />
-        {/* Connection lines - representing network/marketplace */}
-        <path
-          d="M12 8V10M12 14V16"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-        />
-      </svg>
-
-      {/* Subtle glow effect */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-400/30 to-purple-400/30 rounded-xl blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      {/* Simple Cube Icon */}
+      <SimpleCubeLogo
+        size={size === 'sm' ? 24 : size === 'md' ? 28 : size === 'lg' ? 36 : 44}
+        className="flex items-center justify-center"
+      />
     </div>
   );
 
@@ -113,14 +74,14 @@ const ProjectBuzzLogo: React.FC<ProjectBuzzLogoProps> = ({
         <div className="flex flex-col">
           <span className={cn(
             currentSize.text,
-            "font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent leading-tight tracking-tight"
+            "font-semibold text-slate-900 dark:text-white tracking-tight"
           )}>
             ProjectBuzz
           </span>
           {showTagline && (
             <span className={cn(
               currentSize.tagline,
-              "text-gray-500 dark:text-gray-400 -mt-1 font-medium tracking-wide"
+              "text-slate-600 dark:text-slate-400 -mt-1 font-medium tracking-wide"
             )}>
               Digital Marketplace
             </span>

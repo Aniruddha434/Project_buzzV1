@@ -369,6 +369,28 @@ const paymentService = {
   // Check if payment has failed
   isPaymentFailed(status) {
     return ['FAILED', 'EXPIRED', 'CANCELLED'].includes(status);
+  },
+
+  // Validate discount code
+  async validateDiscountCode(discountCode, projectId) {
+    try {
+      console.log('🔄 Validating discount code:', { discountCode, projectId });
+
+      const response = await api.post('/negotiations/validate-code', {
+        discountCode,
+        projectId
+      });
+
+      console.log('✅ Discount code validation response:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('❌ Error validating discount code:', error);
+      return {
+        success: false,
+        message: error.response?.data?.message || 'Failed to validate discount code',
+        data: { isValid: false, discountAmount: 0 }
+      };
+    }
   }
 };
 

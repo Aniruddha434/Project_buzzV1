@@ -1,12 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
-import { CheckCircle, Download, ExternalLink, AlertCircle, Loader } from 'lucide-react';
+import { CheckCircle, Download, ExternalLink, AlertCircle, Loader, Receipt, Calendar, CreditCard, Package, Star, Shield, ArrowRight, Copy, Check } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
 import Badge from '../components/ui/Badge';
 import paymentService from '../services/paymentService';
 import projectService from '../services/projectService';
 
+/**
+ * PaymentSuccess Component - Black Suit Theme
+ *
+ * An elegant, professional payment receipt page with a sophisticated black theme.
+ * Features:
+ * - Gradient backgrounds and subtle borders
+ * - Copy-to-clipboard functionality for order details
+ * - Responsive grid layouts
+ * - Professional typography and spacing
+ * - Interactive hover effects and animations
+ * - Status indicators with appropriate colors
+ * - Clean, modern card-based design
+ */
 const PaymentSuccess: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -14,6 +27,7 @@ const PaymentSuccess: React.FC = () => {
   const [paymentData, setPaymentData] = useState<any>(null);
   const [projectData, setProjectData] = useState<any>(null);
   const [error, setError] = useState<string>('');
+  const [copiedField, setCopiedField] = useState<string>('');
 
   const orderId = searchParams.get('order_id');
 
@@ -83,46 +97,60 @@ const PaymentSuccess: React.FC = () => {
     }
   };
 
+  const copyToClipboard = async (text: string, field: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedField(field);
+      setTimeout(() => setCopiedField(''), 2000);
+    } catch (err) {
+      console.error('Failed to copy text: ', err);
+    }
+  };
+
   if (isVerifying) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md text-center p-8">
-          <Loader
-            className="h-12 w-12 text-blue-600 mx-auto mb-4 animate-spin"
-            width="48"
-            height="48"
-          />
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Verifying Payment</h2>
-          <p className="text-gray-600">Please wait while we confirm your payment...</p>
-        </Card>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 page-with-navbar">
+        <div className="w-full max-w-md">
+          <div className="bg-white rounded-2xl p-8 text-center shadow-lg border border-gray-200">
+            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Loader className="h-6 w-6 text-blue-600 animate-spin" />
+            </div>
+            <h2 className="text-xl font-semibold text-gray-900 mb-3">Verifying Payment</h2>
+            <p className="text-gray-600 leading-relaxed">
+              Please wait while we confirm your payment...
+            </p>
+          </div>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md text-center p-8">
-          <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Payment Verification Failed</h2>
-          <p className="text-gray-600 mb-6">{error}</p>
-          <div className="space-y-3">
-            <Button
-              variant="primary"
-              onClick={() => navigate('/dashboard/buyer')}
-              className="w-full"
-            >
-              Go to Dashboard
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => navigate('/')}
-              className="w-full"
-            >
-              Back to Home
-            </Button>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 page-with-navbar">
+        <div className="w-full max-w-md">
+          <div className="bg-white rounded-2xl p-8 text-center shadow-lg border border-gray-200">
+            <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <AlertCircle className="h-6 w-6 text-red-600" />
+            </div>
+            <h2 className="text-xl font-semibold text-gray-900 mb-3">Payment Verification Failed</h2>
+            <p className="text-gray-600 mb-8 leading-relaxed">{error}</p>
+            <div className="space-y-3">
+              <button
+                onClick={() => navigate('/dashboard/buyer')}
+                className="w-full bg-black text-white font-medium py-3 px-6 rounded-lg hover:bg-gray-800 transition-colors"
+              >
+                Go to Dashboard
+              </button>
+              <button
+                onClick={() => navigate('/')}
+                className="w-full bg-white text-gray-900 font-medium py-3 px-6 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors"
+              >
+                Back to Home
+              </button>
+            </div>
           </div>
-        </Card>
+        </div>
       </div>
     );
   }
@@ -130,130 +158,193 @@ const PaymentSuccess: React.FC = () => {
   const isPaymentSuccessful = paymentData && paymentService.isPaymentSuccessful(paymentData.status);
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4">
-      <div className="max-w-2xl mx-auto">
-        {/* Success Header */}
-        {isPaymentSuccessful ? (
-          <Card className="text-center p-8 mb-6">
-            <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Payment Successful!</h1>
-            <p className="text-gray-600 mb-4">
-              Thank you for your purchase. You now have access to the project.
-            </p>
-            <Badge variant="success" size="lg">
-              Order #{paymentData.orderId}
-            </Badge>
-          </Card>
-        ) : (
-          <Card className="text-center p-8 mb-6">
-            <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Payment Status</h1>
-            <p className="text-gray-600 mb-4">
-              Your payment status is: {paymentService.getStatusText(paymentData?.status || 'UNKNOWN')}
-            </p>
-            <Badge variant={paymentService.getStatusColor(paymentData?.status) as any} size="lg">
-              Order #{paymentData?.orderId}
-            </Badge>
-          </Card>
-        )}
+    <div className="min-h-screen bg-black page-with-navbar">
+      <div className="max-w-3xl mx-auto px-4 py-12">
+        {/* Clean Professional Receipt */}
+        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+          {/* Header */}
+          <div className="bg-black px-8 py-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-2xl font-bold text-white">Payment Receipt</h1>
+                <p className="text-gray-400 text-sm mt-1">ProjectBuzz Digital Marketplace</p>
+              </div>
+              <div className="text-right">
+                <p className="text-gray-400 text-sm">Receipt #</p>
+                <p className="text-white font-mono text-lg">{paymentData?.orderId}</p>
+              </div>
+            </div>
+          </div>
 
-        {/* Payment Details */}
-        {paymentData && (
-          <Card className="p-6 mb-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Payment Details</h2>
-            <div className="space-y-3">
-              <div className="flex justify-between">
-                <span className="text-gray-600">Order ID:</span>
-                <span className="font-medium">{paymentData.orderId}</span>
+          {/* Status Section */}
+          {isPaymentSuccessful ? (
+            <div className="px-8 py-8 bg-green-50 border-b border-gray-200">
+              <div className="flex items-center justify-center space-x-4">
+                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                  <CheckCircle className="h-6 w-6 text-green-600" />
+                </div>
+                <div className="text-center">
+                  <h2 className="text-xl font-bold text-gray-900 mb-1">Payment Successful</h2>
+                  <p className="text-gray-600">Your transaction has been completed successfully</p>
+                </div>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Amount:</span>
-                <span className="font-medium">
-                  {paymentService.formatCurrency(paymentData.amount, paymentData.currency)}
-                </span>
+            </div>
+          ) : (
+            <div className="px-8 py-8 bg-red-50 border-b border-gray-200">
+              <div className="flex items-center justify-center space-x-4">
+                <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                  <AlertCircle className="h-6 w-6 text-red-600" />
+                </div>
+                <div className="text-center">
+                  <h2 className="text-xl font-bold text-gray-900 mb-1">Payment Status</h2>
+                  <p className="text-gray-600">
+                    Status: {paymentService.getStatusText(paymentData?.status || 'UNKNOWN')}
+                  </p>
+                </div>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Status:</span>
-                <Badge variant={paymentService.getStatusColor(paymentData.status) as any}>
-                  {paymentService.getStatusText(paymentData.status)}
-                </Badge>
-              </div>
-              {paymentData.paymentTime && (
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Payment Time:</span>
-                  <span className="font-medium">
-                    {new Date(paymentData.paymentTime).toLocaleString()}
+            </div>
+          )}
+
+          {/* Payment Details Section */}
+          {paymentData && (
+            <div className="px-8 py-8">
+              <h3 className="text-lg font-semibold text-gray-900 mb-6">Transaction Details</h3>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center py-3 border-b border-gray-100">
+                  <span className="text-gray-600">Order ID</span>
+                  <div className="flex items-center space-x-2">
+                    <span className="font-mono text-gray-900">{paymentData.orderId}</span>
+                    <button
+                      onClick={() => copyToClipboard(paymentData.orderId, 'orderId')}
+                      className="p-1 hover:bg-gray-100 rounded transition-colors"
+                      title="Copy Order ID"
+                    >
+                      {copiedField === 'orderId' ? (
+                        <Check className="w-4 h-4 text-green-600" />
+                      ) : (
+                        <Copy className="w-4 h-4 text-gray-400" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex justify-between items-center py-3 border-b border-gray-100">
+                  <span className="text-gray-600">Amount Paid</span>
+                  <span className="text-xl font-bold text-gray-900">
+                    {paymentService.formatCurrency(paymentData.amount, paymentData.currency)}
                   </span>
                 </div>
-              )}
-            </div>
-          </Card>
-        )}
 
-        {/* Project Access */}
-        {isPaymentSuccessful && projectData && (
-          <Card className="p-6 mb-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Project Access</h2>
-            <div className="bg-gray-50 rounded-lg p-4 mb-4">
-              <h3 className="font-medium text-gray-900 mb-2">{projectData.title}</h3>
-              <p className="text-sm text-gray-600 mb-3">{projectData.description}</p>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500">
-                  Category: {projectData.category}
-                </span>
-                <span className="text-sm font-medium text-green-600">
-                  ✓ Access Granted
-                </span>
+                <div className="flex justify-between items-center py-3 border-b border-gray-100">
+                  <span className="text-gray-600">Status</span>
+                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                    isPaymentSuccessful
+                      ? 'bg-green-100 text-green-800'
+                      : 'bg-red-100 text-red-800'
+                  }`}>
+                    {paymentService.getStatusText(paymentData.status)}
+                  </span>
+                </div>
+
+                {paymentData.paymentTime && (
+                  <div className="flex justify-between items-center py-3">
+                    <span className="text-gray-600">Payment Time</span>
+                    <span className="text-gray-900 font-medium">
+                      {new Date(paymentData.paymentTime).toLocaleString()}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
+          )}
 
-            <div className="space-y-3">
-              <Button
-                variant="primary"
-                onClick={handleDownloadAccess}
-                leftIcon={<Download className="h-4 w-4" />}
-                className="w-full"
-              >
-                Access GitHub Repository
-              </Button>
+          {/* Project Access Section */}
+          {isPaymentSuccessful && projectData && (
+            <div className="px-8 py-8 bg-gray-50 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900 mb-6">Your Purchase</h3>
 
-              {projectData.demoUrl && (
-                <Button
-                  variant="outline"
-                  onClick={() => window.open(projectData.demoUrl, '_blank')}
-                  leftIcon={<ExternalLink className="h-4 w-4" />}
-                  className="w-full"
+              <div className="bg-white rounded-xl p-6 border border-gray-200 mb-6">
+                <div className="flex items-start space-x-4">
+                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Package className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="text-lg font-bold text-gray-900 mb-2">{projectData.title}</h4>
+                    <p className="text-gray-600 mb-4 leading-relaxed">{projectData.description}</p>
+                    <div className="flex items-center space-x-3">
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                        {projectData.category}
+                      </span>
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        <CheckCircle className="w-3 h-3 mr-1" />
+                        Access Granted
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <button
+                  onClick={handleDownloadAccess}
+                  className="bg-black text-white font-medium py-3 px-6 rounded-lg hover:bg-gray-800 transition-colors flex items-center justify-center space-x-2"
                 >
-                  View Live Demo
-                </Button>
-              )}
-            </div>
-          </Card>
-        )}
+                  <Download className="w-4 h-4" />
+                  <span>Access GitHub Repository</span>
+                </button>
 
-        {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-3">
-          <Link to="/dashboard/buyer" className="flex-1">
-            <Button variant="primary" className="w-full">
-              Go to Dashboard
-            </Button>
-          </Link>
-          <Link to="/" className="flex-1">
-            <Button variant="outline" className="w-full">
-              Browse More Projects
-            </Button>
-          </Link>
+                {projectData.demoUrl && (
+                  <button
+                    onClick={() => window.open(projectData.demoUrl, '_blank')}
+                    className="bg-white text-gray-900 font-medium py-3 px-6 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors flex items-center justify-center space-x-2"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    <span>View Live Demo</span>
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Action Buttons */}
+          <div className="px-8 py-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+              <Link to="/dashboard/buyer" className="block">
+                <button className="w-full bg-black text-white font-medium py-3 px-6 rounded-lg hover:bg-gray-800 transition-colors">
+                  Go to Dashboard
+                </button>
+              </Link>
+              <Link to="/" className="block">
+                <button className="w-full bg-white text-gray-900 font-medium py-3 px-6 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors">
+                  Browse More Projects
+                </button>
+              </Link>
+            </div>
+
+            {/* Support Section */}
+            <div className="bg-blue-50 rounded-lg p-6 border border-blue-200">
+              <div className="text-center">
+                <h4 className="text-gray-900 font-medium mb-2">Need Help?</h4>
+                <p className="text-gray-600 text-sm mb-4">
+                  Contact our support team for any questions about your purchase.
+                </p>
+                <a
+                  href="mailto:support@projectbuzz.com"
+                  className="text-blue-600 hover:text-blue-700 font-medium text-sm"
+                >
+                  support@projectbuzz.com
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Support Info */}
-        <Card className="p-4 mt-6 bg-blue-50 border-blue-200">
-          <p className="text-sm text-blue-800 text-center">
-            Need help? Contact our support team at{' '}
-            <a href="mailto:support@projectbuzz.com" className="font-medium underline">
-              support@projectbuzz.com
-            </a>
+        {/* Footer */}
+        <div className="mt-8 text-center">
+          <p className="text-gray-500 text-sm">
+            Thank you for choosing ProjectBuzz. Your receipt has been sent to your email.
           </p>
-        </Card>
+        </div>
       </div>
     </div>
   );

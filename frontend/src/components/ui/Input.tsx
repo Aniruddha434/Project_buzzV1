@@ -24,8 +24,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
   const baseStyles = "w-full px-4 py-3 text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed";
   
   const variants = {
-    default: "bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:text-white",
-    glass: "bg-white/10 dark:bg-gray-900/10 backdrop-blur-lg border border-white/20 dark:border-gray-700/20 rounded-lg focus:ring-cyan-500 focus:border-cyan-500 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400",
+    default: "bg-gray-800 border border-gray-600 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-white placeholder-gray-400",
+    glass: "bg-gray-900/10 backdrop-blur-lg border border-gray-700/20 rounded-lg focus:ring-cyan-500 focus:border-cyan-500 text-white placeholder-gray-400",
     neon: "bg-gray-900 border-2 border-cyan-500/50 rounded-lg focus:ring-cyan-500 focus:border-cyan-500 text-cyan-100 placeholder-cyan-300/50 shadow-lg shadow-cyan-500/10"
   };
 
@@ -34,14 +34,14 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
   return (
     <div className="space-y-2">
       {label && (
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+        <label className="block text-sm font-medium text-gray-300">
           {label}
         </label>
       )}
       
       <div className="relative">
         {leftIcon && (
-          <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500">
+          <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
             {leftIcon}
           </div>
         )}
@@ -60,7 +60,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
         />
         
         {rightIcon && (
-          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500">
+          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
             {rightIcon}
           </div>
         )}

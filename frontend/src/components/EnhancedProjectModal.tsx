@@ -6,6 +6,8 @@ import Badge from './ui/Badge';
 import Input from './ui/Input';
 import paymentService from '../services/paymentService';
 import { projectService } from '../services/projectService';
+import { getImageUrl } from '../utils/imageUtils';
+import InlineError from './ui/InlineError';
 
 interface ProjectImage {
   url: string;
@@ -97,6 +99,8 @@ const EnhancedProjectModal: React.FC<EnhancedProjectModalProps> = ({
   const [showExistingPaymentDialog, setShowExistingPaymentDialog] = useState(false);
   const [useTestMode, setUseTestMode] = useState(false);
   const [discountCode, setDiscountCode] = useState<string>('');
+  const [roleError, setRoleError] = useState<string>('');
+  const [downloadError, setDownloadError] = useState<string>('');
 
   // Reset state when modal opens/closes and manage body scroll
   useEffect(() => {
@@ -110,6 +114,8 @@ const EnhancedProjectModal: React.FC<EnhancedProjectModalProps> = ({
       setCurrentOrder(null);
       setPaymentStatus('');
       setError('');
+      setRoleError('');
+      setDownloadError('');
       setSelectedImageIndex(0);
       setUseTestMode(false);
       setDiscountCode('');
@@ -150,14 +156,20 @@ const EnhancedProjectModal: React.FC<EnhancedProjectModalProps> = ({
     return createPortal(invalidDataContent, document.body);
   }
 
-  // Get all project images
+  // Get all project images with properly processed URLs
   const getProjectImages = () => {
     const images = [];
     if (project.images && project.images.length > 0) {
-      images.push(...project.images);
+      images.push(...project.images.map(img => ({
+        ...img,
+        url: getImageUrl(img.url)
+      })));
     }
-    if (project.image?.url && !images.some(img => img.url === project.image?.url)) {
-      images.push(project.image);
+    if (project.image?.url && !images.some(img => img.url === getImageUrl(project.image?.url))) {
+      images.push({
+        ...project.image,
+        url: getImageUrl(project.image.url)
+      });
     }
     return images;
   };
@@ -246,7 +258,7 @@ const EnhancedProjectModal: React.FC<EnhancedProjectModalProps> = ({
       return;
     }
     if (user.role !== 'buyer') {
-      alert('Only buyers can purchase projects. Please contact support if you need to change your role.');
+      setRoleError('Only buyers can purchase projects. Please contact support if you need to change your role.');
       return;
     }
     setShowCheckout(true);
@@ -499,6 +511,18 @@ const EnhancedProjectModal: React.FC<EnhancedProjectModalProps> = ({
                           >
                             {user ? 'Contact Seller' : 'Sign in to Buy'}
                           </Button>
+                        )}
+
+                        {/* Role Error Display */}
+                        {roleError && (
+                          <div className="mt-3">
+                            <InlineError
+                              message={roleError}
+                              variant="warning"
+                              dismissible
+                              onDismiss={() => setRoleError('')}
+                            />
+                          </div>
                         )}
 
                         {/* Demo Link */}
@@ -828,7 +852,7 @@ const EnhancedProjectModal: React.FC<EnhancedProjectModalProps> = ({
                                     await projectService.downloadProjectZip(project._id);
                                   } catch (error) {
                                     console.error('Download failed:', error);
-                                    alert('Download failed. Please try again.');
+                                    setDownloadError('Download failed. Please try again.');
                                   }
                                 }}
                                 className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors flex items-center space-x-2"
@@ -886,7 +910,7 @@ const EnhancedProjectModal: React.FC<EnhancedProjectModalProps> = ({
                                       await projectService.downloadDocumentationFile(doc.filename, doc.originalName);
                                     } catch (error: any) {
                                       console.error('Documentation download failed:', error);
-                                      alert(`Failed to download ${doc.originalName}: ${error.message || 'Download failed'}`);
+                                      setDownloadError(`Failed to download ${doc.originalName}: ${error.message || 'Download failed'}`);
                                     }
                                   }}
                                   className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
@@ -897,6 +921,18 @@ const EnhancedProjectModal: React.FC<EnhancedProjectModalProps> = ({
                             </div>
                           ))}
                         </div>
+                      </div>
+                    )}
+
+                    {/* Download Error Display */}
+                    {downloadError && (
+                      <div className="mt-4">
+                        <InlineError
+                          message={downloadError}
+                          variant="error"
+                          dismissible
+                          onDismiss={() => setDownloadError('')}
+                        />
                       </div>
                     )}
                   </div>

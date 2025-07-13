@@ -80,11 +80,24 @@ const NavbarEnhanced: React.FC = () => {
     }
   };
 
+  const getSettingsPath = () => {
+    switch (role) {
+      case 'seller':
+        return '/dashboard/seller'; // Redirect to seller dashboard (settings can be added later)
+      case 'buyer':
+        return '/dashboard/buyer?tab=settings'; // Direct link to buyer dashboard settings tab
+      case 'admin':
+        return '/dashboard/admin'; // Redirect to admin dashboard (admin settings via admin management)
+      default:
+        return '/dashboard/buyer?tab=settings';
+    }
+  };
+
   const isActive = (path: string) => location.pathname === path;
 
   const navItems = [
     { name: 'Home', path: '/', icon: null },
-    { name: 'Projects', path: '/projects', icon: null },
+    { name: 'Market', path: '/market', icon: null },
     { name: 'About', path: '/about', icon: null },
     ...(user && role === 'buyer' ? [{ name: 'Negotiations', path: '/negotiations', icon: null }] : []),
   ];
@@ -111,9 +124,24 @@ const NavbarEnhanced: React.FC = () => {
         }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           isScrolled
-            ? 'bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl shadow-xl border-b border-gray-200/50 dark:border-gray-700/50'
-            : 'bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg shadow-lg'
+            ? 'bg-black/90 backdrop-blur-xl shadow-xl border-b border-gray-800/50'
+            : 'bg-black/95 backdrop-blur-lg shadow-lg'
         }`}
+        style={{
+          // Ensure consistent positioning across browsers
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 50,
+          // Chrome-specific fixes
+          WebkitBackfaceVisibility: 'hidden',
+          backfaceVisibility: 'hidden',
+          WebkitTransform: 'translateZ(0)',
+          transform: 'translateZ(0)',
+          // Ensure proper stacking context
+          isolation: 'isolate'
+        }}
         onMouseEnter={() => setIsHoveringTop(true)}
         onMouseLeave={() => setIsHoveringTop(false)}
       >
@@ -240,7 +268,7 @@ const NavbarEnhanced: React.FC = () => {
 
                         <div className="py-2">
                           <Link
-                            to="/profile"
+                            to={getSettingsPath()}
                             onClick={() => setIsUserMenuOpen(false)}
                             className="flex items-center px-4 py-3 text-sm text-gray-700 dark:text-gray-300"
                           >

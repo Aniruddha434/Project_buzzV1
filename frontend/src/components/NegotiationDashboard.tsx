@@ -7,6 +7,8 @@ import { Input } from './ui/input-shadcn';
 import { Textarea } from './ui/textarea';
 import { useAuth } from '../context/AuthContext';
 import api from '../api';
+import InlineError from './ui/InlineError';
+import FieldError from './ui/FieldError';
 
 interface Negotiation {
   _id: string;
@@ -61,6 +63,9 @@ export const NegotiationDashboard: React.FC<NegotiationDashboardProps> = ({ onNe
   const [messageText, setMessageText] = useState('');
   const [priceOffer, setPriceOffer] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [validationError, setValidationError] = useState('');
 
   useEffect(() => {
     if (user) {
@@ -122,18 +127,19 @@ export const NegotiationDashboard: React.FC<NegotiationDashboardProps> = ({ onNe
 
       if (type === 'price_offer' || type === 'counter_offer') {
         if (!priceOffer) {
-          alert('Please enter a price offer');
+          setValidationError('Please enter a price offer');
           return;
         }
         body.priceOffer = parseFloat(priceOffer);
         body.content = `I offer ₹${priceOffer} for this project.`;
       } else {
         if (!messageText.trim()) {
-          alert('Please enter a message');
+          setValidationError('Please enter a message');
           return;
         }
         body.content = messageText;
       }
+      setValidationError('');
 
       const response = await api.post(`/negotiations/${selectedNegotiation._id}/message`, body);
 
@@ -145,7 +151,7 @@ export const NegotiationDashboard: React.FC<NegotiationDashboardProps> = ({ onNe
       }
     } catch (error: any) {
       console.error('Error sending message:', error);
-      alert(error.response?.data?.error || 'Failed to send message');
+      setError(error.response?.data?.error || 'Failed to send message');
     } finally {
       setIsSubmitting(false);
     }
@@ -160,7 +166,7 @@ export const NegotiationDashboard: React.FC<NegotiationDashboardProps> = ({ onNe
 
       if (response.data.success) {
         const data = response.data;
-        alert(`Offer accepted! Discount code: ${data.discountCode}`);
+        setSuccessMessage(`Offer accepted! Discount code: ${data.discountCode}`);
         fetchNegotiationDetails(selectedNegotiation._id);
         fetchNegotiations();
         // Notify parent component to update counts
@@ -170,7 +176,7 @@ export const NegotiationDashboard: React.FC<NegotiationDashboardProps> = ({ onNe
       }
     } catch (error: any) {
       console.error('Error accepting offer:', error);
-      alert(error.response?.data?.error || 'Failed to accept offer');
+      setError(error.response?.data?.error || 'Failed to accept offer');
     } finally {
       setIsSubmitting(false);
     }
@@ -186,7 +192,7 @@ export const NegotiationDashboard: React.FC<NegotiationDashboardProps> = ({ onNe
       const response = await api.post(`/negotiations/${selectedNegotiation._id}/reject`, { reason });
 
       if (response.data.success) {
-        alert('Offer rejected');
+        setSuccessMessage('Offer rejected successfully');
         fetchNegotiationDetails(selectedNegotiation._id);
         fetchNegotiations();
         // Notify parent component to update counts
@@ -196,7 +202,7 @@ export const NegotiationDashboard: React.FC<NegotiationDashboardProps> = ({ onNe
       }
     } catch (error: any) {
       console.error('Error rejecting offer:', error);
-      alert(error.response?.data?.error || 'Failed to reject offer');
+      setError(error.response?.data?.error || 'Failed to reject offer');
     } finally {
       setIsSubmitting(false);
     }
@@ -399,6 +405,35 @@ export const NegotiationDashboard: React.FC<NegotiationDashboardProps> = ({ onNe
                     </Button>
                   </div>
                 )}
+              </div>
+            )}
+
+            {/* Error and Success Messages */}
+            {validationError && (
+              <div className="mt-3">
+                <FieldError message={validationError} />
+              </div>
+            )}
+
+            {error && (
+              <div className="mt-3">
+                <InlineError
+                  message={error}
+                  variant="error"
+                  dismissible
+                  onDismiss={() => setError('')}
+                />
+              </div>
+            )}
+
+            {successMessage && (
+              <div className="mt-3">
+                <InlineError
+                  message={successMessage}
+                  variant="info"
+                  dismissible
+                  onDismiss={() => setSuccessMessage('')}
+                />
               </div>
             )}
 

@@ -142,7 +142,7 @@ const ProjectDetailsPage: FC = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 dark:bg-black p-4">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-black p-4">
         <div className="bg-white dark:bg-gray-900 p-8 rounded-lg shadow-xl text-center border border-gray-200 dark:border-gray-800">
           <svg className="mx-auto h-16 w-16 text-red-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
           <h1 className="text-2xl font-bold text-red-600 dark:text-red-400 mb-3">Error</h1>
@@ -156,7 +156,7 @@ const ProjectDetailsPage: FC = () => {
   if (!project) {
     // This case should ideally be handled by the error state from fetchProject
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 dark:bg-black p-4">
+        <div className="min-h-screen flex flex-col items-center justify-center bg-black p-4">
             <div className="bg-white dark:bg-gray-900 p-8 rounded-lg shadow-xl text-center border border-gray-200 dark:border-gray-800">
                 <h1 className="text-2xl font-bold text-gray-700 dark:text-gray-300 mb-3">Project Not Found</h1>
                 <p className="text-gray-600 dark:text-gray-400 mb-6">The project you are looking for does not exist.</p>
@@ -169,7 +169,7 @@ const ProjectDetailsPage: FC = () => {
   // Only show project details if project status is 'approved' OR if user is authorized (seller/buyer)
   if (project.status !== 'approved' && !isAuthorized) {
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 dark:bg-black p-4">
+        <div className="min-h-screen flex flex-col items-center justify-center bg-black p-4 pt-24">
             <div className="bg-white dark:bg-gray-900 p-8 rounded-lg shadow-xl text-center border border-gray-200 dark:border-gray-800">
                 <h1 className="text-2xl font-bold text-yellow-600 dark:text-yellow-400 mb-3">Project Not Available</h1>
                 <p className="text-gray-700 dark:text-gray-300 mb-6">This project is currently not approved for public viewing.</p>
@@ -180,7 +180,7 @@ const ProjectDetailsPage: FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-black py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-black py-8 px-4 sm:px-6 lg:px-8 pt-24">
       <div className="max-w-4xl mx-auto bg-white dark:bg-gray-900 shadow-2xl rounded-xl overflow-hidden border border-gray-200 dark:border-gray-800">
         {/* Project Images */}
         {(project.images && project.images.length > 0) || project.image ? (

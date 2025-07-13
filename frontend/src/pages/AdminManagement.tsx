@@ -6,6 +6,7 @@ import {
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import AdminCreationModal from '../components/AdminCreationModal';
+import AdminThemeWrapper from '../components/AdminThemeWrapper';
 import api from '../api.js';
 
 interface Admin {
@@ -130,17 +131,20 @@ const AdminManagement: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-gray-400">Loading admin accounts...</p>
+      <AdminThemeWrapper>
+        <div className="min-h-screen bg-black flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+            <p className="text-gray-400">Loading admin accounts...</p>
+          </div>
         </div>
-      </div>
+      </AdminThemeWrapper>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 p-6">
+    <AdminThemeWrapper>
+      <div className="min-h-screen bg-black p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -325,7 +329,8 @@ const AdminManagement: React.FC = () => {
         onClose={() => setShowCreateModal(false)}
         onSuccess={handleCreateSuccess}
       />
-    </div>
+      </div>
+    </AdminThemeWrapper>
   );
 };
 

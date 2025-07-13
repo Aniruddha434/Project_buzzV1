@@ -8,6 +8,8 @@ import { Input } from './ui/input-shadcn';
 import { Textarea } from './ui/textarea';
 import { Badge } from './ui/badge-shadcn';
 import api from '../api';
+import InlineError from './ui/InlineError';
+import FieldError from './ui/FieldError';
 
 interface NegotiationButtonProps {
   projectId: string;
@@ -38,6 +40,8 @@ export const NegotiationButton: React.FC<NegotiationButtonProps> = ({
   const [priceOffer, setPriceOffer] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [step, setStep] = useState<'template' | 'price' | 'confirm'>('template');
+  const [error, setError] = useState('');
+  const [priceError, setPriceError] = useState('');
 
   const minimumPrice = Math.floor(originalPrice * 0.7);
 
@@ -60,6 +64,8 @@ export const NegotiationButton: React.FC<NegotiationButtonProps> = ({
     setCustomMessage('');
     setPriceOffer('');
     setStep('template');
+    setError('');
+    setPriceError('');
     setIsOpen(false);
     // Remove body scroll lock
     document.body.classList.remove('modal-open');
@@ -122,17 +128,14 @@ export const NegotiationButton: React.FC<NegotiationButtonProps> = ({
         resetModal();
         onNegotiationStart?.();
 
-        // Show success message and navigate to negotiations page
-        alert('Negotiation started successfully! Redirecting to negotiations page...');
-        setTimeout(() => {
-          navigate('/negotiations');
-        }, 1000);
+        // Navigate to negotiations page immediately
+        navigate('/negotiations');
       } else {
-        alert(response.data.error || 'Failed to start negotiation');
+        setError(response.data.error || 'Failed to start negotiation');
       }
     } catch (error: any) {
       console.error('Error starting negotiation:', error);
-      alert(error.response?.data?.error || 'Failed to start negotiation');
+      setError(error.response?.data?.error || 'Failed to start negotiation');
     } finally {
       setIsSubmitting(false);
     }
@@ -140,9 +143,10 @@ export const NegotiationButton: React.FC<NegotiationButtonProps> = ({
 
   const handlePriceSubmit = async () => {
     if (!priceOffer || parseFloat(priceOffer) < minimumPrice) {
-      alert(`Price must be at least ₹${minimumPrice}`);
+      setPriceError(`Price must be at least ₹${minimumPrice}`);
       return;
     }
+    setPriceError('');
 
     setIsSubmitting(true);
 
@@ -168,16 +172,13 @@ export const NegotiationButton: React.FC<NegotiationButtonProps> = ({
           resetModal();
           onNegotiationStart?.();
 
-          // Show success message and navigate to negotiations page
-          alert('Price offer submitted successfully! Redirecting to negotiations page...');
-          setTimeout(() => {
-            navigate('/negotiations');
-          }, 1000);
+          // Navigate to negotiations page immediately
+          navigate('/negotiations');
         }
       }
     } catch (error: any) {
       console.error('Error submitting price offer:', error);
-      alert(error.response?.data?.error || 'Failed to submit price offer');
+      setError(error.response?.data?.error || 'Failed to submit price offer');
     } finally {
       setIsSubmitting(false);
     }
@@ -233,6 +234,18 @@ export const NegotiationButton: React.FC<NegotiationButtonProps> = ({
               <Badge variant="outline">Min: ₹{minimumPrice}</Badge>
             </div>
           </div>
+
+          {/* General Error Display */}
+          {error && (
+            <div className="mb-4">
+              <InlineError
+                message={error}
+                variant="error"
+                dismissible
+                onDismiss={() => setError('')}
+              />
+            </div>
+          )}
 
           {step === 'template' && (
             <div className="space-y-4">
@@ -310,6 +323,9 @@ export const NegotiationButton: React.FC<NegotiationButtonProps> = ({
                 <p className="text-xs text-muted-foreground mt-1">
                   Price must be between ₹{minimumPrice} and ₹{originalPrice}
                 </p>
+                {priceError && (
+                  <FieldError message={priceError} className="mt-2" />
+                )}
               </div>
 
               <div className="flex gap-2">
