@@ -13,6 +13,7 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import helmet from 'helmet';
 import session from 'express-session';
+import MongoStore from 'connect-mongo';
 import passport from 'passport';
 // import { getOptimalPort, PortManager } from './utils/portManager.js';
 
@@ -301,6 +302,10 @@ app.use(session({
   secret: process.env.SESSION_SECRET || 'your-fallback-session-secret',
   resave: false,
   saveUninitialized: false,
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGO_URI || 'mongodb://localhost:27017/projectbuzz',
+    touchAfter: 24 * 3600 // lazy session update
+  }),
   cookie: {
     secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
