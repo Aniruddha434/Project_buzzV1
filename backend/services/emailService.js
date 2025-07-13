@@ -94,7 +94,9 @@ class EmailService {
       'admin-alert.hbs',
       'new-user-registration.hbs',
       'generic-notification.hbs',
-      'test-email.hbs'
+      'test-email.hbs',
+      'otp-verification.hbs',
+      'seller-otp-verification.hbs'
     ];
 
     let loadedCount = 0;
@@ -202,19 +204,28 @@ class EmailService {
 
   // Specific email methods for different notification types
   async sendPurchaseConfirmation(user, project, payment) {
+    console.log('📧 ===== SENDING PURCHASE CONFIRMATION EMAIL =====');
+    console.log('📧 User:', { email: user.email, displayName: user.displayName });
+    console.log('📧 Project:', { title: project.title, price: project.price });
+    console.log('📧 Payment:', { orderId: payment.orderId, amount: payment.amount });
+
+    const emailData = {
+      userName: user.displayName || user.email.split('@')[0],
+      projectTitle: project.title,
+      projectPrice: payment.amount,
+      orderId: payment.orderId,
+      transactionId: payment.razorpayPaymentId || payment.paymentDetails?.razorpayPaymentId,
+      downloadUrl: `${process.env.FRONTEND_URL}/dashboard/purchases`,
+      orderDate: new Date().toLocaleDateString()
+    };
+
+    console.log('📧 Email data being sent to template:', emailData);
+
     return this.sendEmail({
       to: user.email,
       subject: `Purchase Confirmation - ${project.title}`,
       template: 'purchase-confirmation',
-      data: {
-        userName: user.displayName || user.email.split('@')[0],
-        projectTitle: project.title,
-        projectPrice: payment.amount,
-        orderId: payment.orderId,
-        transactionId: payment.razorpayPaymentId || payment.paymentDetails?.razorpayPaymentId,
-        downloadUrl: `${process.env.FRONTEND_URL}/dashboard/purchases`,
-        orderDate: new Date().toLocaleDateString()
-      }
+      data: emailData
     });
   }
 

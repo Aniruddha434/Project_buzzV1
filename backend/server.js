@@ -365,7 +365,7 @@ const connectMongoDB = async () => {
     console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
     console.log(`🗄️  Database: ${process.env.MONGODB_ATLAS_DB_NAME || 'projectbuzz'}`);
 
-    await mongoose.connect(process.env.MONGODB_URI || process.env.MONGO_URI, connectionOptions);
+    await mongoose.connect(process.env.MONGO_URI, connectionOptions);
 
     console.log('✅ MongoDB connected successfully');
     console.log(`🏊 Connection pool: ${connectionOptions.minPoolSize}-${connectionOptions.maxPoolSize} connections`);
@@ -579,7 +579,7 @@ const startServer = () => {
       console.log('\n📋 Development URLs:');
       console.log(`   Frontend: ${process.env.FRONTEND_URL || 'http://localhost:5173'}`);
       console.log(`   Backend API: http://localhost:${PORT}/api`);
-      console.log(`   MongoDB: ${process.env.MONGODB_URI || process.env.MONGO_URI || 'mongodb://localhost:27017/projectbuzz'}`);
+      console.log(`   MongoDB: ${process.env.MONGO_URI || 'mongodb://localhost:27017/projectbuzz'}`);
       console.log('');
     }
   });

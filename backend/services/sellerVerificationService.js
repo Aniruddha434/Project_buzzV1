@@ -20,9 +20,8 @@ class SellerVerificationService {
         .withMessage('Valid email is required'),
 
       body('password')
-        .isLength({ min: 8 })
-        .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/)
-        .withMessage('Password must be at least 8 characters with uppercase, lowercase, number, and special character'),
+        .isLength({ min: 6 })
+        .withMessage('Password must be at least 6 characters long'),
 
       body('displayName')
         .trim()
@@ -36,22 +35,26 @@ class SellerVerificationService {
         .withMessage('Full name is required (2-100 characters)'),
 
       body('phoneNumber')
+        .optional({ checkFalsy: true })
         .trim()
         .isLength({ min: 10, max: 20 })
-        .withMessage('Valid phone number is required (10-20 characters)'),
+        .withMessage('Phone number must be 10-20 characters if provided'),
 
       body('occupation')
+        .optional({ checkFalsy: true })
         .trim()
         .isLength({ min: 2, max: 100 })
-        .withMessage('Occupation is required'),
+        .withMessage('Occupation must be 2-100 characters if provided'),
 
       body('experienceLevel')
+        .optional({ checkFalsy: true })
         .isIn(['beginner', 'intermediate', 'advanced', 'expert'])
-        .withMessage('Valid experience level is required'),
+        .withMessage('Experience level must be one of: beginner, intermediate, advanced, expert'),
 
       body('yearsOfExperience')
+        .optional({ checkFalsy: true })
         .isInt({ min: 0, max: 50 })
-        .withMessage('Years of experience must be between 0-50'),
+        .withMessage('Years of experience must be between 0-50 if provided'),
 
       body('portfolioUrl')
         .optional({ checkFalsy: true })
@@ -64,13 +67,15 @@ class SellerVerificationService {
         .withMessage('GitHub profile must be valid URL'),
 
       body('motivation')
+        .optional({ checkFalsy: true })
         .trim()
-        .isLength({ min: 50, max: 1000 })
-        .withMessage('Motivation must be between 50-1000 characters'),
+        .isLength({ min: 10, max: 1000 })
+        .withMessage('Motivation must be between 10-1000 characters if provided'),
 
       body('specializations')
-        .isArray({ min: 1, max: 10 })
-        .withMessage('At least 1 specialization is required (max 10)'),
+        .optional()
+        .isArray({ max: 10 })
+        .withMessage('Maximum 10 specializations allowed'),
 
       body('sellerTermsAccepted')
         .custom((value) => {
@@ -116,17 +121,20 @@ class SellerVerificationService {
         throw new Error('User with this email already exists');
       }
 
-      // Validate required seller fields
+      // Validate required seller fields (only essential ones)
       const requiredFields = [
-        'email', 'password', 'displayName', 'fullName', 'phoneNumber',
-        'occupation', 'experienceLevel', 'yearsOfExperience', 'motivation',
-        'specializations', 'sellerTermsAccepted'
+        'email', 'password', 'displayName', 'fullName', 'sellerTermsAccepted'
       ];
 
       for (const field of requiredFields) {
         if (!userData[field]) {
           throw new Error(`${field} is required for seller registration`);
         }
+      }
+
+      // Validate sellerTermsAccepted specifically
+      if (userData.sellerTermsAccepted !== true && userData.sellerTermsAccepted !== 'true') {
+        throw new Error('Seller terms and conditions must be accepted');
       }
 
       // Create user with seller verification data
@@ -136,7 +144,7 @@ class SellerVerificationService {
         displayName: userData.displayName,
         role: 'seller',
         sellerVerification: {
-          fullName: userData.fullName,
+          verifiedFullName: userData.fullName,
           phoneNumber: userData.phoneNumber,
           occupation: userData.occupation,
           experienceLevel: userData.experienceLevel,

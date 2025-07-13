@@ -11,7 +11,10 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: true,
+    required: function() {
+      // Password is not required for OAuth users
+      return !this.googleId && !this.githubId;
+    },
     minlength: 6
   },
   displayName: {
@@ -30,6 +33,24 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+
+  // OAuth provider fields
+  googleId: {
+    type: String,
+    sparse: true // Allows multiple null values but unique non-null values
+  },
+  githubId: {
+    type: String,
+    sparse: true
+  },
+  authProvider: {
+    type: String,
+    enum: ['local', 'google', 'github'],
+    default: 'local'
+  },
+  avatar: {
+    type: String // URL to profile picture from OAuth provider
+  },
   // Additional profile information
   profile: {
     bio: String,
@@ -44,7 +65,7 @@ const userSchema = new mongoose.Schema({
   // Seller-specific verification information
   sellerVerification: {
     // Personal Information
-    fullName: String,
+    verifiedFullName: String,
     phoneNumber: String,
     phoneVerified: {
       type: Boolean,

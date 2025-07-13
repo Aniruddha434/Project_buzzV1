@@ -324,43 +324,84 @@ class NotificationService {
     console.log('📧 Project ID:', projectId);
     console.log('📧 Payment ID:', paymentId);
 
-    const result = await this.createNotification({
-      recipientId: buyerId,
-      title: 'Purchase Confirmed!',
-      message: 'Your purchase has been confirmed. You can now download your project.',
-      type: 'PURCHASE_CONFIRMATION',
-      category: 'purchase',
-      priority: 'high',
-      relatedEntities: {
-        project: projectId,
-        payment: paymentId
-      },
-      actionData: {
-        actionType: 'download',
-        actionUrl: `/dashboard/purchases`,
-        actionText: 'View Purchase'
-      },
-      sendEmail: true
-    });
+    try {
+      // Fetch the actual project and payment data for email template
+      const Project = (await import('../models/Project.js')).default;
+      const Payment = (await import('../models/Payment.js')).default;
 
-    console.log('📧 Purchase confirmation notification result:', result ? '✅ Success' : '❌ Failed');
-    return result;
+      const project = await Project.findById(projectId);
+      const payment = await Payment.findById(paymentId);
+
+      if (!project) {
+        throw new Error(`Project not found: ${projectId}`);
+      }
+      if (!payment) {
+        throw new Error(`Payment not found: ${paymentId}`);
+      }
+
+      console.log('📧 Project data:', { title: project.title, price: project.price });
+      console.log('📧 Payment data:', { orderId: payment.orderId, amount: payment.amount });
+
+      const result = await this.createNotification({
+        recipientId: buyerId,
+        title: 'Purchase Confirmed!',
+        message: 'Your purchase has been confirmed. You can now download your project.',
+        type: 'PURCHASE_CONFIRMATION',
+        category: 'purchase',
+        priority: 'high',
+        relatedEntities: {
+          project: project, // Pass the full project object
+          payment: payment  // Pass the full payment object
+        },
+        actionData: {
+          actionType: 'download',
+          actionUrl: `/dashboard/purchases`,
+          actionText: 'View Purchase'
+        },
+        sendEmail: true
+      });
+
+      console.log('📧 Purchase confirmation notification result:', result ? '✅ Success' : '❌ Failed');
+      return result;
+    } catch (error) {
+      console.error('❌ Error in notifyPurchaseConfirmation:', error.message);
+      throw error;
+    }
   }
 
   async notifyPaymentSuccess(buyerId, projectId, paymentId) {
-    return await this.createNotification({
-      recipientId: buyerId,
-      title: 'Payment Successful',
-      message: 'Your payment has been processed successfully.',
-      type: 'PAYMENT_SUCCESS',
-      category: 'payment',
-      priority: 'high',
-      relatedEntities: {
-        project: projectId,
-        payment: paymentId
-      },
-      sendEmail: true
-    });
+    try {
+      // Fetch the actual project and payment data for email template
+      const Project = (await import('../models/Project.js')).default;
+      const Payment = (await import('../models/Payment.js')).default;
+
+      const project = await Project.findById(projectId);
+      const payment = await Payment.findById(paymentId);
+
+      if (!project) {
+        throw new Error(`Project not found: ${projectId}`);
+      }
+      if (!payment) {
+        throw new Error(`Payment not found: ${paymentId}`);
+      }
+
+      return await this.createNotification({
+        recipientId: buyerId,
+        title: 'Payment Successful',
+        message: 'Your payment has been processed successfully.',
+        type: 'PAYMENT_SUCCESS',
+        category: 'payment',
+        priority: 'high',
+        relatedEntities: {
+          project: project, // Pass the full project object
+          payment: payment  // Pass the full payment object
+        },
+        sendEmail: true
+      });
+    } catch (error) {
+      console.error('❌ Error in notifyPaymentSuccess:', error.message);
+      throw error;
+    }
   }
 
   async notifyPaymentFailed(buyerId, projectId, paymentId) {
@@ -501,7 +542,7 @@ class NotificationService {
           const notification = await this.createNotification({
             recipientId: admin._id,
             title: 'New Seller Registration - Auto-Approved',
-            message: `A new seller has registered and is now active: ${newSeller.email} (${newSeller.sellerVerification?.fullName || 'Name not provided'})`,
+            message: `A new seller has registered and is now active: ${newSeller.email} (${newSeller.sellerVerification?.verifiedFullName || 'Name not provided'})`,
             type: 'SELLER_REGISTRATION',
             category: 'admin',
             priority: 'medium',
@@ -516,7 +557,7 @@ class NotificationService {
             metadata: {
               sellerInfo: {
                 email: newSeller.email,
-                fullName: newSeller.sellerVerification?.fullName,
+                fullName: newSeller.sellerVerification?.verifiedFullName,
                 occupation: newSeller.sellerVerification?.occupation,
                 experienceLevel: newSeller.sellerVerification?.experienceLevel,
                 specializations: newSeller.sellerVerification?.specializations
