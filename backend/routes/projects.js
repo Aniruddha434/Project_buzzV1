@@ -935,10 +935,18 @@ router.post('/',
       console.error('=== ERROR CREATING PROJECT ===');
       console.error('Error message:', error.message);
       console.error('Error stack:', error.stack);
+      console.error('Error name:', error.name);
+      console.error('Error code:', error.code);
       console.error('User:', req.user?.email);
+      console.error('Request body keys:', Object.keys(req.body || {}));
       console.error('Request body:', req.body);
       console.error('Request files:', req.files);
       console.error('Full error:', error);
+
+      // Log specific validation errors
+      if (error.name === 'ValidationError') {
+        console.error('Mongoose validation errors:', error.errors);
+      }
 
       // Check if it's a multer error
       if (error.code === 'LIMIT_FILE_SIZE') {
@@ -954,6 +962,38 @@ router.post('/',
           success: false,
           message: 'Unexpected file field. Please check your file uploads.',
           error: 'UNEXPECTED_FILE'
+        });
+      }
+
+      // Check if it's a validation error
+      if (error.name === 'ValidationError') {
+        return res.status(400).json({
+          success: false,
+          message: 'Validation failed',
+          error: 'VALIDATION_ERROR',
+          details: Object.keys(error.errors).map(key => ({
+            field: key,
+            message: error.errors[key].message
+          }))
+        });
+      }
+
+      // Check if it's a MongoDB error
+      if (error.name === 'MongoError' || error.name === 'MongoServerError') {
+        return res.status(500).json({
+          success: false,
+          message: 'Database error occurred',
+          error: 'DATABASE_ERROR'
+        });
+      }
+
+      // Check if it's a cast error (invalid ObjectId, etc.)
+      if (error.name === 'CastError') {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid data format',
+          error: 'CAST_ERROR',
+          details: `Invalid ${error.kind} for field ${error.path}`
         });
       }
 
