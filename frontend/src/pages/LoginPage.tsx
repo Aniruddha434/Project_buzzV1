@@ -12,6 +12,7 @@ import EnhancedOTPInput from '../components/ui/EnhancedOTPInput';
 
 import OTPVerificationModal from '../components/OTPVerificationModal';
 import { CanvasRevealEffect } from '../components/ui/CanvasRevealEffect';
+import api from '../api.js';
 
 const LoginPage: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -119,28 +120,20 @@ const LoginPage: React.FC = () => {
         console.log('Role: buyer (forced)');
 
         // For registration, first create user and send OTP
-        const response = await fetch('/api/auth/register-with-otp', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            email: formData.email.trim(),
-            password: formData.password,
-            displayName,
-            role: 'buyer'
-          }),
+        const response = await api.post('/auth/register-with-otp', {
+          email: formData.email.trim(),
+          password: formData.password,
+          displayName,
+          role: 'buyer'
         });
 
-        const data = await response.json();
-
-        if (data.success) {
-          setPendingUserId(data.userId);
+        if (response.data.success) {
+          setPendingUserId(response.data.userId);
           setStep('code');
           setIsLoading(false);
           return; // Don't proceed with navigation yet
         } else {
-          throw new Error(data.message || 'Registration failed');
+          throw new Error(response.data.message || 'Registration failed');
         }
       }
 
