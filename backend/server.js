@@ -229,6 +229,9 @@ const corsOptions = {
       'http://127.0.0.1:5173',
       'http://127.0.0.1:5174',
       'http://127.0.0.1:3000',
+      // Vercel deployment URLs
+      'https://project-buzz-3sdi1n2rq-aniruddhagayki0-gmailcoms-projects.vercel.app',
+      'https://projectbuzz.vercel.app',
       // Production URLs from environment
       ...(process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',').map(url => url.trim()) : [])
     ].filter(Boolean); // Remove undefined values
@@ -240,6 +243,13 @@ const corsOptions = {
         console.log('✅ CORS: Allowing localhost/127.0.0.1 origin in development');
         return callback(null, true);
       }
+    }
+
+    // Allow Vercel deployment URLs (they have dynamic subdomains)
+    if (origin.includes('vercel.app') &&
+        (origin.includes('project-buzz') || origin.includes('projectbuzz'))) {
+      console.log('✅ CORS: Allowing Vercel deployment URL');
+      return callback(null, true);
     }
 
     // Check against allowed origins list
