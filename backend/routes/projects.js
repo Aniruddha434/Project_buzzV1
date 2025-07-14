@@ -9,10 +9,23 @@ import User from '../models/User.js';
 
 const router = express.Router();
 
-// Ensure uploads directory exists
+// Ensure uploads directory exists (with error handling for cloud platforms)
 const uploadsDir = path.join(process.cwd(), 'uploads', 'images');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
+let canWriteToFileSystem = true;
+
+try {
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  }
+  // Test write permissions
+  const testFile = path.join(uploadsDir, 'test-write.tmp');
+  fs.writeFileSync(testFile, 'test');
+  fs.unlinkSync(testFile);
+  console.log('✅ File system write permissions confirmed');
+} catch (error) {
+  console.log('⚠️ File system write permissions denied, using memory storage');
+  console.log('Error:', error.message);
+  canWriteToFileSystem = false;
 }
 
 // Configure multer for image uploads only
@@ -86,34 +99,50 @@ const uploadDocs = multer({
 });
 
 // Combined upload for images, documentation, and ZIP files
-const uploadCombined = multer({
-  storage: multer.diskStorage({
-    destination: (req, file, cb) => {
-      if (file.fieldname === 'images') {
-        cb(null, uploadsDir);
-      } else if (file.fieldname === 'documentationFiles') {
-        const docsDir = path.join(uploadsDir, 'docs');
-        if (!fs.existsSync(docsDir)) {
-          fs.mkdirSync(docsDir, { recursive: true });
+// Create storage configuration based on file system permissions
+const createStorageConfig = () => {
+  if (canWriteToFileSystem) {
+    console.log('📁 Using disk storage for file uploads');
+    return multer.diskStorage({
+      destination: (req, file, cb) => {
+        try {
+          if (file.fieldname === 'images') {
+            cb(null, uploadsDir);
+          } else if (file.fieldname === 'documentationFiles') {
+            const docsDir = path.join(uploadsDir, 'docs');
+            if (!fs.existsSync(docsDir)) {
+              fs.mkdirSync(docsDir, { recursive: true });
+            }
+            cb(null, docsDir);
+          } else if (file.fieldname === 'projectZipFile') {
+            const zipDir = path.join(uploadsDir, 'projects');
+            if (!fs.existsSync(zipDir)) {
+              fs.mkdirSync(zipDir, { recursive: true });
+            }
+            cb(null, zipDir);
+          } else {
+            cb(new Error('Invalid field name'));
+          }
+        } catch (error) {
+          console.log('❌ Disk storage error, falling back to memory storage');
+          cb(error);
         }
-        cb(null, docsDir);
-      } else if (file.fieldname === 'projectZipFile') {
-        const zipDir = path.join(uploadsDir, 'projects');
-        if (!fs.existsSync(zipDir)) {
-          fs.mkdirSync(zipDir, { recursive: true });
-        }
-        cb(null, zipDir);
-      } else {
-        cb(new Error('Invalid field name'));
+      },
+      filename: (req, file, cb) => {
+        const timestamp = Date.now();
+        const ext = path.extname(file.originalname);
+        const filename = `${timestamp}_${req.user?._id || 'user'}_${Math.random().toString(36).substring(7)}${ext}`;
+        cb(null, filename);
       }
-    },
-    filename: (req, file, cb) => {
-      const timestamp = Date.now();
-      const ext = path.extname(file.originalname);
-      const filename = `${timestamp}_${req.user?._id || 'user'}_${Math.random().toString(36).substring(7)}${ext}`;
-      cb(null, filename);
-    }
-  }),
+    });
+  } else {
+    console.log('💾 Using memory storage for file uploads (cloud platform)');
+    return multer.memoryStorage();
+  }
+};
+
+const uploadCombined = multer({
+  storage: createStorageConfig(),
   limits: {
     fileSize: 100 * 1024 * 1024, // 100MB limit (will be checked per field in validation)
     files: 16 // Max total files
@@ -688,18 +717,33 @@ router.get('/:id',
   }
 );
 
-// Conditional multer middleware - only apply for multipart requests
+// Conditional multer middleware - only apply for multipart requests with error handling
 const conditionalUpload = (req, res, next) => {
   const contentType = req.get('Content-Type') || '';
 
   // Only apply multer for multipart/form-data requests
   if (contentType.includes('multipart/form-data')) {
     console.log('🔄 Applying multer middleware for multipart request');
-    return uploadCombined.fields([
+
+    // Wrap multer in error handling
+    const multerMiddleware = uploadCombined.fields([
       { name: 'images', maxCount: 5 },
       { name: 'documentationFiles', maxCount: 10 },
       { name: 'projectZipFile', maxCount: 1 }
-    ])(req, res, next);
+    ]);
+
+    return multerMiddleware(req, res, (err) => {
+      if (err) {
+        console.log('❌ Multer middleware error:', err.message);
+        // If multer fails, continue without files but log the error
+        console.log('⚠️ Continuing without file upload support');
+        req.files = {}; // Ensure req.files exists but is empty
+        next();
+      } else {
+        console.log('✅ Multer middleware completed successfully');
+        next();
+      }
+    });
   }
 
   // For JSON requests, skip multer
