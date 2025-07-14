@@ -93,28 +93,20 @@ const EnhancedLoginPage: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/auth/verify-otp', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userId: pendingUserId,
-          otp: otp,
-          type: 'email'
-        }),
+      const response = await api.post('/auth/verify-otp', {
+        userId: pendingUserId,
+        otp: otp,
+        type: 'email'
       });
 
-      const data = await response.json();
-
-      if (data.success) {
+      if (response.data.success) {
         // Transition to success screen
         setTimeout(() => {
           setStep('success');
-          handleAuthSuccess(data.data.user, data.data.token);
+          handleAuthSuccess(response.data.data.user, response.data.data.token);
         }, 1000);
       } else {
-        setOtpError(data.message || 'Invalid verification code');
+        setOtpError(response.data.message || 'Invalid verification code');
       }
     } catch (error) {
       console.error('OTP verification error:', error);
@@ -129,23 +121,16 @@ const EnhancedLoginPage: React.FC = () => {
     
     setIsLoading(true);
     try {
-      const response = await fetch('/api/auth/resend-otp', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userId: pendingUserId,
-          type: 'email'
-        }),
+      const response = await api.post('/auth/resend-otp', {
+        userId: pendingUserId,
+        type: 'email'
       });
 
-      const data = await response.json();
-      if (data.success) {
+      if (response.data.success) {
         setResendCooldown(60);
         setOtpError('');
       } else {
-        setOtpError(data.message || 'Failed to resend code');
+        setOtpError(response.data.message || 'Failed to resend code');
       }
     } catch (error) {
       console.error('Resend OTP error:', error);
