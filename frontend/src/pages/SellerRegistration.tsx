@@ -405,7 +405,7 @@ const SellerRegistration: React.FC = () => {
                   value={formData.phoneNumber}
                   onChange={handleInputChange}
                   className="pl-10 bg-gray-800 border-gray-700 text-white"
-                  placeholder="+1 (555) 123-4567"
+                  placeholder="+91 8624829427"
                   required
                 />
               </div>
