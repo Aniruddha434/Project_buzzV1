@@ -36,6 +36,16 @@ export const projectService = {
       }
     });
 
+    // Handle projectDetails separately with flattened field names
+    if (projectData.projectDetails) {
+      Object.keys(projectData.projectDetails).forEach(detailKey => {
+        const value = projectData.projectDetails[detailKey];
+        if (value !== undefined && value !== null && value !== '') {
+          formData.append(`projectDetails.${detailKey}`, value);
+        }
+      });
+    }
+
     // Append project details as individual fields
     if (projectData.projectDetails) {
       Object.keys(projectData.projectDetails).forEach(key => {
