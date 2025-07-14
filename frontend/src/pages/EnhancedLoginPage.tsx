@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import EnhancedInput from '../components/ui/EnhancedInput';
 import EnhancedButton from '../components/ui/EnhancedButton';
 import EnhancedOTPInput from '../components/ui/EnhancedOTPInput';
+import api from '../api.js';
 
 import { Squares } from '../components/ui/Squares';
 import InlineError from '../components/ui/InlineError';
@@ -66,26 +67,18 @@ const EnhancedLoginPage: React.FC = () => {
 
         const displayName = formData.displayName.trim() || formData.email.split('@')[0];
 
-        const response = await fetch('/api/auth/register-with-otp', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            email: formData.email.trim(),
-            password: formData.password || 'temp-password', // For email-only registration
-            displayName,
-            role: 'buyer'
-          }),
+        const response = await api.post('/auth/register-with-otp', {
+          email: formData.email.trim(),
+          password: formData.password || 'temp-password', // For email-only registration
+          displayName,
+          role: 'buyer'
         });
 
-        const data = await response.json();
-
-        if (data.success) {
-          setPendingUserId(data.userId);
+        if (response.data.success) {
+          setPendingUserId(response.data.userId);
           setStep('code');
         } else {
-          throw new Error(data.message || 'Registration failed');
+          throw new Error(response.data.message || 'Registration failed');
         }
       }
     } catch (error: any) {
