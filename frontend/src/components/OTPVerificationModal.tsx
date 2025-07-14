@@ -12,7 +12,7 @@ interface OTPVerificationModalProps {
   onVerificationSuccess: () => void;
   email: string;
   userId: string;
-  verificationType: 'email' | 'sms';
+  verificationType: 'email' | 'sms' | 'seller_registration';
   phoneNumber?: string;
 }
 
@@ -190,7 +190,7 @@ const OTPVerificationModal: React.FC<OTPVerificationModalProps> = ({
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
-                {verificationType === 'email' ? (
+                {verificationType === 'email' || verificationType === 'seller_registration' ? (
                   <Mail className="h-5 w-5 text-white" />
                 ) : (
                   <MessageSquare className="h-5 w-5 text-white" />
@@ -198,7 +198,7 @@ const OTPVerificationModal: React.FC<OTPVerificationModalProps> = ({
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-white">
-                  Verify Your {verificationType === 'email' ? 'Email' : 'Phone'}
+                  Verify Your {verificationType === 'email' || verificationType === 'seller_registration' ? 'Email' : 'Phone'}
                 </h3>
                 <p className="text-sm text-gray-400">
                   Enter the verification code
@@ -219,7 +219,7 @@ const OTPVerificationModal: React.FC<OTPVerificationModalProps> = ({
               We've sent a 6-digit verification code to
             </p>
             <p className="text-sm font-medium text-white text-center mt-1">
-              {verificationType === 'email' ? email : phoneNumber}
+              {verificationType === 'email' || verificationType === 'seller_registration' ? email : phoneNumber}
             </p>
           </div>
 
