@@ -140,12 +140,12 @@ const Footer: React.FC = () => {
               </li>
               <li className="flex items-center text-gray-400 text-sm">
                 <Phone className="h-4 w-4 mr-3 flex-shrink-0" />
-                <span>+91 (555) 123-4567</span>
+                <span>+91 8624829427</span>
               </li>
               <li className="flex items-start text-gray-400 text-sm">
                 <MapPin className="h-4 w-4 mr-3 flex-shrink-0 mt-0.5" />
                 <span>
-                  Mumbai, Maharashtra<br />
+                  Amravati, Maharashtra<br />
                   India
                 </span>
               </li>

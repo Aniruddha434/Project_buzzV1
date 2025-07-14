@@ -273,7 +273,9 @@ const TermsAndConditions: React.FC = () => {
               If you have questions about these Terms and Conditions, please contact us:
             </p>
             <div className="space-y-2 text-muted-foreground">
-              <p><strong>Email:</strong> support@projectbuzz.com</p>
+              <p><strong>Email:</strong> infoprojectbuzz@gmail.com</p>
+              <p><strong>Phone:</strong> +91 8624829427</p>
+              <p><strong>Address:</strong> Amravati, Maharashtra, India</p>
               <p><strong>Platform:</strong> Use the contact form in your dashboard</p>
               <p><strong>Response Time:</strong> 24-48 hours for general inquiries</p>
             </div>

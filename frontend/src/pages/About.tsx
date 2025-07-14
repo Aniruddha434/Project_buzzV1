@@ -463,7 +463,7 @@ const About: React.FC = () => {
               <h3 className="text-sm font-semibold text-foreground mb-4">Connect</h3>
               <ul className="space-y-2">
                 <li>
-                  <a href="mailto:info@projectbuzz.com" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  <a href="mailto:infoprojectbuzz@gmail.com" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                     Contact Support
                   </a>
                 </li>
@@ -497,7 +497,7 @@ const About: React.FC = () => {
               <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
                 <Linkedin className="h-5 w-5" />
               </a>
-              <a href="mailto:info@projectbuzz.com" className="text-muted-foreground hover:text-foreground transition-colors">
+              <a href="mailto:infoprojectbuzz@gmail.com" className="text-muted-foreground hover:text-foreground transition-colors">
                 <Mail className="h-5 w-5" />
               </a>
             </div>
