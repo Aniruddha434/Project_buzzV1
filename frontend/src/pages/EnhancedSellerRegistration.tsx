@@ -263,36 +263,14 @@ const EnhancedSellerRegistration: React.FC = () => {
   const handleOTPVerificationSuccess = async () => {
     setShowOTPModal(false);
 
-    try {
-      // Complete the seller registration process
-      const requestData = {
-        ...formData,
-        yearsOfExperience: parseInt(formData.yearsOfExperience) || 0,
-        expectedMonthlyRevenue: parseInt(formData.expectedMonthlyRevenue) || 0
-      };
+    // OTP verification already completed the registration and authentication
+    // The user is now logged in and the registration is complete
+    setSuccess('Seller registration successful! You can start selling immediately. Welcome to ProjectBuzz!');
 
-      const response = await api.post('/auth/complete-seller-registration', {
-        userId: pendingUserId,
-        ...requestData
-      });
-
-      if (response.data.success) {
-        setSuccess('Seller registration successful! You can start selling immediately. Welcome to ProjectBuzz!');
-        // Store token and user data
-        localStorage.setItem('token', response.data.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.data.user));
-
-        // Redirect to seller dashboard after a short delay
-        setTimeout(() => {
-          navigate('/dashboard/seller');
-        }, 2000);
-      } else {
-        setError(response.data.message || 'Registration completion failed');
-      }
-    } catch (error) {
-      console.error('Registration completion error:', error);
-      setError('Failed to complete registration. Please try again.');
-    }
+    // Redirect to seller dashboard after a short delay
+    setTimeout(() => {
+      navigate('/dashboard/seller');
+    }, 2000);
   };
 
   const getStepTitle = () => {
@@ -754,7 +732,7 @@ const EnhancedSellerRegistration: React.FC = () => {
         onVerificationSuccess={handleOTPVerificationSuccess}
         email={formData.email}
         userId={pendingUserId}
-        verificationType="email"
+        verificationType="seller_registration"
       />
     </div>
   );
