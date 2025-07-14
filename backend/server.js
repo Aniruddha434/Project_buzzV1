@@ -230,7 +230,8 @@ const corsOptions = {
       'http://127.0.0.1:5174',
       'http://127.0.0.1:3000',
       // Vercel deployment URLs
-      'https://project-buzz-3sdi1n2rq-aniruddhagayki0-gmailcoms-projects.vercel.app',
+      'https://project-buzz-8p7pyql08-aniruddhagayki0-gmailcoms-projects.vercel.app',
+      'https://project-buzz-v.vercel.app',
       'https://projectbuzz.vercel.app',
       // Production URLs from environment
       ...(process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',').map(url => url.trim()) : [])
