@@ -688,15 +688,30 @@ router.get('/:id',
   }
 );
 
+// Conditional multer middleware - only apply for multipart requests
+const conditionalUpload = (req, res, next) => {
+  const contentType = req.get('Content-Type') || '';
+
+  // Only apply multer for multipart/form-data requests
+  if (contentType.includes('multipart/form-data')) {
+    console.log('🔄 Applying multer middleware for multipart request');
+    return uploadCombined.fields([
+      { name: 'images', maxCount: 5 },
+      { name: 'documentationFiles', maxCount: 10 },
+      { name: 'projectZipFile', maxCount: 1 }
+    ])(req, res, next);
+  }
+
+  // For JSON requests, skip multer
+  console.log('⏭️ Skipping multer middleware for JSON request');
+  next();
+};
+
 // POST /api/projects - Create new project
 router.post('/',
   verifyToken,
   requireRole(['seller']),
-  uploadCombined.fields([
-    { name: 'images', maxCount: 5 },
-    { name: 'documentationFiles', maxCount: 10 },
-    { name: 'projectZipFile', maxCount: 1 }
-  ]),
+  conditionalUpload,
   createProjectValidation,
   async (req, res) => {
     try {
