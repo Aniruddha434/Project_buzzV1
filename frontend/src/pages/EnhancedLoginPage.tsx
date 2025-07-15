@@ -173,11 +173,11 @@ const EnhancedLoginPage: React.FC = () => {
         />
       </div>
 
-      {/* Content Layer */}
-      <div className="relative z-10 min-h-[calc(100vh-4rem)] flex">
+      {/* Content Layer - Mobile Responsive */}
+      <div className="relative z-10 min-h-[calc(100vh-4rem)] flex auth-page-mobile">
         {/* Form */}
-        <div className="flex items-center justify-center px-4 sm:px-6 lg:px-8 w-full">
-          <div className="max-w-md w-full space-y-8">
+        <div className="flex items-center justify-center px-4 sm:px-6 lg:px-8 w-full auth-content-mobile">
+          <div className="max-w-md w-full space-y-6 sm:space-y-8 login-form-card">
 
             <AnimatePresence mode="wait">
               {step === 'email' && (
