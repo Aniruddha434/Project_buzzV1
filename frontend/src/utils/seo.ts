@@ -45,9 +45,9 @@ export const DEFAULT_SEO: SEOConfig = {
   description: 'ProjectBuzz is the premier digital marketplace for developers. Buy ready-made projects, sell coding projects, and discover innovative solutions. Join thousands of developers worldwide.',
   keywords: [...KEYWORDS.primary, ...KEYWORDS.secondary, ...KEYWORDS.longTail],
   ogType: 'website',
-  ogImage: 'https://project-buzz-v.vercel.app/og-image.jpg',
+  ogImage: 'https://projectbuzz.tech/og-image.jpg',
   twitterCard: 'summary_large_image',
-  canonical: 'https://project-buzz-v.vercel.app'
+  canonical: 'https://projectbuzz.tech'
 };
 
 // Page-specific SEO configurations
@@ -56,12 +56,12 @@ export const PAGE_SEO: Record<string, SEOConfig> = {
     title: 'ProjectBuzz - Digital Marketplace for Developers | Buy & Sell Projects',
     description: 'Discover, buy, and sell high-quality programming projects on ProjectBuzz. The premier digital marketplace for developers with ready-made solutions, source code, and innovative projects.',
     keywords: [...KEYWORDS.primary, ...KEYWORDS.secondary, 'homepage', 'featured projects'],
-    canonical: 'https://project-buzz-v.vercel.app',
+    canonical: 'https://projectbuzz.tech',
     structuredData: {
       '@context': 'https://schema.org',
       '@type': 'WebSite',
       name: 'ProjectBuzz',
-      url: 'https://project-buzz-v.vercel.app',
+      url: 'https://projectbuzz.tech',
       description: 'Digital marketplace for developers to buy and sell programming projects',
       potentialAction: {
         '@type': 'SearchAction',
