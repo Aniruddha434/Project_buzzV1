@@ -106,3 +106,6 @@ debug-*.local.js
 
 # Test cleanup analysis
 TEST_CLEANUP_ANALYSIS.md
+
+# ProjectBuzz specific
+uploads/
