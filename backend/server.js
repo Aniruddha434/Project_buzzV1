@@ -84,13 +84,14 @@ console.log('GOOGLE_CLIENT_SECRET:', process.env.GOOGLE_CLIENT_SECRET ? 'SET' : 
 console.log('GITHUB_CLIENT_ID:', process.env.GITHUB_CLIENT_ID ? 'SET' : 'NOT SET');
 console.log('GITHUB_CLIENT_SECRET:', process.env.GITHUB_CLIENT_SECRET ? 'SET' : 'NOT SET');
 
+// Define backend URL for OAuth callbacks
+const backendUrl = process.env.NODE_ENV === 'production'
+  ? (process.env.BACKEND_URL || 'https://project-buzzv1-2.onrender.com')
+  : 'http://localhost:5000';
+
 // Only configure OAuth strategies if credentials are available
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
   // Google OAuth Strategy
-  const backendUrl = process.env.NODE_ENV === 'production'
-    ? (process.env.BACKEND_URL || 'https://project-buzzv1-2.onrender.com')
-    : 'http://localhost:5000';
-
   passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
