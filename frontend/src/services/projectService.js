@@ -263,9 +263,9 @@ export const projectService = {
   },
 
   // Get featured projects
-  async getFeaturedProjects() {
+  async getFeaturedProjects(limit = 4) {
     const response = await api.get('/projects', {
-      params: { featured: true, limit: 6 }
+      params: { featured: true, limit }
     });
     return response.data;
   },
