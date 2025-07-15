@@ -1045,17 +1045,19 @@ body > div[class*="modal-detail-backdrop"] {
   }
 }
 
-/* Project card content - 20% compact info */
+/* Project card content - 20% with action buttons */
 .project-card-content {
   @apply p-3 flex flex-col justify-between;
-  height: 20%; /* 20% of card height for minimal info */
+  height: 20%; /* 20% of card height for info + actions */
   flex-shrink: 0;
+  min-height: 56px; /* Ensure space for buttons */
 }
 
 @media (max-width: 640px) {
   .project-card-content {
     @apply p-2;
-    height: 22%; /* Slightly more on mobile */
+    height: 22%; /* Slightly more on mobile for stacked buttons */
+    min-height: 64px;
   }
 }
 
@@ -1124,6 +1126,32 @@ body > div[class*="modal-detail-backdrop"] {
 
   .project-card-stats .stat-icon {
     @apply h-3 w-3 mr-1;
+  }
+}
+
+/* Project card action buttons */
+.project-card-actions {
+  @apply mt-2;
+}
+
+.project-card-button {
+  @apply flex items-center justify-center px-2 py-1.5 rounded-md text-xs font-medium transition-colors;
+  min-height: 32px; /* Touch-friendly on desktop */
+}
+
+@media (max-width: 640px) {
+  .project-card-button {
+    @apply py-2 px-3 text-xs;
+    min-height: var(--mobile-min-touch-target); /* 44px for mobile */
+  }
+
+  .project-card-actions {
+    @apply mt-1;
+  }
+
+  /* Stack buttons vertically on mobile */
+  .project-card-actions .flex {
+    @apply flex-col gap-1;
   }
 }
 

@@ -346,9 +346,10 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
         </div>
       </div>
 
-        {/* Minimal Content Section - 20% of card */}
+        {/* Content Section - 20% with action buttons */}
         <div className="project-card-content">
-          <div className="flex items-center justify-between">
+          {/* Project Info Row */}
+          <div className="flex items-center justify-between mb-2">
             <div className="flex-1 min-w-0">
               <h3 className="project-card-title">
                 {project.title}
@@ -362,6 +363,67 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
               <span>{project.stats?.sales || 0}</span>
             </div>
           </div>
+
+          {/* Action Buttons Row */}
+          {showBuyButton && (
+            <div className="project-card-actions">
+              {user && user.role === 'buyer' ? (
+                isPurchased ? (
+                  <div className="flex items-center justify-center p-2 bg-gray-900 border border-gray-700 rounded-lg">
+                    <CheckCircle className="h-3 w-3 text-white mr-1.5" />
+                    <span className="text-xs font-medium text-white">
+                      Owned
+                    </span>
+                  </div>
+                ) : (
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <button
+                      className="project-card-button flex-1 bg-black hover:bg-gray-800 text-white border border-gray-700"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onClick?.(project);
+                      }}
+                    >
+                      <ShoppingCart className="h-3 w-3 mr-1.5" />
+                      <span className="text-xs">Buy {formatProjectPrice(project.price)}</span>
+                    </button>
+
+                    {/* Negotiation Button */}
+                    <div className="flex-1">
+                      <NegotiationButton
+                        projectId={project._id}
+                        projectTitle={project.title}
+                        originalPrice={project.price}
+                        onNegotiationStart={() => {
+                          console.log('Negotiation started for project:', project.title);
+                        }}
+                        className="w-full project-card-button bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-600"
+                        size="sm"
+                      />
+                    </div>
+                  </div>
+                )
+              ) : (
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <Link to={user ? `/project/${project._id}` : '/login'} className="flex-1">
+                    <button className="w-full project-card-button bg-black hover:bg-gray-800 text-white border border-gray-700">
+                      <ShoppingCart className="h-3 w-3 mr-1.5" />
+                      <span className="text-xs">{user ? 'View Details' : 'Sign in to Buy'}</span>
+                    </button>
+                  </Link>
+                  <button
+                    className="project-card-button bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-600"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowShareModal(true);
+                    }}
+                  >
+                    <Heart className="h-3 w-3" />
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
