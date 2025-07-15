@@ -197,29 +197,29 @@ const MarketPage: React.FC = () => {
           </header>
         </div>
 
-        {/* Search and Filters */}
-        <div className="mb-8 space-y-4">
-          <div className="flex flex-col md:flex-row gap-4">
+        {/* Search and Filters - Mobile Responsive */}
+        <div className="mb-6 sm:mb-8 space-y-3 sm:space-y-4">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
             {/* Search */}
             <div className="flex-1">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4 sm:h-5 sm:w-5" />
                 <Input
                   type="text"
                   placeholder="Search projects..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 bg-gray-800 border-gray-700 text-white placeholder-gray-400"
+                  className="pl-9 sm:pl-10 bg-gray-800 border-gray-700 text-white placeholder-gray-400 h-12 sm:h-auto text-base"
                 />
               </div>
             </div>
 
             {/* Category Filter */}
-            <div className="md:w-64">
+            <div className="sm:w-48 md:w-64">
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-3 sm:py-2 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-base h-12 sm:h-auto"
               >
                 {categories.map((category) => (
                   <option key={category.value} value={category.value}>
@@ -229,8 +229,8 @@ const MarketPage: React.FC = () => {
               </select>
             </div>
 
-            {/* View Mode Toggle */}
-            <div className="flex bg-gray-800 rounded-md p-1">
+            {/* View Mode Toggle - Hidden on mobile, grid is default */}
+            <div className="hidden sm:flex bg-gray-800 rounded-md p-1">
               <Button
                 variant={viewMode === 'grid' ? 'primary' : 'ghost'}
                 size="sm"
