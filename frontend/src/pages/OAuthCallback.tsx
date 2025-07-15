@@ -16,7 +16,15 @@ const OAuthCallback: React.FC = () => {
       const provider = searchParams.get('provider');
       const error = searchParams.get('error');
 
+      console.log('🔍 OAuth Callback - URL params:', {
+        token: token ? token.substring(0, 20) + '...' : null,
+        provider,
+        error,
+        fullURL: window.location.href
+      });
+
       if (error) {
+        console.error('❌ OAuth error from URL:', error);
         setStatus('error');
         setMessage(`Authentication failed: ${error}`);
         setTimeout(() => navigate('/login'), 3000);
@@ -24,6 +32,7 @@ const OAuthCallback: React.FC = () => {
       }
 
       if (!token || !provider) {
+        console.error('❌ Missing OAuth data:', { token: !!token, provider });
         setStatus('error');
         setMessage('Missing authentication data');
         setTimeout(() => navigate('/login'), 3000);
@@ -31,19 +40,22 @@ const OAuthCallback: React.FC = () => {
       }
 
       try {
+        console.log(`🔍 Processing ${provider} OAuth callback...`);
         const success = await handleOAuthCallback(token, provider);
-        
+
         if (success) {
+          console.log(`✅ ${provider} OAuth callback successful`);
           setStatus('success');
           setMessage(`Successfully signed in with ${provider}!`);
           setTimeout(() => navigate('/'), 2000);
         } else {
+          console.error(`❌ ${provider} OAuth callback failed`);
           setStatus('error');
           setMessage('Authentication failed');
           setTimeout(() => navigate('/login'), 3000);
         }
       } catch (error) {
-        console.error('OAuth callback error:', error);
+        console.error('❌ OAuth callback error:', error);
         setStatus('error');
         setMessage('Authentication failed');
         setTimeout(() => navigate('/login'), 3000);

@@ -11,14 +11,14 @@ declare global {
 }
 
 // Google Analytics Configuration
-const GA_MEASUREMENT_ID = 'G-XXXXXXXXXX'; // Replace with your actual GA4 Measurement ID
-const GTM_ID = 'GTM-XXXXXXX'; // Replace with your Google Tag Manager ID
+const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID || ''; // Only load if provided
+const GTM_ID = import.meta.env.VITE_GTM_ID || ''; // Only load if provided
 
 /**
  * Initialize Google Analytics 4
  */
 export const initializeGA = () => {
-  if (typeof window === 'undefined') return;
+  if (typeof window === 'undefined' || !GA_MEASUREMENT_ID) return;
 
   // Load Google Analytics script
   const script = document.createElement('script');

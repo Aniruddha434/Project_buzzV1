@@ -124,11 +124,12 @@ const addPerformanceMetaTags = () => {
  * Add security-related meta tags
  */
 const addSecurityMetaTags = () => {
-  addMetaTag('http-equiv', 'Content-Security-Policy', 
-    "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://project-buzzv1-2.onrender.com https://checkout.razorpay.com;");
-  
+  addMetaTag('http-equiv', 'Content-Security-Policy',
+    "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' http://localhost:5000 https://project-buzzv1-2.onrender.com https://checkout.razorpay.com;");
+
   addMetaTag('http-equiv', 'X-Content-Type-Options', 'nosniff');
-  addMetaTag('http-equiv', 'X-Frame-Options', 'DENY');
+  // Note: X-Frame-Options should be set via HTTP headers, not meta tags
+  // addMetaTag('http-equiv', 'X-Frame-Options', 'DENY');
   addMetaTag('http-equiv', 'X-XSS-Protection', '1; mode=block');
   addMetaTag('http-equiv', 'Referrer-Policy', 'strict-origin-when-cross-origin');
 };

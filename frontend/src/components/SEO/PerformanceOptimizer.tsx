@@ -20,12 +20,15 @@ const PerformanceOptimizer: React.FC<PerformanceOptimizerProps> = ({ children })
     
     // Web Vitals monitoring
     if (typeof window !== 'undefined') {
-      import('web-vitals').then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
-        getCLS(sendToAnalytics);
-        getFID(sendToAnalytics);
-        getFCP(sendToAnalytics);
-        getLCP(sendToAnalytics);
-        getTTFB(sendToAnalytics);
+      import('web-vitals').then((webVitals) => {
+        // Check if functions exist before calling them
+        if (webVitals.getCLS) webVitals.getCLS(sendToAnalytics);
+        if (webVitals.getFID) webVitals.getFID(sendToAnalytics);
+        if (webVitals.getFCP) webVitals.getFCP(sendToAnalytics);
+        if (webVitals.getLCP) webVitals.getLCP(sendToAnalytics);
+        if (webVitals.getTTFB) webVitals.getTTFB(sendToAnalytics);
+      }).catch((error) => {
+        console.warn('Web Vitals not available:', error);
       });
     }
   }, []);
@@ -95,18 +98,23 @@ const PerformanceOptimizer: React.FC<PerformanceOptimizerProps> = ({ children })
    * Preload critical resources
    */
   const preloadCriticalResources = useCallback(() => {
-    // Preload critical API endpoints
-    const criticalEndpoints = [
-      '/api/projects/featured',
-      '/api/projects/approved'
-    ];
+    // Skip API prefetching in development to avoid cache issues
+    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
-    criticalEndpoints.forEach((endpoint) => {
-      const link = document.createElement('link');
-      link.rel = 'prefetch';
-      link.href = `${import.meta.env.VITE_API_URL}${endpoint}`;
-      document.head.appendChild(link);
-    });
+    if (!isDevelopment) {
+      // Only preload in production
+      const criticalEndpoints = [
+        '/api/projects/featured',
+        '/api/projects/approved'
+      ];
+
+      criticalEndpoints.forEach((endpoint) => {
+        const link = document.createElement('link');
+        link.rel = 'prefetch';
+        link.href = `${import.meta.env.VITE_API_URL}${endpoint}`;
+        document.head.appendChild(link);
+      });
+    }
 
     // Preload critical fonts
     const fontLink = document.createElement('link');

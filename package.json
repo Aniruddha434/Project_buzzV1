@@ -63,6 +63,8 @@
   "homepage": "https://github.com/your-username/projectbuzz#readme",
   "dependencies": {
     "axios": "^1.9.0",
-    "mongodb": "^6.17.0"
+    "mongodb": "^6.17.0",
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0"
   }
 }
