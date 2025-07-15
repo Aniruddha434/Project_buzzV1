@@ -18,15 +18,15 @@ const ConnectionTest = () => {
     },
     {
       name: 'Backend Root',
-      url: import.meta.env.VITE_BACKEND_URL || 'https://project-buzzv1-2.onrender.com'
+      url: import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'
     },
     {
       name: 'API Root',
-      url: (import.meta.env.VITE_API_URL || 'https://project-buzzv1-2.onrender.com/api')
+      url: (import.meta.env.VITE_API_URL || 'http://localhost:5000/api')
     },
     {
       name: 'Projects Endpoint',
-      url: (import.meta.env.VITE_API_URL || 'https://project-buzzv1-2.onrender.com/api') + '/projects'
+      url: (import.meta.env.VITE_API_URL || 'http://localhost:5000/api') + '/projects'
     }
   ];
 

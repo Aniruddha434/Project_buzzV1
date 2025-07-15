@@ -29,6 +29,12 @@ export default defineConfig(({ command, mode }) => {
       port: parseInt(env.VITE_DEV_PORT) || 5173,
       host: env.VITE_DEV_HOST || 'localhost',
       open: true,
+      // Force disable cache for development
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      },
       proxy: {
         // Proxy API requests to backend with enhanced CORS support
         '/api': {

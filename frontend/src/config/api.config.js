@@ -17,7 +17,7 @@ const DEFAULT_CONFIG = {
     retryDelay: 1000
   },
   production: {
-    baseURL: import.meta.env.VITE_API_URL || 'https://your-domain.com',
+    baseURL: import.meta.env.VITE_BACKEND_URL || 'https://project-buzzv1-2.onrender.com',
     apiPath: '/api',
     timeout: 15000,
     retries: 2,
