@@ -962,6 +962,19 @@ body > div[class*="modal-detail-backdrop"] {
   }
 }
 
+/* ===== MOBILE-RESPONSIVE DESIGN SYSTEM ===== */
+
+/* Mobile-first responsive breakpoints */
+:root {
+  --mobile-min-touch-target: 44px;
+  --mobile-padding: 1rem;
+  --tablet-padding: 1.5rem;
+  --desktop-padding: 2rem;
+  --card-gap-mobile: 0.75rem;
+  --card-gap-tablet: 1rem;
+  --card-gap-desktop: 1.5rem;
+}
+
 /* Enhanced mobile responsiveness */
 @media (max-width: 768px) {
   .page-with-navbar,
@@ -969,6 +982,8 @@ body > div[class*="modal-detail-backdrop"] {
   .dashboard-page,
   .main-content {
     padding-top: 4rem; /* Keep consistent on mobile */
+    padding-left: var(--mobile-padding);
+    padding-right: var(--mobile-padding);
   }
 
   .dashboard-navbar-fix {
@@ -987,6 +1002,289 @@ body > div[class*="modal-detail-backdrop"] {
     .dashboard-navbar-fix {
       padding-top: 5.25rem !important;
     }
+  }
+}
+
+/* ===== UNIFIED PROJECT CARD SYSTEM ===== */
+
+/* Base project card styles */
+.project-card-unified {
+  @apply bg-gray-900 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-800 hover:border-gray-700 flex flex-col;
+  position: relative;
+  z-index: 1;
+  min-height: 420px;
+}
+
+.project-card-unified:hover {
+  transform: translateY(-2px);
+}
+
+/* Mobile-optimized project card */
+@media (max-width: 640px) {
+  .project-card-unified {
+    min-height: 380px;
+    border-radius: 0.5rem;
+  }
+
+  .project-card-unified:hover {
+    transform: none; /* Disable hover transform on mobile */
+  }
+}
+
+/* Project card image container */
+.project-card-image {
+  @apply relative bg-muted overflow-hidden cursor-pointer;
+  height: 176px; /* 44 * 4 = 176px for consistent aspect ratio */
+}
+
+@media (max-width: 640px) {
+  .project-card-image {
+    height: 160px; /* Slightly smaller on mobile */
+  }
+}
+
+/* Project card content */
+.project-card-content {
+  @apply p-4 flex-1 flex flex-col;
+}
+
+@media (max-width: 640px) {
+  .project-card-content {
+    @apply p-3;
+  }
+}
+
+/* Project card header */
+.project-card-header {
+  @apply bg-gradient-to-r from-gray-800 to-gray-700 px-3 py-2 border-b border-gray-600;
+}
+
+@media (max-width: 640px) {
+  .project-card-header {
+    @apply px-2 py-1.5;
+  }
+}
+
+/* Project card title */
+.project-card-title {
+  @apply text-lg font-semibold text-white mb-2 line-clamp-2;
+  min-height: 3.5rem; /* Ensure consistent height */
+}
+
+@media (max-width: 640px) {
+  .project-card-title {
+    @apply text-base;
+    min-height: 3rem;
+  }
+}
+
+/* Project card description */
+.project-card-description {
+  @apply text-sm text-gray-400 mb-3 line-clamp-3 flex-1;
+}
+
+@media (max-width: 640px) {
+  .project-card-description {
+    @apply text-xs mb-2 line-clamp-2;
+  }
+}
+
+/* Project card price */
+.project-card-price {
+  @apply text-xl font-bold text-green-400;
+}
+
+@media (max-width: 640px) {
+  .project-card-price {
+    @apply text-lg;
+  }
+}
+
+/* Sales data display */
+.project-card-stats {
+  @apply flex items-center space-x-2 text-xs text-gray-400;
+}
+
+@media (max-width: 640px) {
+  .project-card-stats {
+    @apply text-xs space-x-1;
+  }
+
+  .project-card-stats .stat-item {
+    @apply flex items-center;
+  }
+
+  .project-card-stats .stat-icon {
+    @apply h-3 w-3 mr-1;
+  }
+}
+
+/* Project card buttons */
+.project-card-button {
+  @apply py-2 px-3 rounded-lg text-sm font-medium transition-colors flex items-center justify-center;
+  min-height: var(--mobile-min-touch-target);
+}
+
+@media (max-width: 640px) {
+  .project-card-button {
+    @apply py-3 px-4 text-base;
+    min-height: 48px; /* Larger touch target on mobile */
+  }
+}
+
+/* Project card action buttons container */
+.project-card-actions {
+  @apply space-y-2 mt-auto;
+}
+
+@media (max-width: 640px) {
+  .project-card-actions {
+    @apply space-y-3;
+  }
+}
+
+/* ===== RESPONSIVE GRID SYSTEM ===== */
+
+/* Unified responsive grid for project cards */
+.projects-grid-unified {
+  @apply grid auto-rows-fr;
+  gap: var(--card-gap-mobile);
+  grid-template-columns: 1fr; /* Mobile: single column */
+}
+
+/* Tablet: 2 columns */
+@media (min-width: 640px) {
+  .projects-grid-unified {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--card-gap-tablet);
+  }
+}
+
+/* Desktop: 3 columns */
+@media (min-width: 1024px) {
+  .projects-grid-unified {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--card-gap-desktop);
+  }
+}
+
+/* Large desktop: 4 columns */
+@media (min-width: 1280px) {
+  .projects-grid-unified {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Container padding for different screen sizes */
+.projects-container {
+  @apply max-w-7xl mx-auto;
+  padding: 0 var(--mobile-padding);
+}
+
+@media (min-width: 640px) {
+  .projects-container {
+    padding: 0 var(--tablet-padding);
+  }
+}
+
+@media (min-width: 1024px) {
+  .projects-container {
+    padding: 0 var(--desktop-padding);
+  }
+}
+
+/* Loading skeleton responsive */
+.project-card-skeleton {
+  @apply bg-gray-800 rounded-lg animate-pulse;
+  height: 380px;
+}
+
+@media (min-width: 640px) {
+  .project-card-skeleton {
+    height: 420px;
+  }
+}
+
+/* ===== MOBILE NAVIGATION ENHANCEMENTS ===== */
+
+/* Mobile menu improvements */
+@media (max-width: 768px) {
+  .mobile-menu-item {
+    @apply block px-4 py-3 rounded-lg text-base font-medium;
+    min-height: var(--mobile-min-touch-target);
+  }
+
+  .mobile-menu-button {
+    @apply p-3 rounded-lg;
+    min-height: var(--mobile-min-touch-target);
+    min-width: var(--mobile-min-touch-target);
+  }
+}
+
+/* ===== MOBILE OAUTH & AUTHENTICATION ===== */
+
+/* OAuth button enhancements for mobile */
+.oauth-button-mobile {
+  @apply w-full py-4 px-6 text-base font-medium rounded-lg transition-all duration-200;
+  min-height: var(--mobile-min-touch-target);
+  touch-action: manipulation; /* Prevents zoom on double-tap */
+}
+
+@media (max-width: 640px) {
+  .oauth-button-mobile {
+    @apply py-5 px-8 text-lg;
+    min-height: 56px; /* Larger touch target on mobile */
+  }
+}
+
+/* Login form mobile optimizations */
+@media (max-width: 640px) {
+  .login-form-container {
+    @apply px-4 py-6;
+    min-height: calc(100vh - 4rem); /* Account for navbar */
+  }
+
+  .login-form-card {
+    @apply p-6 mx-2;
+    max-width: calc(100vw - 2rem);
+  }
+
+  .login-input-mobile {
+    @apply py-4 px-4 text-base;
+    min-height: var(--mobile-min-touch-target);
+  }
+
+  .login-button-mobile {
+    @apply py-4 px-6 text-base font-semibold;
+    min-height: var(--mobile-min-touch-target);
+  }
+}
+
+/* Mobile viewport fixes for authentication */
+@media (max-width: 640px) {
+  .auth-page-mobile {
+    min-height: 100vh;
+    min-height: -webkit-fill-available; /* iOS Safari fix */
+  }
+
+  .auth-content-mobile {
+    padding-bottom: env(safe-area-inset-bottom); /* iOS safe area */
+  }
+}
+
+/* Touch-friendly form elements */
+@media (max-width: 768px) {
+  input[type="email"],
+  input[type="password"],
+  input[type="text"] {
+    font-size: 16px !important; /* Prevents zoom on iOS */
+    -webkit-appearance: none;
+    border-radius: 8px;
+  }
+
+  button {
+    -webkit-tap-highlight-color: transparent; /* Remove tap highlight */
+    touch-action: manipulation;
   }
 }
 

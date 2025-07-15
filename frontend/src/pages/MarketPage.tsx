@@ -178,7 +178,7 @@ const MarketPage: React.FC = () => {
       />
 
       <div className="min-h-screen bg-black page-with-navbar-extra">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="projects-container py-8">
           {/* Header - SEO Optimized */}
           <header className="mb-8">
             <h1 className="text-3xl font-bold text-white mb-4">
@@ -258,14 +258,9 @@ const MarketPage: React.FC = () => {
 
         {/* Projects Grid */}
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="projects-grid-unified">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <Card key={i} className="p-6 animate-pulse">
-                <div className="h-48 bg-gray-800 rounded mb-4"></div>
-                <div className="h-4 bg-gray-800 rounded mb-2"></div>
-                <div className="h-4 bg-gray-800 rounded mb-4 w-3/4"></div>
-                <div className="h-8 bg-gray-800 rounded"></div>
-              </Card>
+              <div key={i} className="project-card-skeleton"></div>
             ))}
           </div>
         ) : filteredProjects.length === 0 ? (
@@ -281,10 +276,10 @@ const MarketPage: React.FC = () => {
             </p>
           </Card>
         ) : (
-          <div className={`grid gap-3 auto-rows-fr ${
+          <div className={`${
             viewMode === 'grid'
-              ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-              : 'grid-cols-1'
+              ? 'projects-grid-unified'
+              : 'grid grid-cols-1 gap-4'
           }`}>
             {filteredProjects.map((project) => (
               <ProjectCard

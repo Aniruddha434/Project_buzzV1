@@ -306,7 +306,8 @@ const NavbarEnhanced: React.FC = () => {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden p-2 rounded-lg"
+              className="md:hidden mobile-menu-button"
+              aria-label="Toggle mobile menu"
             >
               {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
@@ -329,7 +330,7 @@ const NavbarEnhanced: React.FC = () => {
                   key={item.path}
                   to={item.path}
                   onClick={() => setIsMenuOpen(false)}
-                  className={`block px-4 py-3 rounded-lg text-base font-medium ${
+                  className={`mobile-menu-item ${
                     isActive(item.path)
                       ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400'
                       : 'text-gray-700 dark:text-gray-300'
@@ -344,7 +345,7 @@ const NavbarEnhanced: React.FC = () => {
                   <Link
                     to={getDashboardPath()}
                     onClick={() => setIsMenuOpen(false)}
-                    className="block px-4 py-3 rounded-lg text-base font-medium text-gray-700 dark:text-gray-300"
+                    className="mobile-menu-item text-gray-700 dark:text-gray-300"
                   >
                     Dashboard
                   </Link>
@@ -353,7 +354,7 @@ const NavbarEnhanced: React.FC = () => {
                       handleLogout();
                       setIsMenuOpen(false);
                     }}
-                    className="block w-full text-left px-4 py-3 rounded-lg text-base font-medium text-red-600"
+                    className="mobile-menu-item w-full text-left text-red-600"
                   >
                     Sign Out
                   </button>

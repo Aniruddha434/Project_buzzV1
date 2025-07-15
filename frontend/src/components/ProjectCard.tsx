@@ -5,6 +5,13 @@ import { Eye, ShoppingCart, CheckCircle, Code, ExternalLink, Github, X, ChevronL
 import { NegotiationButton } from './NegotiationButton';
 import ShareModal from './ShareModal';
 import { getImageUrl } from '../utils/imageUtils.js';
+import {
+  formatProjectPrice,
+  formatCompactPrice,
+  formatSalesCount,
+  formatViewCount,
+  formatRating
+} from '../utils/currency';
 
 interface ProjectImage {
   url: string;
@@ -204,29 +211,28 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   return (
     <>
       <div
-        className={`project-card group h-full bg-gray-900 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-800 hover:border-gray-700 flex flex-col ${onClick ? 'cursor-pointer' : ''} ${className}`}
-        style={{ position: 'relative', zIndex: 1 }}
+        className={`project-card-unified group ${onClick ? 'cursor-pointer' : ''} ${className}`}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         onClick={handleCardClick}
       >
-        {/* Header with Category and Price - More Compact */}
-        <div className="bg-gradient-to-r from-gray-800 to-gray-700 px-3 py-2 border-b border-gray-600">
+        {/* Header with Category and Price - Mobile Optimized */}
+        <div className="project-card-header">
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium text-blue-400 uppercase tracking-wide">
               {project.category || 'Development'}
             </span>
             <div className="text-right">
-              <div className="text-base font-bold text-white">
-                ₹{project.price?.toLocaleString() || '0'}
+              <div className="project-card-price">
+                {formatProjectPrice(project.price)}
               </div>
               <div className="text-xs text-gray-400">One-time</div>
             </div>
           </div>
         </div>
 
-        {/* Enhanced Project Image with Hover Effects - Optimized Height for Better Proportions */}
-        <div className="relative h-44 bg-muted overflow-hidden cursor-pointer" onClick={handleImageClick}>
+        {/* Enhanced Project Image with Hover Effects - Mobile Responsive */}
+        <div className="project-card-image" onClick={handleImageClick}>
           {currentImage?.url ? (
             <div className="relative w-full h-full group">
               <img
@@ -350,9 +356,13 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
         </div>
       </div>
 
-        {/* Content Section - More Compact */}
-        <div className="p-3 flex-1 flex flex-col">
-          <p className="text-gray-300 text-xs mb-2 line-clamp-2">
+        {/* Content Section - Mobile Responsive */}
+        <div className="project-card-content">
+          <h3 className="project-card-title">
+            {project.title}
+          </h3>
+
+          <p className="project-card-description">
             {truncateDescription(project.description)}
           </p>
 
@@ -366,21 +376,21 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                 {project.seller?.displayName || 'Anonymous'}
               </span>
             </div>
-            <div className="flex items-center space-x-2 text-xs text-gray-400">
-              <span className="flex items-center">
-                <Eye className="h-2.5 w-2.5 mr-0.5" />
+            <div className="project-card-stats">
+              <span className="stat-item" title={formatViewCount(project.stats?.views)}>
+                <Eye className="stat-icon" />
                 {project.stats?.views || 0}
               </span>
-              <span className="flex items-center">
-                <Download className="h-2.5 w-2.5 mr-0.5" />
+              <span className="stat-item" title={formatSalesCount(project.stats?.sales)}>
+                <Download className="stat-icon" />
                 {project.stats?.sales || 0}
               </span>
             </div>
           </div>
 
-          {/* Action Buttons - Smaller and More Compact */}
+          {/* Action Buttons - Mobile Responsive */}
           {showBuyButton && (
-            <div className="space-y-2">
+            <div className="project-card-actions">
               {user && user.role === 'buyer' ? (
                 isPurchased ? (
                   <div className="flex items-center justify-center p-2 bg-green-900/20 rounded-lg border border-green-700">
@@ -392,7 +402,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                 ) : (
                   <div className="flex space-x-2">
                     <button
-                      className="flex-1 bg-black hover:bg-gray-800 text-white py-2 px-3 rounded-lg text-sm font-medium transition-colors flex items-center justify-center"
+                      className="project-card-button flex-1 bg-black hover:bg-gray-800 text-white"
                       onClick={(e) => {
                         e.stopPropagation();
                         onClick?.(project);
