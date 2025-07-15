@@ -11,8 +11,17 @@ export const securityHeaders = helmet({
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
       imgSrc: ["'self'", "data:", "https:"],
       scriptSrc: ["'self'", "https://checkout.razorpay.com"],
-      connectSrc: ["'self'", "https://api.razorpay.com"],
-      frameSrc: ["'none'"],
+      connectSrc: [
+        "'self'",
+        "https://api.razorpay.com",
+        "https://lumberjack.razorpay.com",
+        "https://checkout.razorpay.com"
+      ],
+      frameSrc: [
+        "'self'",
+        "https://api.razorpay.com",
+        "https://checkout.razorpay.com"
+      ],
       objectSrc: ["'none'"],
       upgradeInsecureRequests: [],
     },

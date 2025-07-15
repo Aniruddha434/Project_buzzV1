@@ -110,6 +110,8 @@ const addPerformanceMetaTags = () => {
   addLinkTag('dns-prefetch', '//fonts.googleapis.com');
   addLinkTag('dns-prefetch', '//www.google-analytics.com');
   addLinkTag('dns-prefetch', '//checkout.razorpay.com');
+  addLinkTag('dns-prefetch', '//api.razorpay.com');
+  addLinkTag('dns-prefetch', '//lumberjack.razorpay.com');
   
   // Preconnect to critical resources
   addLinkTag('preconnect', 'https://project-buzzv1-2.onrender.com');
@@ -125,7 +127,7 @@ const addPerformanceMetaTags = () => {
  */
 const addSecurityMetaTags = () => {
   addMetaTag('http-equiv', 'Content-Security-Policy',
-    "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' http://localhost:5000 https://project-buzzv1-2.onrender.com https://checkout.razorpay.com;");
+    "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' http://localhost:5000 https://project-buzzv1-2.onrender.com https://checkout.razorpay.com https://api.razorpay.com https://lumberjack.razorpay.com; frame-src 'self' https://api.razorpay.com https://checkout.razorpay.com;");
 
   addMetaTag('http-equiv', 'X-Content-Type-Options', 'nosniff');
   // Note: X-Frame-Options should be set via HTTP headers, not meta tags
