@@ -363,9 +363,6 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
             </div>
           </div>
         </div>
-
-          {/* Click to expand for full details */}
-        </div>
       </div>
 
       {/* Image Modal */}
