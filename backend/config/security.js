@@ -31,12 +31,16 @@ export const securityConfig = {
           "https://cdn.jsdelivr.net"
         ],
         connectSrc: [
-          "'self'", 
+          "'self'",
           "https://api.razorpay.com",
+          "https://lumberjack.razorpay.com",
+          "https://checkout.razorpay.com",
           "wss:"
         ],
         frameSrc: [
-          "'none'"
+          "'self'",
+          "https://api.razorpay.com",
+          "https://checkout.razorpay.com"
         ],
         objectSrc: [
           "'none'"
