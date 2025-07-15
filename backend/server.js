@@ -87,10 +87,14 @@ console.log('GITHUB_CLIENT_SECRET:', process.env.GITHUB_CLIENT_SECRET ? 'SET' : 
 // Only configure OAuth strategies if credentials are available
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
   // Google OAuth Strategy
+  const backendUrl = process.env.NODE_ENV === 'production'
+    ? (process.env.BACKEND_URL || 'https://project-buzzv1-2.onrender.com')
+    : 'http://localhost:5000';
+
   passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "/api/auth/google/callback"
+    callbackURL: `${backendUrl}/api/auth/google/callback`
   }, async (accessToken, refreshToken, profile, done) => {
     try {
       console.log('🔍 Google OAuth profile:', profile);
@@ -144,7 +148,7 @@ if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
   passport.use(new GitHubStrategy({
     clientID: process.env.GITHUB_CLIENT_ID,
     clientSecret: process.env.GITHUB_CLIENT_SECRET,
-    callbackURL: "/api/auth/github/callback"
+    callbackURL: `${backendUrl}/api/auth/github/callback`
   }, async (accessToken, refreshToken, profile, done) => {
     try {
       console.log('🔍 GitHub OAuth profile:', profile);
@@ -229,10 +233,12 @@ const corsOptions = {
       'http://127.0.0.1:5173',
       'http://127.0.0.1:5174',
       'http://127.0.0.1:3000',
-      // Vercel deployment URLs
+      // Vercel deployment URLs - Updated with actual deployment URL
       'https://project-buzz-8p7pyql08-aniruddhagayki0-gmailcoms-projects.vercel.app',
       'https://project-buzz-v.vercel.app',
       'https://projectbuzz.vercel.app',
+      'https://projectbuzz.tech', // Custom domain
+      'https://www.projectbuzz.tech', // Custom domain with www
       // Production URLs from environment
       ...(process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',').map(url => url.trim()) : [])
     ].filter(Boolean); // Remove undefined values
@@ -240,7 +246,7 @@ const corsOptions = {
     // In development, be more permissive
     if (process.env.NODE_ENV !== 'production') {
       // Allow all localhost and 127.0.0.1 origins
-      if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
+      if (origin && (origin.includes('localhost') || origin.includes('127.0.0.1'))) {
         console.log('✅ CORS: Allowing localhost/127.0.0.1 origin in development');
         return callback(null, true);
       }
@@ -250,6 +256,12 @@ const corsOptions = {
     if (origin.includes('vercel.app') &&
         (origin.includes('project-buzz') || origin.includes('projectbuzz'))) {
       console.log('✅ CORS: Allowing Vercel deployment URL');
+      return callback(null, true);
+    }
+
+    // Allow custom domain
+    if (origin.includes('projectbuzz.tech')) {
+      console.log('✅ CORS: Allowing ProjectBuzz custom domain');
       return callback(null, true);
     }
 
