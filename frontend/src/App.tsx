@@ -11,6 +11,7 @@ const AdminDashboard = lazy(() => import('./pages/AdminDashboard.tsx'));
 const ProjectDetails = lazy(() => import('./pages/ProjectDetails.tsx'));
 const ProjectShare = lazy(() => import('./pages/ProjectShare.tsx'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage.tsx'));
+const NotFound404 = lazy(() => import('./pages/NotFound404.tsx'));
 const UnauthorizedPage = lazy(() => import('./pages/UnauthorizedPage.tsx'));
 
 // Enhanced UI Components (MongoDB-based)
@@ -32,6 +33,7 @@ const ConnectionTest = lazy(() => import('./pages/ConnectionTest.jsx'));
 import NavbarEnhanced from './components/NavbarEnhanced.tsx';
 import ProtectedRoute from './components/ProtectedRoute.tsx';
 import ErrorBoundary from './components/ErrorBoundary.tsx';
+import PerformanceOptimizer, { CriticalCSS, ResourceHints } from './components/SEO/PerformanceOptimizer';
 
 import { AuthProvider } from './context/AuthContext.tsx';
 
@@ -48,9 +50,12 @@ const App: React.FC = () => {
   return (
     <AuthProvider>
       <Router>
-        <NavbarEnhanced />
-        <ErrorBoundary>
-          <Suspense fallback={<LoadingFallback />}> {/* Wrap Routes with Suspense */}
+        <CriticalCSS />
+        <ResourceHints />
+        <PerformanceOptimizer>
+          <NavbarEnhanced />
+          <ErrorBoundary>
+            <Suspense fallback={<LoadingFallback />}> {/* Wrap Routes with Suspense */}
             <Routes>
             {/* Enhanced UI Routes */}
             <Route path="/" element={<HomePro />} />
@@ -97,12 +102,12 @@ const App: React.FC = () => {
 
 
 
-            <Route path="*" element={<NotFoundPage />} />
+            <Route path="*" element={<NotFound404 />} />
           </Routes>
-        </Suspense>
-      </ErrorBoundary>
-
-    </Router>
+            </Suspense>
+          </ErrorBoundary>
+        </PerformanceOptimizer>
+      </Router>
     </AuthProvider>
   );
 };
