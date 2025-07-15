@@ -1,0 +1,32 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- ProjectBuzz Favicon - 3D Cube Design -->
+  <rect width="32" height="32" fill="#000000" rx="4"/>
+  
+  <!-- 3D Cube Design -->
+  <!-- Top face -->
+  <path
+    d="M16 6 L26 10 L16 14 L6 10 Z"
+    fill="white"
+    stroke="white"
+    stroke-width="0.5"
+    stroke-linejoin="round"
+  />
+  
+  <!-- Left face -->
+  <path
+    d="M6 10 L6 20 L16 24 L16 14 Z"
+    fill="rgba(255, 255, 255, 0.8)"
+    stroke="white"
+    stroke-width="0.5"
+    stroke-linejoin="round"
+  />
+  
+  <!-- Right face -->
+  <path
+    d="M16 14 L16 24 L26 20 L26 10 Z"
+    fill="rgba(255, 255, 255, 0.6)"
+    stroke="white"
+    stroke-width="0.5"
+    stroke-linejoin="round"
+  />
+</svg>

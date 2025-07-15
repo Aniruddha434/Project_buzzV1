@@ -5,6 +5,7 @@ import './index.css';
 import { AuthProvider } from './context/AuthContext.tsx'; // Will be .tsx
 import { initSVGFixes } from './utils/svgFix';
 import { initializeAnalytics } from './utils/analytics';
+import './utils/seoValidator'; // Auto-run SEO validation in development
 
 // Initialize SVG fixes to prevent validation errors during payment flow
 initSVGFixes();

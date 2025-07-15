@@ -34,6 +34,7 @@ import NavbarEnhanced from './components/NavbarEnhanced.tsx';
 import ProtectedRoute from './components/ProtectedRoute.tsx';
 import ErrorBoundary from './components/ErrorBoundary.tsx';
 import PerformanceOptimizer, { CriticalCSS, ResourceHints } from './components/SEO/PerformanceOptimizer';
+import GoogleSearchConsole from './components/SEO/GoogleSearchConsole';
 
 import { AuthProvider } from './context/AuthContext.tsx';
 
@@ -52,6 +53,7 @@ const App: React.FC = () => {
       <Router>
         <CriticalCSS />
         <ResourceHints />
+        <GoogleSearchConsole />
         <PerformanceOptimizer>
           <NavbarEnhanced />
           <ErrorBoundary>
