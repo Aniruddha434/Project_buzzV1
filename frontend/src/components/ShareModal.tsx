@@ -126,7 +126,7 @@ const ShareModal: React.FC<ShareModalProps> = ({
           <div className="flex gap-3 pt-2">
             <Button
               onClick={handleCopyLink}
-              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+              className="flex-1 bg-white hover:bg-gray-100 text-black text-sm"
               disabled={copied}
             >
               {copied ? (
@@ -145,7 +145,7 @@ const ShareModal: React.FC<ShareModalProps> = ({
             <Button
               onClick={handleOpenInNewTab}
               variant="outline"
-              className="border-gray-700 hover:bg-gray-800 text-gray-300"
+              className="border-gray-700 hover:bg-gray-800 text-gray-300 text-sm"
             >
               <ExternalLink className="h-4 w-4 mr-2" />
               Preview
