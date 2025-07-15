@@ -158,6 +158,41 @@ ProjectBuzz is a comprehensive digital marketplace that connects developers worl
 - **Seller Account**: Register as seller to list and sell your projects
 - **Payment Testing**: Use Razorpay test cards for payment simulation
 
+## 🧪 **Testing**
+
+ProjectBuzz includes a comprehensive testing suite with unit, integration, and end-to-end tests.
+
+### **Test Structure**
+
+```
+tests/
+├── integration/          # API and workflow integration tests
+├── unit/                 # Individual component/function tests
+└── e2e/                  # End-to-end user journey tests
+
+frontend/src/__tests__/   # Frontend component tests
+backend/tests/            # Backend API and service tests
+```
+
+### **Running Tests**
+
+```bash
+# All tests
+npm test
+
+# Frontend tests only
+cd frontend && npm test
+
+# Backend tests only
+cd backend && npm test
+
+# Integration tests
+cd tests && npm run test:integration
+
+# With coverage
+npm run test:coverage
+```
+
 ## 🚀 **Setup Instructions**
 
 ### Prerequisites

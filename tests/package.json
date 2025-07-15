@@ -1,0 +1,33 @@
+{
+  "name": "projectbuzz-tests",
+  "version": "1.0.0",
+  "description": "Integration and E2E tests for ProjectBuzz",
+  "type": "module",
+  "scripts": {
+    "test": "jest",
+    "test:integration": "jest integration",
+    "test:e2e": "jest e2e",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "axios": "^1.6.0",
+    "@jest/globals": "^29.7.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "transform": {},
+    "extensionsToTreatAsEsm": [".js"],
+    "globals": {
+      "NODE_OPTIONS": "--experimental-vm-modules"
+    },
+    "testMatch": [
+      "**/*.test.js"
+    ],
+    "collectCoverageFrom": [
+      "**/*.js",
+      "!**/node_modules/**"
+    ]
+  }
+}
