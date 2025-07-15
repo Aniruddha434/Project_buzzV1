@@ -6,6 +6,20 @@
 [![GitHub](https://img.shields.io/badge/GitHub-Repository-black?style=for-the-badge&logo=github)](https://github.com/Aniruddha434/Project_buzzV1)
 [![Vercel](https://img.shields.io/badge/Deployed_on-Vercel-black?style=for-the-badge&logo=vercel)](https://project-buzz-v.vercel.app)
 
+![React](https://img.shields.io/badge/React-18.0-61DAFB?style=flat&logo=react)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=flat&logo=typescript)
+![Node.js](https://img.shields.io/badge/Node.js-18.0-339933?style=flat&logo=node.js)
+![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=flat&logo=mongodb)
+![Tailwind](https://img.shields.io/badge/Tailwind-CSS-06B6D4?style=flat&logo=tailwindcss)
+![Razorpay](https://img.shields.io/badge/Razorpay-Payment-528FF0?style=flat&logo=razorpay)
+
+![GitHub stars](https://img.shields.io/github/stars/Aniruddha434/Project_buzzV1?style=social)
+![GitHub forks](https://img.shields.io/github/forks/Aniruddha434/Project_buzzV1?style=social)
+![GitHub issues](https://img.shields.io/github/issues/Aniruddha434/Project_buzzV1)
+![GitHub license](https://img.shields.io/github/license/Aniruddha434/Project_buzzV1)
+![Code size](https://img.shields.io/github/languages/code-size/Aniruddha434/Project_buzzV1)
+![Last commit](https://img.shields.io/github/last-commit/Aniruddha434/Project_buzzV1)
+
 ## 🌟 **Live Application**
 
 **🔗 Visit ProjectBuzz**: [https://projectbuzz.tech](https://projectbuzz.tech)
