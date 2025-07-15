@@ -16,6 +16,8 @@ interface NegotiationButtonProps {
   projectTitle: string;
   originalPrice: number;
   onNegotiationStart?: () => void;
+  className?: string;
+  size?: 'sm' | 'md' | 'lg';
 }
 
 const MESSAGE_TEMPLATES = [
@@ -31,7 +33,9 @@ export const NegotiationButton: React.FC<NegotiationButtonProps> = ({
   projectId,
   projectTitle,
   originalPrice,
-  onNegotiationStart
+  onNegotiationStart,
+  className = '',
+  size = 'md'
 }) => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
@@ -192,10 +196,11 @@ export const NegotiationButton: React.FC<NegotiationButtonProps> = ({
           document.body.classList.add('modal-open');
         }}
         variant="outline"
-        className="flex items-center gap-2 bg-muted hover:bg-muted/80 border-border text-foreground"
+        size={size}
+        className={`flex items-center gap-2 bg-muted hover:bg-muted/80 border-border text-foreground ${className}`}
       >
         <MessageCircle className="w-4 h-4" />
-        Negotiate Price
+        <span className="text-xs">Negotiate</span>
       </Button>
     );
   }
