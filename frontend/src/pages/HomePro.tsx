@@ -7,41 +7,127 @@ import { DemoOne } from '../components/ui/demo-one';
 import { WhyChooseProjectBuzzPins, HowItWorksPins, JoinCommunityPins } from '../components/ProjectBuzzPins';
 import Footer from '../components/Footer';
 import Button from '../components/ui/Button';
+import SEOHead from '../components/SEO/SEOHead';
 
 const HomePro: React.FC = () => {
   const { user } = useAuth();
 
-
-
-
-
-
+  // SEO structured data for homepage
+  const homepageStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'ProjectBuzz',
+    alternateName: 'Project Buzz',
+    url: 'https://projectbuzz.tech',
+    description: 'ProjectBuzz is the premier digital marketplace for developers to buy and sell high-quality programming projects, source code, and innovative solutions.',
+    keywords: 'ProjectBuzz, project buzz, digital marketplace, buy projects, sell projects, developer marketplace, code marketplace, programming projects',
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: 'https://projectbuzz.tech/market?search={search_term_string}',
+      'query-input': 'required name=search_term_string'
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'ProjectBuzz',
+      url: 'https://projectbuzz.tech',
+      founder: {
+        '@type': 'Person',
+        name: 'Aniruddha Gayki'
+      }
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-black page-with-navbar">
-      {/* Hero Section with Rubik's Cube */}
-      <DemoOne />
-
-
-
-
-
-      {/* Featured Projects */}
-      <FeaturedProjects
-        title="Featured Projects"
-        subtitle="Quality projects from verified developers"
-        limit={4}
-        showViewAllButton={true}
+    <>
+      {/* SEO Head Component */}
+      <SEOHead
+        title="ProjectBuzz - Digital Marketplace for Developers | Buy & Sell Projects"
+        description="Discover, buy, and sell high-quality programming projects on ProjectBuzz. The premier digital marketplace for developers with ready-made solutions, source code, and innovative projects worldwide."
+        keywords={[
+          'ProjectBuzz', 'project buzz', 'digital marketplace',
+          'buy projects', 'sell projects', 'developer marketplace', 'code marketplace', 'programming projects',
+          'buy ready-made projects', 'sell coding projects online', 'developer project marketplace',
+          'purchase source code projects', 'marketplace for developers', 'buy programming projects',
+          'sell software projects', 'digital project marketplace', 'code project marketplace'
+        ]}
+        canonical="https://projectbuzz.tech"
+        ogImage="https://projectbuzz.tech/og-image-homepage.jpg"
+        structuredData={homepageStructuredData}
+        breadcrumbs={[
+          { name: 'Home', url: 'https://projectbuzz.tech' }
+        ]}
       />
 
-      {/* Why Choose ProjectBuzz - 3D Pins */}
-      <WhyChooseProjectBuzzPins />
+      <div className="min-h-screen bg-black page-with-navbar">
+        {/* Hero Section with Rubik's Cube - SEO Optimized */}
+        <header role="banner" aria-label="ProjectBuzz Homepage Hero">
+          <DemoOne />
+        </header>
 
-      {/* How It Works - 3D Pins */}
-      <HowItWorksPins />
 
-      {/* Join Our Community - 3D Pins */}
-      <JoinCommunityPins />
+
+
+
+        {/* SEO-Optimized Content Section */}
+        <section className="py-16 bg-black" aria-label="ProjectBuzz Digital Marketplace Introduction">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
+                ProjectBuzz - Premier Digital Marketplace for Developers
+              </h1>
+              <p className="text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed">
+                Discover, buy, and sell high-quality programming projects on ProjectBuzz. Join thousands of developers worldwide in the leading digital marketplace for ready-made solutions, source code, and innovative projects. Whether you're looking to buy projects or sell coding projects online, ProjectBuzz is your trusted developer marketplace.
+              </p>
+            </div>
+
+            {/* Key Features Grid - SEO Optimized */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
+              <div className="text-center">
+                <h2 className="text-2xl font-semibold text-white mb-4">Buy Ready-Made Projects</h2>
+                <p className="text-gray-400">
+                  Browse thousands of high-quality programming projects. From web development to mobile apps, AI/ML solutions to blockchain projects - find the perfect ready-made solution for your needs.
+                </p>
+              </div>
+              <div className="text-center">
+                <h2 className="text-2xl font-semibold text-white mb-4">Sell Coding Projects Online</h2>
+                <p className="text-gray-400">
+                  Monetize your programming skills by selling your projects on our developer marketplace. Reach a global audience of buyers looking for innovative solutions and quality source code.
+                </p>
+              </div>
+              <div className="text-center">
+                <h2 className="text-2xl font-semibold text-white mb-4">Developer Project Marketplace</h2>
+                <p className="text-gray-400">
+                  Join the premier code marketplace where developers connect, collaborate, and trade innovative projects. Secure payments, instant downloads, and 24/7 support included.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Featured Projects - SEO Enhanced */}
+        <section aria-label="Featured Programming Projects">
+          <FeaturedProjects
+            title="Featured Projects - Top Programming Solutions"
+            subtitle="Discover quality projects from verified developers in our digital marketplace"
+            limit={4}
+            showViewAllButton={true}
+          />
+        </section>
+
+        {/* Why Choose ProjectBuzz - 3D Pins */}
+        <section aria-label="Why Choose ProjectBuzz Digital Marketplace">
+          <WhyChooseProjectBuzzPins />
+        </section>
+
+        {/* How It Works - 3D Pins */}
+        <section aria-label="How ProjectBuzz Marketplace Works">
+          <HowItWorksPins />
+        </section>
+
+        {/* Join Our Community - 3D Pins */}
+        <section aria-label="Join ProjectBuzz Developer Community">
+          <JoinCommunityPins />
+        </section>
 
       {/* CTA Section */}
       <section className="py-20 bg-black text-white">
@@ -129,9 +215,10 @@ const HomePro: React.FC = () => {
         </div>
       </section>
 
-      {/* Footer */}
-      <Footer />
-    </div>
+        {/* Footer */}
+        <Footer />
+      </div>
+    </>
   );
 };
 

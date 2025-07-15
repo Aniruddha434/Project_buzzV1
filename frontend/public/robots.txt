@@ -1,0 +1,72 @@
+# ProjectBuzz Robots.txt
+# Optimized for search engine crawling and indexing
+
+User-agent: *
+Allow: /
+
+# Allow all major search engines
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+User-agent: YandexBot
+Allow: /
+
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+# Disallow private/sensitive areas
+Disallow: /dashboard/
+Disallow: /admin/
+Disallow: /api/
+Disallow: /login
+Disallow: /register
+Disallow: /reset-password
+Disallow: /verify-email
+Disallow: /checkout/
+Disallow: /payment/
+Disallow: /profile/
+Disallow: /settings/
+Disallow: /search?*
+Disallow: /*?*utm_*
+Disallow: /*?*ref=*
+Disallow: /*?*fbclid=*
+Disallow: /*?*gclid=*
+
+# Allow important pages for SEO
+Allow: /market
+Allow: /about
+Allow: /contact
+Allow: /terms
+Allow: /privacy
+Allow: /help
+Allow: /categories/
+Allow: /projects/
+
+# Crawl delay (be respectful)
+Crawl-delay: 1
+
+# Sitemap location
+Sitemap: https://projectbuzz.tech/sitemap.xml
+Sitemap: https://projectbuzz.tech/sitemap-projects.xml
+Sitemap: https://projectbuzz.tech/sitemap-categories.xml
+
+# Host directive
+Host: https://projectbuzz.tech

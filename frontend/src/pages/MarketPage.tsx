@@ -7,6 +7,8 @@ import EnhancedProjectModal from '../components/EnhancedProjectModal';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import Card from '../components/ui/Card';
+import SEOHead from '../components/SEO/SEOHead';
+import { useLocation } from 'react-router-dom';
 
 interface Project {
   _id: string;
@@ -47,6 +49,7 @@ interface Project {
 
 const MarketPage: React.FC = () => {
   const { user } = useAuth();
+  const location = useLocation();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -54,6 +57,47 @@ const MarketPage: React.FC = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+
+  // SEO configuration based on category and search
+  const getSEOConfig = () => {
+    const urlParams = new URLSearchParams(location.search);
+    const category = urlParams.get('category') || selectedCategory;
+    const search = urlParams.get('search') || searchTerm;
+
+    let title = 'Browse Projects - Digital Marketplace | ProjectBuzz';
+    let description = 'Browse thousands of high-quality programming projects on ProjectBuzz. Find web development, mobile apps, AI/ML projects, and more. Buy ready-made solutions from expert developers.';
+    let keywords = ['browse projects', 'project catalog', 'programming solutions', 'buy projects', 'developer marketplace'];
+
+    if (category && category !== 'all') {
+      switch (category) {
+        case 'web':
+          title = 'Web Development Projects - Buy Ready-Made Solutions | ProjectBuzz';
+          description = 'Discover premium web development projects on ProjectBuzz. React, Vue, Angular, Node.js, and full-stack solutions. Buy ready-made web applications from expert developers.';
+          keywords = ['web development projects', 'React projects', 'Vue projects', 'Angular projects', 'Node.js', 'full-stack'];
+          break;
+        case 'mobile':
+          title = 'Mobile App Projects - iOS & Android Solutions | ProjectBuzz';
+          description = 'Browse mobile app projects for iOS and Android. React Native, Flutter, Swift, and Kotlin projects. Buy complete mobile applications and source code.';
+          keywords = ['mobile app projects', 'iOS projects', 'Android projects', 'React Native', 'Flutter', 'mobile development'];
+          break;
+        case 'ai-ml':
+          title = 'AI & Machine Learning Projects - Advanced Solutions | ProjectBuzz';
+          description = 'Explore cutting-edge AI and machine learning projects. Python, TensorFlow, PyTorch, and deep learning solutions. Buy advanced AI projects from expert developers.';
+          keywords = ['AI projects', 'machine learning projects', 'Python AI', 'TensorFlow', 'PyTorch', 'deep learning'];
+          break;
+      }
+    }
+
+    if (search) {
+      title = `${search} Projects - Search Results | ProjectBuzz`;
+      description = `Find ${search} projects on ProjectBuzz. Browse high-quality programming solutions and ready-made projects related to ${search}.`;
+      keywords = [...keywords, search, `${search} projects`, `buy ${search} projects`];
+    }
+
+    return { title, description, keywords };
+  };
+
+  const seoConfig = getSEOConfig();
 
   const categories = [
     { value: 'all', label: 'All Categories' },
@@ -120,16 +164,37 @@ const MarketPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black page-with-navbar-extra">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-4">
-            Digital Market
-          </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-400">
-            Discover amazing digital projects from talented developers
-          </p>
+    <>
+      {/* SEO Head Component */}
+      <SEOHead
+        title={seoConfig.title}
+        description={seoConfig.description}
+        keywords={seoConfig.keywords}
+        canonical={`https://projectbuzz.tech/market${location.search}`}
+        breadcrumbs={[
+          { name: 'Home', url: 'https://projectbuzz.tech' },
+          { name: 'Market', url: 'https://projectbuzz.tech/market' }
+        ]}
+      />
+
+      <div className="min-h-screen bg-black page-with-navbar-extra">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Header - SEO Optimized */}
+          <header className="mb-8">
+            <h1 className="text-3xl font-bold text-white mb-4">
+              {selectedCategory === 'all' ? 'Digital Project Marketplace' :
+               selectedCategory === 'web' ? 'Web Development Projects' :
+               selectedCategory === 'mobile' ? 'Mobile App Projects' :
+               selectedCategory === 'ai-ml' ? 'AI & Machine Learning Projects' :
+               'Digital Projects'}
+            </h1>
+            <p className="text-lg text-gray-600 dark:text-gray-400">
+              {selectedCategory === 'all' ?
+                'Discover amazing programming projects from talented developers worldwide. Buy ready-made solutions and source code.' :
+                `Browse high-quality ${selectedCategory} projects from expert developers. Find the perfect solution for your needs.`
+              }
+            </p>
+          </header>
         </div>
 
         {/* Search and Filters */}
@@ -256,6 +321,7 @@ const MarketPage: React.FC = () => {
         )}
       </div>
     </div>
+    </>
   );
 };
 
