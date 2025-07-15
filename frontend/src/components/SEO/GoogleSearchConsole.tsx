@@ -31,8 +31,8 @@ export const GoogleSearchConsole: React.FC<GoogleSearchConsoleProps> = ({
       '@context': 'https://schema.org',
       '@type': 'Organization',
       name: 'ProjectBuzz',
-      url: 'https://project-buzz-v.vercel.app',
-      logo: 'https://project-buzz-v.vercel.app/favicon.svg',
+      url: 'https://projectbuzz.tech',
+      logo: 'https://projectbuzz.tech/favicon.svg',
       description: 'Digital marketplace for developers to buy and sell programming projects',
       sameAs: [
         'https://github.com/ProjectBuzz',
@@ -50,11 +50,11 @@ export const GoogleSearchConsole: React.FC<GoogleSearchConsoleProps> = ({
       '@context': 'https://schema.org',
       '@type': 'WebSite',
       name: 'ProjectBuzz',
-      url: 'https://project-buzz-v.vercel.app',
+      url: 'https://projectbuzz.tech',
       description: 'Digital marketplace for developers to buy and sell programming projects',
       potentialAction: {
         '@type': 'SearchAction',
-        target: 'https://project-buzz-v.vercel.app/market?search={search_term_string}',
+        target: 'https://projectbuzz.tech/market?search={search_term_string}',
         'query-input': 'required name=search_term_string'
       }
     };
@@ -64,7 +64,7 @@ export const GoogleSearchConsole: React.FC<GoogleSearchConsoleProps> = ({
       '@context': 'https://schema.org',
       '@type': 'WebApplication',
       name: 'ProjectBuzz',
-      url: 'https://project-buzz-v.vercel.app',
+      url: 'https://projectbuzz.tech',
       applicationCategory: 'BusinessApplication',
       operatingSystem: 'Web',
       description: 'Digital marketplace for developers to buy and sell programming projects',
