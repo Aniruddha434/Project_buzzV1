@@ -1007,12 +1007,13 @@ body > div[class*="modal-detail-backdrop"] {
 
 /* ===== UNIFIED PROJECT CARD SYSTEM ===== */
 
-/* Base project card styles */
+/* Base project card styles - Image Dominant Design */
 .project-card-unified {
   @apply bg-gray-900 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-800 hover:border-gray-700 flex flex-col;
   position: relative;
   z-index: 1;
-  min-height: 420px;
+  aspect-ratio: 4/3; /* Rectangular form - proper proportions */
+  height: 280px; /* Compact height */
 }
 
 .project-card-unified:hover {
@@ -1022,7 +1023,7 @@ body > div[class*="modal-detail-backdrop"] {
 /* Mobile-optimized project card */
 @media (max-width: 640px) {
   .project-card-unified {
-    min-height: 380px;
+    height: 260px; /* Slightly smaller on mobile */
     border-radius: 0.5rem;
   }
 
@@ -1031,72 +1032,79 @@ body > div[class*="modal-detail-backdrop"] {
   }
 }
 
-/* Project card image container */
+/* Project card image container - 80% dominant */
 .project-card-image {
   @apply relative bg-muted overflow-hidden cursor-pointer;
-  height: 176px; /* 44 * 4 = 176px for consistent aspect ratio */
+  height: 80%; /* 80% of card height for image dominance */
+  flex-shrink: 0;
 }
 
 @media (max-width: 640px) {
   .project-card-image {
-    height: 160px; /* Slightly smaller on mobile */
+    height: 78%; /* Slightly less on mobile for better proportions */
   }
 }
 
-/* Project card content */
+/* Project card content - 20% compact info */
 .project-card-content {
-  @apply p-4 flex-1 flex flex-col;
+  @apply p-3 flex flex-col justify-between;
+  height: 20%; /* 20% of card height for minimal info */
+  flex-shrink: 0;
 }
 
 @media (max-width: 640px) {
   .project-card-content {
-    @apply p-3;
+    @apply p-2;
+    height: 22%; /* Slightly more on mobile */
   }
 }
 
-/* Project card header */
+/* Remove header - keep content minimal */
 .project-card-header {
-  @apply bg-gradient-to-r from-gray-800 to-gray-700 px-3 py-2 border-b border-gray-600;
+  display: none; /* Hide header for cleaner look */
 }
 
-@media (max-width: 640px) {
-  .project-card-header {
-    @apply px-2 py-1.5;
-  }
-}
-
-/* Project card title */
+/* Project card title - compact */
 .project-card-title {
-  @apply text-lg font-semibold text-white mb-2 line-clamp-2;
-  min-height: 3.5rem; /* Ensure consistent height */
+  @apply text-sm font-semibold text-white mb-1 line-clamp-1;
+  font-size: 0.875rem; /* Smaller, more compact */
 }
 
 @media (max-width: 640px) {
   .project-card-title {
-    @apply text-base;
-    min-height: 3rem;
+    @apply text-xs;
+    font-size: 0.75rem;
   }
 }
 
-/* Project card description */
+/* Project card description - minimal */
 .project-card-description {
-  @apply text-sm text-gray-400 mb-3 line-clamp-3 flex-1;
+  @apply text-xs text-gray-400 line-clamp-1;
+  margin: 0; /* Remove margins for compact design */
 }
 
 @media (max-width: 640px) {
   .project-card-description {
-    @apply text-xs mb-2 line-clamp-2;
+    font-size: 0.6875rem; /* Even smaller on mobile */
   }
 }
 
-/* Project card price */
+/* Project card price - compact overlay */
 .project-card-price {
-  @apply text-xl font-bold text-green-400;
+  @apply text-sm font-bold text-green-400;
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 4px 8px;
+  border-radius: 4px;
+  backdrop-filter: blur(4px);
 }
 
 @media (max-width: 640px) {
   .project-card-price {
-    @apply text-lg;
+    @apply text-xs;
+    padding: 3px 6px;
   }
 }
 
@@ -1193,15 +1201,16 @@ body > div[class*="modal-detail-backdrop"] {
   }
 }
 
-/* Loading skeleton responsive */
+/* Loading skeleton responsive - matches new card design */
 .project-card-skeleton {
   @apply bg-gray-800 rounded-lg animate-pulse;
-  height: 380px;
+  aspect-ratio: 4/3;
+  height: 260px;
 }
 
 @media (min-width: 640px) {
   .project-card-skeleton {
-    height: 420px;
+    height: 280px;
   }
 }
 

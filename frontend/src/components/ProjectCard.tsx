@@ -216,23 +216,13 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
         onMouseLeave={() => setIsHovered(false)}
         onClick={handleCardClick}
       >
-        {/* Header with Category and Price - Mobile Optimized */}
-        <div className="project-card-header">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-blue-400 uppercase tracking-wide">
-              {project.category || 'Development'}
-            </span>
-            <div className="text-right">
-              <div className="project-card-price">
-                {formatProjectPrice(project.price)}
-              </div>
-              <div className="text-xs text-gray-400">One-time</div>
-            </div>
-          </div>
-        </div>
 
-        {/* Enhanced Project Image with Hover Effects - Mobile Responsive */}
+        {/* Dominant Project Image - 80% of card */}
         <div className="project-card-image" onClick={handleImageClick}>
+          {/* Price overlay on image */}
+          <div className="project-card-price">
+            {formatProjectPrice(project.price)}
+          </div>
           {currentImage?.url ? (
             <div className="relative w-full h-full group">
               <img
@@ -356,125 +346,25 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
         </div>
       </div>
 
-        {/* Content Section - Mobile Responsive */}
+        {/* Minimal Content Section - 20% of card */}
         <div className="project-card-content">
-          <h3 className="project-card-title">
-            {project.title}
-          </h3>
-
-          <p className="project-card-description">
-            {truncateDescription(project.description)}
-          </p>
-
-          {/* Author and Stats - More Compact */}
-          <div className="flex items-center justify-between mb-2 pb-2 border-b border-gray-700">
-            <div className="flex items-center">
-              <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
-                <User className="h-2.5 w-2.5 text-white" />
-              </div>
-              <span className="ml-1.5 text-xs font-medium text-gray-300">
-                {project.seller?.displayName || 'Anonymous'}
-              </span>
+          <div className="flex items-center justify-between">
+            <div className="flex-1 min-w-0">
+              <h3 className="project-card-title">
+                {project.title}
+              </h3>
+              <p className="project-card-description">
+                {project.category || 'Development'}
+              </p>
             </div>
-            <div className="project-card-stats">
-              <span className="stat-item" title={formatViewCount(project.stats?.views)}>
-                <Eye className="stat-icon" />
-                {project.stats?.views || 0}
-              </span>
-              <span className="stat-item" title={formatSalesCount(project.stats?.sales)}>
-                <Download className="stat-icon" />
-                {project.stats?.sales || 0}
-              </span>
+            <div className="flex items-center space-x-1 text-xs text-gray-400">
+              <Eye className="h-3 w-3" />
+              <span>{project.stats?.sales || 0}</span>
             </div>
           </div>
+        </div>
 
-          {/* Action Buttons - Mobile Responsive */}
-          {showBuyButton && (
-            <div className="project-card-actions">
-              {user && user.role === 'buyer' ? (
-                isPurchased ? (
-                  <div className="flex items-center justify-center p-2 bg-green-900/20 rounded-lg border border-green-700">
-                    <CheckCircle className="h-3 w-3 text-green-600 mr-1.5" />
-                    <span className="text-xs font-medium text-green-400">
-                      Owned
-                    </span>
-                  </div>
-                ) : (
-                  <div className="flex space-x-2">
-                    <button
-                      className="project-card-button flex-1 bg-black hover:bg-gray-800 text-white"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onClick?.(project);
-                      }}
-                    >
-                      <ShoppingCart className="h-3 w-3 mr-1.5" />
-                      Purchase
-                    </button>
-                    <button
-                      className="p-2 border border-gray-600 rounded-lg hover:bg-gray-800 transition-colors"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setShowShareModal(true);
-                      }}
-                    >
-                      <Heart className="h-3 w-3 text-gray-400" />
-                    </button>
-                    <button
-                      className="p-2 border border-gray-600 rounded-lg hover:bg-gray-800 transition-colors"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onClick?.(project);
-                      }}
-                    >
-                      <ExternalLink className="h-3 w-3 text-gray-600 dark:text-gray-400" />
-                    </button>
-                  </div>
-                )
-              ) : (
-                <div className="flex space-x-2">
-                  <Link to={user ? `/project/${project._id}` : '/login'} className="flex-1">
-                    <button className="w-full bg-black hover:bg-gray-800 text-white py-2 px-3 rounded-lg text-sm font-medium transition-colors flex items-center justify-center">
-                      <ShoppingCart className="h-3 w-3 mr-1.5" />
-                      {user ? 'View' : 'Sign in'}
-                    </button>
-                  </Link>
-                  <button
-                    className="p-2 border border-gray-600 rounded-lg hover:bg-gray-800 transition-colors"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setShowShareModal(true);
-                    }}
-                  >
-                    <Heart className="h-3 w-3 text-gray-400" />
-                  </button>
-                  <button
-                    className="p-2 border border-gray-600 rounded-lg hover:bg-gray-800 transition-colors"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onClick?.(project);
-                    }}
-                  >
-                    <ExternalLink className="h-3 w-3 text-gray-600 dark:text-gray-400" />
-                  </button>
-                </div>
-              )}
-
-              {/* Negotiation Button */}
-              {user && user.role === 'buyer' && !isPurchased && (
-                <div className="negotiation-button">
-                  <NegotiationButton
-                    projectId={project._id}
-                    projectTitle={project.title}
-                    originalPrice={project.price}
-                    onNegotiationStart={() => {
-                      console.log('Negotiation started for project:', project.title);
-                    }}
-                  />
-                </div>
-              )}
-            </div>
-          )}
+          {/* Click to expand for full details */}
         </div>
       </div>
 
