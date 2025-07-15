@@ -291,7 +291,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // OAuth methods
   const loginWithGoogle = () => {
-    const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+    // Determine backend URL based on environment
+    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const backendUrl = isDevelopment ? 'http://localhost:5000' : (import.meta.env.VITE_BACKEND_URL || 'https://project-buzzv1-2.onrender.com');
+
+    // Only log in development
+    if (isDevelopment && import.meta.env.DEV) {
+      console.log('🔍 Google OAuth redirect:', {
+        isDevelopment,
+        hostname: window.location.hostname,
+        backendUrl
+      });
+    }
+
     window.location.href = `${backendUrl}/api/auth/google`;
   };
 
@@ -309,10 +321,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setLoading(true);
       setError(null);
 
-      console.log(`🔍 Handling ${provider} OAuth callback with token`);
+      console.log(`🔍 Handling ${provider} OAuth callback with token:`, token.substring(0, 20) + '...');
 
       // Fetch user data using the token
+      console.log('🔍 Making API call to /auth/oauth/user');
       const response = await api.get(`/auth/oauth/user?token=${token}`);
+      console.log('🔍 API response:', response.data);
 
       if (response.data.success) {
         const { user: userData, token: authToken } = response.data.data;
@@ -320,11 +334,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         console.log(`✅ ${provider} OAuth login successful:`, userData.email);
         return true;
       } else {
+        console.error('❌ OAuth response not successful:', response.data);
         throw new Error(response.data.message || `${provider} OAuth login failed`);
       }
     } catch (error: any) {
       console.error(`❌ ${provider} OAuth callback error:`, error);
-      setError(error.response?.data?.message || `${provider} login failed`);
+      console.error('❌ Error details:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+        statusText: error.response?.statusText
+      });
+      setError(error.response?.data?.message || error.message || `${provider} login failed`);
       return false;
     } finally {
       setLoading(false);

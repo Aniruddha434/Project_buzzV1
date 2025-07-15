@@ -673,8 +673,16 @@ router.post('/logout', (req, res) => {
 
 // ===== OAUTH ROUTES =====
 // Google OAuth routes
-router.get('/google',
-  passport.authenticate('google', {
+router.get('/google', (req, res, next) => {
+  // Only log in development mode
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🔍 Google OAuth initiation request:', {
+      origin: req.get('origin'),
+      hostname: req.hostname
+    });
+  }
+  next();
+}, passport.authenticate('google', {
     scope: ['profile', 'email']
   })
 );
@@ -688,9 +696,28 @@ router.get('/google/callback',
       // Generate JWT token for the authenticated user
       const token = generateToken(req.user._id);
 
-      // Redirect to frontend with token
-      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
-      res.redirect(`${frontendUrl}/auth/callback?token=${token}&provider=google`);
+      // Determine frontend URL based on environment
+      const isDevelopment = req.get('referer')?.includes('localhost') ||
+                           req.get('origin')?.includes('localhost') ||
+                           process.env.NODE_ENV === 'development';
+
+      let frontendUrl;
+      if (isDevelopment) {
+        frontendUrl = 'http://localhost:5175';
+        if (process.env.NODE_ENV === 'development') {
+          console.log('🔧 DEVELOPMENT MODE: Using localhost frontend');
+        }
+      } else {
+        frontendUrl = process.env.FRONTEND_URL || 'https://projectbuzz.tech';
+      }
+
+      // Only log detailed info in development
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🔗 Redirecting to frontend:', frontendUrl);
+      }
+
+      const redirectUrl = `${frontendUrl}/auth/callback?token=${token}&provider=google`;
+      res.redirect(redirectUrl);
 
     } catch (error) {
       console.error('❌ Google OAuth callback error:', error);
