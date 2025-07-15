@@ -180,13 +180,13 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({
 
   return (
     <section className="py-16 bg-black">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="projects-container">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">{title}</h2>
           <p className="text-lg text-gray-400 max-w-2xl mx-auto">{subtitle}</p>
         </div>
 
-        <div className="featured-projects-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-fr">
+        <div className="projects-grid-unified">
           {projects.map((project) => (
             <ProjectCard
               key={project._id}
