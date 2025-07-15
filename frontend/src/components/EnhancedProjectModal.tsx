@@ -266,27 +266,27 @@ const EnhancedProjectModal: React.FC<EnhancedProjectModalProps> = ({
 
   // Main modal content
   const modalContent = (
-    <div className="modal-detail-backdrop bg-black/50 backdrop-blur-sm overflow-y-auto">
+    <div className="modal-detail-backdrop bg-black/80 backdrop-blur-sm overflow-y-auto">
       {/* Backdrop */}
-      <div className="fixed inset-0 bg-black bg-opacity-50 transition-opacity" onClick={onClose} />
+      <div className="fixed inset-0 bg-black bg-opacity-80 transition-opacity" onClick={onClose} />
 
       {/* Modal */}
       <div className="flex min-h-full items-center justify-center p-4">
-        <div className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-7xl w-full max-h-[95vh] overflow-hidden">
+        <div className="relative bg-black rounded-lg shadow-2xl max-w-7xl w-full max-h-[95vh] overflow-hidden border border-gray-800">
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
-            <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+          <div className="flex items-center justify-between p-4 border-b border-gray-800 bg-gray-900">
+            <div className="flex items-center space-x-2 text-sm text-gray-400">
               <span>Projects</span>
               <span>›</span>
               <span className="capitalize">{project.category}</span>
               <span>›</span>
-              <span className="text-gray-900 dark:text-white font-medium truncate max-w-xs">
+              <span className="text-white font-medium truncate max-w-xs">
                 {project.title}
               </span>
             </div>
             <button
               onClick={onClose}
-              className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700"
+              className="p-2 text-gray-400 hover:text-white transition-colors rounded-lg hover:bg-gray-800"
             >
               <X className="h-5 w-5" />
             </button>
@@ -374,21 +374,21 @@ const EnhancedProjectModal: React.FC<EnhancedProjectModalProps> = ({
                     </div>
 
                     {/* Price */}
-                    <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <div className="p-4 bg-gray-900 border border-gray-800 rounded-lg">
                       <div className="flex items-baseline space-x-2 mb-2">
-                        <span className="text-3xl font-bold text-gray-900 dark:text-white">
+                        <span className="text-3xl font-bold text-white">
                           {formatCurrency(project.price)}
                         </span>
                       </div>
-                      <div className="text-sm text-gray-600 dark:text-gray-400">
+                      <div className="text-sm text-gray-400">
                         Digital download • Instant access
                       </div>
                     </div>
 
                     {/* Description Preview */}
                     <div className="space-y-3">
-                      <h3 className="font-semibold text-gray-900 dark:text-white">About this project</h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-4">
+                      <h3 className="font-semibold text-white">About this project</h3>
+                      <p className="text-sm text-gray-400 line-clamp-4">
                         {project.description}
                       </p>
                     </div>
@@ -396,15 +396,15 @@ const EnhancedProjectModal: React.FC<EnhancedProjectModalProps> = ({
                     {/* Technologies */}
                     {project.tags && project.tags.length > 0 && (
                       <div>
-                        <h3 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center">
+                        <h3 className="font-semibold text-white mb-3 flex items-center">
                           <Tag className="h-4 w-4 mr-2" />
                           Technologies
                         </h3>
                         <div className="flex flex-wrap gap-2">
                           {project.tags.slice(0, 6).map((tag, index) => (
-                            <Badge key={index} variant="default" size="sm" className="bg-blue-50 text-blue-700">
+                            <span key={index} className="px-3 py-1 bg-gray-900 border border-gray-700 text-gray-300 text-sm rounded-md">
                               {tag}
-                            </Badge>
+                            </span>
                           ))}
                         </div>
                       </div>
@@ -413,18 +413,18 @@ const EnhancedProjectModal: React.FC<EnhancedProjectModalProps> = ({
                     {/* Project Completion Status */}
                     {project.completionStatus !== undefined && (
                       <div>
-                        <h3 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center">
+                        <h3 className="font-semibold text-white mb-3 flex items-center">
                           <Target className="h-4 w-4 mr-2" />
                           Completion Status
                         </h3>
                         <div className="space-y-2">
                           <div className="flex items-center justify-between">
-                            <span className="text-sm text-gray-600 dark:text-gray-400">Progress</span>
-                            <span className="text-sm font-medium text-gray-900 dark:text-white">{project.completionStatus}%</span>
+                            <span className="text-sm text-gray-400">Progress</span>
+                            <span className="text-sm font-medium text-white">{project.completionStatus}%</span>
                           </div>
-                          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                          <div className="w-full bg-gray-800 rounded-full h-2">
                             <div
-                              className="bg-green-600 h-2 rounded-full transition-all duration-300"
+                              className="bg-white h-2 rounded-full transition-all duration-300"
                               style={{ width: `${project.completionStatus}%` }}
                             ></div>
                           </div>
@@ -438,43 +438,36 @@ const EnhancedProjectModal: React.FC<EnhancedProjectModalProps> = ({
                     {/* Complexity Level */}
                     {project.projectDetails?.complexityLevel && (
                       <div>
-                        <h3 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center">
+                        <h3 className="font-semibold text-white mb-3 flex items-center">
                           <Zap className="h-4 w-4 mr-2" />
                           Complexity Level
                         </h3>
-                        <Badge
-                          variant="default"
-                          className={`capitalize ${
-                            project.projectDetails.complexityLevel === 'beginner' ? 'bg-green-100 text-green-800' :
-                            project.projectDetails.complexityLevel === 'intermediate' ? 'bg-yellow-100 text-yellow-800' :
-                            'bg-red-100 text-red-800'
-                          }`}
-                        >
+                        <span className="px-3 py-1 bg-gray-900 border border-gray-700 text-gray-300 text-sm rounded-md capitalize">
                           {project.projectDetails.complexityLevel}
-                        </Badge>
+                        </span>
                       </div>
                     )}
 
                     {/* Stats - Hidden for buyers who purchased */}
                     {!isPurchased && (
-                      <div className="grid grid-cols-3 gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                      <div className="grid grid-cols-3 gap-4 p-4 bg-gray-900 border border-gray-800 rounded-lg">
                         <div className="text-center">
-                          <div className="text-lg font-bold text-gray-900 dark:text-white">
+                          <div className="text-lg font-bold text-white">
                             {project.stats?.views || 0}
                           </div>
-                          <div className="text-xs text-gray-500">Views</div>
+                          <div className="text-xs text-gray-400">Views</div>
                         </div>
                         <div className="text-center">
-                          <div className="text-lg font-bold text-gray-900 dark:text-white">
+                          <div className="text-lg font-bold text-white">
                             {project.stats?.sales || 0}
                           </div>
-                          <div className="text-xs text-gray-500">Sales</div>
+                          <div className="text-xs text-gray-400">Sales</div>
                         </div>
                         <div className="text-center">
-                          <div className="text-lg font-bold text-gray-900 dark:text-white">
+                          <div className="text-lg font-bold text-white">
                             {project.stats?.downloads || 0}
                           </div>
-                          <div className="text-xs text-gray-500">Downloads</div>
+                          <div className="text-xs text-gray-400">Downloads</div>
                         </div>
                       </div>
                     )}
@@ -484,9 +477,9 @@ const EnhancedProjectModal: React.FC<EnhancedProjectModalProps> = ({
                       <div className="space-y-3">
                         {user && user.role === 'buyer' ? (
                           isPurchased ? (
-                            <div className="flex items-center justify-center p-4 bg-green-50 dark:bg-green-900/20 rounded-xl">
-                              <CheckCircle className="h-5 w-5 text-green-600 mr-2" />
-                              <span className="text-green-800 dark:text-green-400 font-medium">
+                            <div className="flex items-center justify-center p-4 bg-gray-900 border border-gray-700 rounded-lg">
+                              <CheckCircle className="h-5 w-5 text-white mr-2" />
+                              <span className="text-white font-medium">
                                 You own this project
                               </span>
                             </div>
@@ -552,43 +545,43 @@ const EnhancedProjectModal: React.FC<EnhancedProjectModalProps> = ({
               {/* Right Column - Checkout Section */}
               {showCheckout && (
                 <div className="lg:col-span-1">
-                  <div className="sticky top-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 shadow-lg">
+                  <div className="sticky top-6 bg-black border border-gray-800 rounded-lg p-6 shadow-lg">
                     {/* Checkout Header */}
                     <div className="flex items-center justify-between mb-6">
-                      <h3 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center">
-                        <Lock className="h-5 w-5 mr-2 text-green-600" />
+                      <h3 className="text-xl font-semibold text-white flex items-center">
+                        <Lock className="h-5 w-5 mr-2 text-white" />
                         Secure Checkout
                       </h3>
                       <button
                         onClick={() => setShowCheckout(false)}
-                        className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                        className="text-gray-400 hover:text-white"
                       >
                         <X className="h-4 w-4" />
                       </button>
                     </div>
 
                     {/* Order Summary */}
-                    <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                      <h4 className="font-medium text-gray-900 dark:text-white mb-3">Order Summary</h4>
+                    <div className="mb-6 p-4 bg-gray-900 border border-gray-800 rounded-lg">
+                      <h4 className="font-medium text-white mb-3">Order Summary</h4>
                       <div className="flex items-start space-x-3">
-                        <div className="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center">
+                        <div className="w-12 h-12 bg-gray-800 border border-gray-700 rounded-lg flex items-center justify-center">
                           <CreditCard className="h-6 w-6 text-gray-400" />
                         </div>
                         <div className="flex-1">
-                          <h5 className="font-medium text-gray-900 dark:text-white text-sm">
+                          <h5 className="font-medium text-white text-sm">
                             {project.title}
                           </h5>
-                          <p className="text-xs text-gray-600 dark:text-gray-400">
+                          <p className="text-xs text-gray-400">
                             by {project.seller?.displayName || 'Unknown Seller'}
                           </p>
                           <div className="flex items-center space-x-2 mt-1">
-                            <Badge variant="default" size="sm" className="bg-blue-100 text-blue-800">
+                            <span className="px-2 py-1 bg-gray-800 border border-gray-700 text-gray-300 text-xs rounded">
                               {project.category}
-                            </Badge>
+                            </span>
                           </div>
                         </div>
                         <div className="text-right">
-                          <div className="text-lg font-bold text-gray-900 dark:text-white">
+                          <div className="text-lg font-bold text-white">
                             {formatCurrency(project.price)}
                           </div>
                         </div>
