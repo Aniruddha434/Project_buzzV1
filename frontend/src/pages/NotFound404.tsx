@@ -15,7 +15,7 @@ const NotFound404: React.FC = () => {
     '@type': 'WebPage',
     name: '404 - Page Not Found | ProjectBuzz',
     description: 'The page you are looking for could not be found on ProjectBuzz. Explore our digital marketplace for programming projects.',
-    url: window.location.href,
+    url: typeof window !== 'undefined' ? window.location.href : 'https://projectbuzz.tech/404',
     isPartOf: {
       '@type': 'WebSite',
       name: 'ProjectBuzz',
@@ -67,7 +67,7 @@ const NotFound404: React.FC = () => {
           '404', 'page not found', 'ProjectBuzz', 'digital marketplace',
           'programming projects', 'buy projects', 'developer marketplace'
         ]}
-        canonical={`https://projectbuzz.tech${window.location.pathname}`}
+        canonical={`https://projectbuzz.tech${typeof window !== 'undefined' ? window.location.pathname : '/404'}`}
         noIndex={true}
         structuredData={structuredData}
       />
