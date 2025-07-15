@@ -67,25 +67,41 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({
   useEffect(() => {
     const fetchFeaturedProjects = async () => {
       try {
-        // First try to get featured projects, fallback to latest approved projects
+        // First try to get featured projects
         let response = await projectService.getFeaturedProjects();
         let projectsData = response.data?.projects || response.projects || [];
-        
-        // If no featured projects, get latest approved projects
-        if (projectsData.length === 0) {
+
+        console.log('Featured projects fetched:', projectsData.length);
+
+        // If we have featured projects, use them
+        if (projectsData.length > 0) {
+          // Ensure we have exactly the requested limit (4 for home page)
+          setProjects(projectsData.slice(0, limit));
+        } else {
+          // Fallback to latest approved projects if no featured projects exist
+          console.log('No featured projects found, falling back to latest approved projects');
           response = await projectService.getApprovedProjects();
           projectsData = response.data?.projects || response.projects || [];
+
           // Sort by creation date to get latest projects
-          projectsData = projectsData.sort((a: Project, b: Project) => 
+          projectsData = projectsData.sort((a: Project, b: Project) =>
             new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
           );
+
+          // Limit the number of projects
+          setProjects(projectsData.slice(0, limit));
         }
-        
-        // Limit the number of projects
-        setProjects(projectsData.slice(0, limit));
       } catch (error) {
         console.error('Error fetching featured projects:', error);
-        setProjects([]);
+        // On error, try to get any approved projects as fallback
+        try {
+          const fallbackResponse = await projectService.getApprovedProjects();
+          const fallbackData = fallbackResponse.data?.projects || fallbackResponse.projects || [];
+          setProjects(fallbackData.slice(0, limit));
+        } catch (fallbackError) {
+          console.error('Error fetching fallback projects:', fallbackError);
+          setProjects([]);
+        }
       } finally {
         setLoading(false);
       }
@@ -170,7 +186,7 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({
           <p className="text-lg text-gray-400 max-w-2xl mx-auto">{subtitle}</p>
         </div>
 
-        <div className="featured-projects-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 auto-rows-fr">
+        <div className="featured-projects-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-fr">
           {projects.map((project) => (
             <ProjectCard
               key={project._id}

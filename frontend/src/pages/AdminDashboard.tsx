@@ -206,6 +206,20 @@ const AdminDashboard: FC = () => {
     }
   };
 
+  const handleFeatureToggle = async (projectId: string, featured: boolean) => {
+    try {
+      setError(null);
+      await adminService.featureProject(projectId, featured);
+      setAllProjects(prev => prev.map(p =>
+        p._id === projectId ? { ...p, featured } : p
+      ));
+      setSuccess(`Project ${featured ? 'featured' : 'unfeatured'} successfully`);
+      setTimeout(() => setSuccess(null), 3000);
+    } catch (err: any) {
+      setError(`Failed to ${featured ? 'feature' : 'unfeature'} project: ${err.response?.data?.message || err.message}`);
+    }
+  };
+
   const handleDeleteProject = async (projectId: string) => {
     if (!window.confirm('Are you sure you want to delete this project? This action cannot be undone.')) {
       return;
@@ -681,16 +695,23 @@ const AdminDashboard: FC = () => {
                       <Card key={project._id} variant="default" animate={false} hover={false}>
                         <div className="p-6">
                           <div className="flex items-start justify-between mb-4">
-                            <Badge
-                              variant={
-                                project.status === 'approved' ? 'success' :
-                                project.status === 'pending' ? 'warning' :
-                                project.status === 'rejected' ? 'error' : 'default'
-                              }
-                              size="sm"
-                            >
-                              {project.status}
-                            </Badge>
+                            <div className="flex items-center space-x-2">
+                              <Badge
+                                variant={
+                                  project.status === 'approved' ? 'success' :
+                                  project.status === 'pending' ? 'warning' :
+                                  project.status === 'rejected' ? 'error' : 'default'
+                                }
+                                size="sm"
+                              >
+                                {project.status}
+                              </Badge>
+                              {project.featured && (
+                                <Badge variant="primary" size="sm">
+                                  Featured
+                                </Badge>
+                              )}
+                            </div>
                             <div className="flex items-center space-x-1">
                               <button
                                 onClick={() => {
@@ -757,13 +778,22 @@ const AdminDashboard: FC = () => {
                               </>
                             )}
                             {project.status === 'approved' && (
-                              <Button
-                                size="sm"
-                                variant="warning"
-                                onClick={() => handleProjectStatusChange(project._id, 'suspended')}
-                              >
-                                Suspend
-                              </Button>
+                              <>
+                                <Button
+                                  size="sm"
+                                  variant="warning"
+                                  onClick={() => handleProjectStatusChange(project._id, 'suspended')}
+                                >
+                                  Suspend
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant={project.featured ? "static-outline" : "primary"}
+                                  onClick={() => handleFeatureToggle(project._id, !project.featured)}
+                                >
+                                  {project.featured ? 'Unfeature' : 'Feature'}
+                                </Button>
+                              </>
                             )}
                           </div>
                         </div>

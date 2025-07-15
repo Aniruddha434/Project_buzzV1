@@ -425,6 +425,77 @@ router.delete('/users/:id',
   }
 );
 
+// PUT /api/admin/projects/:id/feature - Feature/unfeature project (admin only)
+router.put('/projects/:id/feature',
+  param('id').isMongoId().withMessage('Invalid project ID'),
+  body('featured').isBoolean().withMessage('Featured must be a boolean'),
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          success: false,
+          message: 'Validation failed',
+          errors: errors.array()
+        });
+      }
+
+      const { featured } = req.body;
+      const project = await Project.findById(req.params.id);
+
+      if (!project) {
+        return res.status(404).json({
+          success: false,
+          message: 'Project not found'
+        });
+      }
+
+      // Only allow featuring approved projects
+      if (featured && project.status !== 'approved') {
+        return res.status(400).json({
+          success: false,
+          message: 'Only approved projects can be featured'
+        });
+      }
+
+      // If featuring a project, check if we already have 4 featured projects
+      if (featured) {
+        const featuredCount = await Project.countDocuments({
+          featured: true,
+          status: 'approved',
+          _id: { $ne: req.params.id } // Exclude current project from count
+        });
+
+        if (featuredCount >= 4) {
+          return res.status(400).json({
+            success: false,
+            message: 'Maximum of 4 projects can be featured at once. Please unfeature another project first.'
+          });
+        }
+      }
+
+      // Update the project's featured status
+      const updatedProject = await Project.findByIdAndUpdate(
+        req.params.id,
+        { featured },
+        { new: true }
+      ).populate('seller', 'displayName photoURL');
+
+      res.json({
+        success: true,
+        message: `Project ${featured ? 'featured' : 'unfeatured'} successfully`,
+        project: updatedProject
+      });
+    } catch (error) {
+      console.error('Error updating project featured status:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error updating project featured status'
+      });
+    }
+  }
+);
+
 // DELETE /api/admin/projects/:id - Delete project (admin only)
 router.delete('/projects/:id',
   param('id').isMongoId().withMessage('Invalid project ID'),
