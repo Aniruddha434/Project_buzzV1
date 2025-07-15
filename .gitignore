@@ -95,3 +95,14 @@ Thumbs.db
 # Build outputs
 dist/
 build/
+
+# Local test files (keep locally but don't track in git)
+comprehensive-project-creation-test.js
+test-backend-connection.js
+*-test-local.js
+*-debug-local.js
+test-*.local.js
+debug-*.local.js
+
+# Test cleanup analysis
+TEST_CLEANUP_ANALYSIS.md

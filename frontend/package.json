@@ -18,7 +18,9 @@
     "clean": "rm -rf dist",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "coverage": "vitest --coverage"
+    "test:unit": "vitest run src/__tests__",
+    "test:watch": "vitest watch",
+    "test:coverage": "vitest --coverage"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.4",
