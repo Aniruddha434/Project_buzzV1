@@ -320,7 +320,6 @@ const MarketPage: React.FC = () => {
           />
         )}
       </div>
-    </div>
     </>
   );
 };
