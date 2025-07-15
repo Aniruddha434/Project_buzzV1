@@ -34,7 +34,7 @@ const LoginPage: React.FC = () => {
   const [initialCanvasVisible, setInitialCanvasVisible] = useState(true);
   const [reverseCanvasVisible, setReverseCanvasVisible] = useState(false);
 
-  const { login, register, error, clearError } = useAuth();
+  const { login, register, error, clearError, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
 
   // Password strength checker
@@ -301,6 +301,7 @@ const LoginPage: React.FC = () => {
                       variant="enhanced-outline"
                       size="lg"
                       fullWidth
+                      onClick={loginWithGoogle}
                       leftIcon={
                         <div className="w-5 h-5 bg-white rounded-sm flex items-center justify-center">
                           <span className="text-black font-bold text-sm">G</span>
