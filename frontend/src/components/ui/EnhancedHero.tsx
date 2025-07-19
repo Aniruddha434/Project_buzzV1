@@ -44,15 +44,15 @@ const EnhancedHero: React.FC = () => {
 
               {/* Value Proposition */}
               <p className="text-base sm:text-lg text-gray-400 mb-8 max-w-xl mx-auto lg:mx-0 leading-relaxed">
-                The premier marketplace for developers to buy ready-made projects,
-                sell coding solutions, and discover innovative programming projects.
+                The premier digital marketplace for buying and selling any digital data -
+                from source code and projects to digital assets and innovative solutions.
               </p>
 
               {/* Key Benefits */}
               <div className="flex flex-col sm:flex-row gap-6 mb-10 justify-center lg:justify-start">
                 <div className="flex items-center text-gray-300">
                   <Code className="h-5 w-5 mr-2 text-white" />
-                  <span className="text-sm">Quality Projects</span>
+                  <span className="text-sm">Quality Digital Data</span>
                 </div>
                 <div className="flex items-center text-gray-300">
                   <Users className="h-5 w-5 mr-2 text-white" />
@@ -92,23 +92,11 @@ const EnhancedHero: React.FC = () => {
                 </Link>
               </div>
 
-              {/* Trust Indicators */}
+              {/* Trust Message */}
               <div className="mt-12 pt-8 border-t border-gray-800">
-                <p className="text-sm text-gray-500 mb-4">Trusted by developers worldwide</p>
-                <div className="flex items-center justify-center lg:justify-start space-x-8 text-gray-600">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-white">1000+</div>
-                    <div className="text-xs">Projects</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-white">500+</div>
-                    <div className="text-xs">Developers</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-white">50+</div>
-                    <div className="text-xs">Categories</div>
-                  </div>
-                </div>
+                <p className="text-sm text-gray-500 text-center lg:text-left">
+                  Your trusted marketplace for digital assets and solutions
+                </p>
               </div>
             </div>
 
@@ -132,18 +120,18 @@ const EnhancedHero: React.FC = () => {
                     {/* Code Content with Typing Animation */}
                     <div className="p-4 font-mono text-sm leading-relaxed">
                       <div className="text-gray-500 mb-1">// Where Digital Projects Come to Life</div>
-                      <div className="text-blue-400">const <span className="text-white">projectBuzz</span> = {</div>
+                      <div className="text-blue-400">const <span className="text-white">projectBuzz</span> = {'{'}</div>
                       <div className="ml-4 text-green-400">tagline: <span className="text-yellow-300">'Where Digital Projects Come to Life'</span>,</div>
-                      <div className="ml-4 text-green-400">mission: <span className="text-yellow-300">'Connect Global Developers'</span>,</div>
-                      <div className="ml-4 text-green-400">features: [</div>
-                      <div className="ml-8 text-yellow-300">'Quality Projects',</div>
-                      <div className="ml-8 text-yellow-300">'Verified Sellers',</div>
-                      <div className="ml-8 text-yellow-300">'Instant Access',</div>
-                      <div className="ml-8 text-yellow-300">'Global Community'</div>
+                      <div className="ml-4 text-green-400">mission: <span className="text-yellow-300">'Digital Marketplace for All'</span>,</div>
+                      <div className="ml-4 text-green-400">products: [</div>
+                      <div className="ml-8 text-yellow-300">'Source Code',</div>
+                      <div className="ml-8 text-yellow-300">'Digital Assets',</div>
+                      <div className="ml-8 text-yellow-300">'Software Solutions',</div>
+                      <div className="ml-8 text-yellow-300">'Any Digital Data'</div>
                       <div className="ml-4 text-green-400">],</div>
                       <div className="ml-4 text-green-400">status: <span className="text-yellow-300">'🚀 Live & Growing'</span></div>
-                      <div className="text-blue-400">};</div>
-                      <div className="mt-2 text-gray-500">// Join thousands of developers today!</div>
+                      <div className="text-blue-400">{'};'}</div>
+                      <div className="mt-2 text-gray-500">// Your digital marketplace awaits!</div>
                     </div>
                   </div>
 
@@ -152,7 +140,7 @@ const EnhancedHero: React.FC = () => {
                     ✨ Live
                   </div>
                   <div className="absolute -bottom-3 -left-3 bg-green-600 text-white px-3 py-1 rounded-full text-xs font-semibold border border-green-500 animate-pulse">
-                    🔥 Trending
+                    💾 Digital Assets
                   </div>
                 </div>
 
@@ -163,8 +151,8 @@ const EnhancedHero: React.FC = () => {
               {/* Mobile Hero Visual - Simplified */}
               <div className="lg:hidden mt-12 text-center">
                 <div className="inline-block bg-gray-900 border border-gray-800 rounded-xl p-6 shadow-xl">
-                  <div className="text-4xl mb-2">💻</div>
-                  <div className="text-white font-semibold">Ready-Made Projects</div>
+                  <div className="text-4xl mb-2">💾</div>
+                  <div className="text-white font-semibold">Digital Assets</div>
                   <div className="text-gray-400 text-sm">Quality • Verified • Instant</div>
                 </div>
               </div>
