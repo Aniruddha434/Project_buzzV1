@@ -68,41 +68,7 @@ const HomePro: React.FC = () => {
 
 
 
-        {/* SEO-Optimized Content Section - Mobile Responsive */}
-        <section className="py-8 sm:py-12 lg:py-16 bg-black" aria-label="ProjectBuzz Digital Marketplace Introduction">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-8 sm:mb-12">
-              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6 leading-tight">
-                ProjectBuzz - Premier Digital Marketplace for Developers
-              </h1>
-              <p className="text-base sm:text-lg lg:text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed px-2">
-                Discover, buy, and sell high-quality programming projects on ProjectBuzz. Join thousands of developers worldwide in the leading digital marketplace for ready-made solutions, source code, and innovative projects. Whether you're looking to buy projects or sell coding projects online, ProjectBuzz is your trusted developer marketplace.
-              </p>
-            </div>
 
-            {/* Key Features Grid - Mobile Responsive */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mt-8 sm:mt-12 lg:mt-16">
-              <div className="text-center p-4 sm:p-6">
-                <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-white mb-3 sm:mb-4">Buy Ready-Made Projects</h2>
-                <p className="text-sm sm:text-base text-gray-400 leading-relaxed">
-                  Browse thousands of high-quality programming projects. From web development to mobile apps, AI/ML solutions to blockchain projects - find the perfect ready-made solution for your needs.
-                </p>
-              </div>
-              <div className="text-center p-4 sm:p-6">
-                <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-white mb-3 sm:mb-4">Sell Coding Projects Online</h2>
-                <p className="text-sm sm:text-base text-gray-400 leading-relaxed">
-                  Monetize your programming skills by selling your projects on our developer marketplace. Reach a global audience of buyers looking for innovative solutions and quality source code.
-                </p>
-              </div>
-              <div className="text-center p-4 sm:p-6 sm:col-span-2 lg:col-span-1">
-                <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-white mb-3 sm:mb-4">Developer Project Marketplace</h2>
-                <p className="text-sm sm:text-base text-gray-400 leading-relaxed">
-                  Join the premier code marketplace where developers connect, collaborate, and trade innovative projects. Secure payments, instant downloads, and 24/7 support included.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
 
         {/* Featured Projects - SEO Enhanced */}
         <section aria-label="Featured Programming Projects">
