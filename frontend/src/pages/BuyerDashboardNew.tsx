@@ -211,15 +211,16 @@ const BuyerDashboardNew: React.FC = () => {
   const handleDownload = async (projectId: string) => {
     try {
       setError(null);
+      setSuccess(null);
       await projectService.downloadProjectZip(projectId);
-      setSuccess('Download started successfully!');
+      setSuccess('Project files downloaded successfully! Check your Downloads folder.');
     } catch (err: any) {
       console.error('Error downloading project:', err);
       let errorMessage = err.response?.data?.message || err.message || 'Failed to download project';
 
       // Provide more helpful error messages
       if (errorMessage.includes('ZIP file not available') || errorMessage.includes('does not have a downloadable ZIP file')) {
-        errorMessage = 'This project does not have a downloadable ZIP file. Please contact the seller for access to the source code or check if GitHub access is available.';
+        errorMessage = 'This project does not have a downloadable ZIP file. Please check your payment receipt for alternative access methods or contact support.';
       }
 
       setError(errorMessage);
