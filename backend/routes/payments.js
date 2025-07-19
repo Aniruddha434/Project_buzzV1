@@ -44,7 +44,7 @@ router.post('/create-order',
       }
       return true;
     }),
-    body('testMode').optional().isBoolean().withMessage('Test mode must be a boolean value')
+
   ],
   async (req, res) => {
     try {
@@ -65,10 +65,10 @@ router.post('/create-order',
 
       console.log('✅ Validation passed successfully');
 
-      let { projectId, discountCode, customerPhone, testMode = false } = req.body;
+      let { projectId, discountCode, customerPhone } = req.body;
       const user = req.user;
 
-      console.log('📋 Processing payment order:', { projectId, discountCode, customerPhone, testMode });
+      console.log('📋 Processing payment order:', { projectId, discountCode, customerPhone });
 
       // Clean phone number if provided
       if (customerPhone && customerPhone.trim() !== '') {

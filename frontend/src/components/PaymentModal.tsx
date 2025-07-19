@@ -76,7 +76,6 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
       const orderResponse = await paymentService.createOrder(
         project._id,
         cleanPhone,
-        false,
         null // No discount code for direct payment
       );
 

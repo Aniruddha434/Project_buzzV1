@@ -123,7 +123,7 @@ const ModernDashboard: React.FC = () => {
 
     setBuyingProject(project._id);
     try {
-      const response = await paymentService.createOrder(project._id);
+      const response = await paymentService.createOrder(project._id, '', null);
 
       if (response.success && response.paymentUrl) {
         window.location.href = response.paymentUrl;
