@@ -3,6 +3,7 @@
 ## Pre-Deployment Checklist
 
 ### Environment Configuration
+
 - [ ] Production environment variables configured
 - [ ] All sensitive data moved to environment variables
 - [ ] Database connection strings updated for production
@@ -11,6 +12,7 @@
 - [ ] SSL certificates obtained and configured
 
 ### Security
+
 - [ ] Strong JWT secrets (64+ characters) generated
 - [ ] Session secrets configured
 - [ ] Rate limiting enabled and configured
@@ -22,6 +24,7 @@
 - [ ] Firewall configured (ports 80, 443, 22 only)
 
 ### Database
+
 - [ ] MongoDB Atlas production cluster created
 - [ ] Database user with minimal required permissions
 - [ ] Network access whitelist configured
@@ -30,6 +33,7 @@
 - [ ] Connection pooling configured
 
 ### Payment Gateway
+
 - [ ] Razorpay account activated for live mode
 - [ ] Live API keys configured
 - [ ] Webhook endpoints configured
@@ -37,12 +41,14 @@
 - [ ] Refund process tested
 
 ### Email Service
+
 - [ ] Production email service configured
 - [ ] SMTP credentials secured
 - [ ] Email templates tested
 - [ ] Delivery rates monitored
 
 ### Performance
+
 - [ ] Frontend build optimized
 - [ ] Code splitting implemented
 - [ ] Static assets compressed
@@ -51,6 +57,7 @@
 - [ ] Database queries optimized
 
 ### Monitoring & Logging
+
 - [ ] Application logging configured
 - [ ] Error tracking setup (Sentry)
 - [ ] Health check endpoints implemented
@@ -61,6 +68,7 @@
 ## Deployment Steps
 
 ### 1. Infrastructure Setup
+
 - [ ] Server provisioned and configured
 - [ ] Domain name configured
 - [ ] DNS records set up
@@ -68,6 +76,7 @@
 - [ ] Reverse proxy configured (Nginx)
 
 ### 2. Application Deployment
+
 - [ ] Code deployed to production server
 - [ ] Dependencies installed
 - [ ] Environment variables configured
@@ -76,6 +85,7 @@
 - [ ] Process manager configured (PM2)
 
 ### 3. Service Configuration
+
 - [ ] Application services started
 - [ ] Health checks passing
 - [ ] Load balancer configured (if applicable)
@@ -85,6 +95,7 @@
 ## Post-Deployment Verification
 
 ### Functionality Testing
+
 - [ ] User registration working
 - [ ] User login working
 - [ ] OAuth authentication working (Google/GitHub)
@@ -96,6 +107,7 @@
 - [ ] Admin dashboard accessible
 
 ### Performance Testing
+
 - [ ] Page load times acceptable (<3 seconds)
 - [ ] API response times acceptable (<500ms)
 - [ ] Database query performance optimized
@@ -103,6 +115,7 @@
 - [ ] CPU usage within limits
 
 ### Security Testing
+
 - [ ] HTTPS working correctly
 - [ ] Security headers present
 - [ ] Rate limiting working
@@ -111,6 +124,7 @@
 - [ ] Authentication security verified
 
 ### Monitoring Verification
+
 - [ ] Application logs being generated
 - [ ] Error tracking working
 - [ ] Health checks responding
@@ -121,18 +135,21 @@
 ## Production Maintenance
 
 ### Daily Tasks
+
 - [ ] Check application health status
 - [ ] Review error logs
 - [ ] Monitor performance metrics
 - [ ] Check backup status
 
 ### Weekly Tasks
+
 - [ ] Review security logs
 - [ ] Check disk space usage
 - [ ] Review performance trends
 - [ ] Update dependencies (if needed)
 
 ### Monthly Tasks
+
 - [ ] Security audit
 - [ ] Performance optimization review
 - [ ] Backup restoration test
@@ -142,6 +159,7 @@
 ## Emergency Procedures
 
 ### Application Down
+
 1. Check server status
 2. Check application logs
 3. Restart application services
@@ -149,18 +167,21 @@
 5. Escalate if needed
 
 ### Database Issues
+
 1. Check MongoDB Atlas status
 2. Review connection logs
 3. Check network connectivity
 4. Contact MongoDB support if needed
 
 ### Payment Issues
+
 1. Check Razorpay dashboard
 2. Review payment logs
 3. Contact Razorpay support
 4. Implement fallback if needed
 
 ### Security Incident
+
 1. Identify the issue
 2. Isolate affected systems
 3. Review security logs
@@ -170,12 +191,14 @@
 ## Rollback Plan
 
 ### Quick Rollback
+
 1. Stop current application
 2. Deploy previous version
 3. Restart services
 4. Verify functionality
 
 ### Database Rollback
+
 1. Stop application
 2. Restore database backup
 3. Deploy compatible application version
@@ -184,11 +207,13 @@
 ## Contact Information
 
 ### Technical Support
+
 - **Primary**: your-email@domain.com
 - **Secondary**: backup-email@domain.com
 - **Emergency**: +1-xxx-xxx-xxxx
 
 ### Service Providers
+
 - **Hosting**: [Provider Support]
 - **Database**: MongoDB Atlas Support
 - **Payment**: Razorpay Support
