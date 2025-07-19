@@ -65,11 +65,19 @@ const EnhancedLoginPage: React.FC = () => {
           throw new Error('Please enter your email');
         }
 
+        if (!formData.password.trim()) {
+          throw new Error('Please enter a password');
+        }
+
+        if (formData.password.length < 6) {
+          throw new Error('Password must be at least 6 characters long');
+        }
+
         const displayName = formData.displayName.trim() || formData.email.split('@')[0];
 
         const response = await api.post('/auth/register-with-otp', {
           email: formData.email.trim(),
-          password: formData.password || 'temp-password', // For email-only registration
+          password: formData.password,
           displayName,
           role: 'buyer'
         });
@@ -283,32 +291,30 @@ const EnhancedLoginPage: React.FC = () => {
                       />
                     )}
 
-                    {/* Password Field - Only show for login */}
-                    {isLogin && (
-                      <EnhancedInput
-                        name="password"
-                        type={showPassword ? "text" : "password"}
-                        placeholder="Enter your password"
-                        value={formData.password}
-                        onChange={handleInputChange}
-                        variant="enhanced"
-                        required
-                        autoComplete="current-password"
-                        rightIcon={
-                          <button
-                            type="button"
-                            onClick={() => setShowPassword(!showPassword)}
-                            className="text-gray-400 hover:text-white transition-colors"
-                          >
-                            {showPassword ? (
-                              <EyeOff className="h-5 w-5" />
-                            ) : (
-                              <Eye className="h-5 w-5" />
-                            )}
-                          </button>
-                        }
-                      />
-                    )}
+                    {/* Password Field - Show for both login and registration */}
+                    <EnhancedInput
+                      name="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder={isLogin ? "Enter your password" : "Create a password"}
+                      value={formData.password}
+                      onChange={handleInputChange}
+                      variant="enhanced"
+                      required
+                      autoComplete={isLogin ? "current-password" : "new-password"}
+                      rightIcon={
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="text-gray-400 hover:text-white transition-colors"
+                        >
+                          {showPassword ? (
+                            <EyeOff className="h-5 w-5" />
+                          ) : (
+                            <Eye className="h-5 w-5" />
+                          )}
+                        </button>
+                      }
+                    />
 
                     {/* Error Display */}
                     {error && (
