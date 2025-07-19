@@ -69,7 +69,7 @@ const EnhancedHero: React.FC = () => {
                 {user ? (
                   <Link
                     to="/market"
-                    className="inline-flex items-center px-8 py-4 bg-white text-black font-semibold rounded-lg hover:bg-gray-100 transition-all duration-200 transform hover:scale-105 shadow-xl"
+                    className="inline-flex items-center px-8 py-4 bg-black text-white font-semibold rounded-lg hover:bg-gray-900 transition-all duration-200 transform hover:scale-105 shadow-xl border border-gray-700"
                   >
                     Browse Projects
                     <ArrowRight className="ml-2 h-5 w-5" />
@@ -77,7 +77,7 @@ const EnhancedHero: React.FC = () => {
                 ) : (
                   <Link
                     to="/login"
-                    className="inline-flex items-center px-8 py-4 bg-white text-black font-semibold rounded-lg hover:bg-gray-100 transition-all duration-200 transform hover:scale-105 shadow-xl"
+                    className="inline-flex items-center px-8 py-4 bg-black text-white font-semibold rounded-lg hover:bg-gray-900 transition-all duration-200 transform hover:scale-105 shadow-xl border border-gray-700"
                   >
                     Get Started
                     <ArrowRight className="ml-2 h-5 w-5" />
@@ -86,7 +86,7 @@ const EnhancedHero: React.FC = () => {
                 
                 <Link
                   to="/seller-registration"
-                  className="inline-flex items-center px-8 py-4 border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-black transition-all duration-200"
+                  className="inline-flex items-center px-8 py-4 border-2 border-gray-600 text-gray-300 font-semibold rounded-lg hover:bg-gray-800 hover:text-white hover:border-gray-500 transition-all duration-200"
                 >
                   Start Selling
                 </Link>
@@ -101,24 +101,24 @@ const EnhancedHero: React.FC = () => {
             </div>
 
             {/* Right Column - Hero Visual */}
-            <div className="relative hidden lg:block">
+            <div className="relative block">
               <div className="relative">
                 {/* Hero Visual Container */}
-                <div className="relative bg-gradient-to-br from-gray-900 to-black rounded-2xl p-6 border border-gray-800 shadow-2xl transform hover:scale-105 transition-transform duration-300">
+                <div className="relative bg-gradient-to-br from-gray-900 to-black rounded-2xl p-4 sm:p-6 border border-gray-800 shadow-2xl transform hover:scale-105 transition-transform duration-300">
                   {/* Code Editor Mockup */}
                   <div className="bg-gray-900 rounded-lg border border-gray-700 overflow-hidden">
                     {/* Editor Header */}
-                    <div className="flex items-center px-4 py-3 bg-gray-800 border-b border-gray-700">
+                    <div className="flex items-center px-3 sm:px-4 py-2 sm:py-3 bg-gray-800 border-b border-gray-700">
                       <div className="flex space-x-2">
-                        <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                        <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                        <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-red-500 rounded-full"></div>
+                        <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-yellow-500 rounded-full"></div>
+                        <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-green-500 rounded-full"></div>
                       </div>
-                      <div className="ml-4 text-sm text-gray-400 font-mono">ProjectBuzz.js</div>
+                      <div className="ml-3 sm:ml-4 text-xs sm:text-sm text-gray-400 font-mono">ProjectBuzz.js</div>
                     </div>
 
                     {/* Code Content with Typing Animation */}
-                    <div className="p-4 font-mono text-sm leading-relaxed">
+                    <div className="p-3 sm:p-4 font-mono text-xs sm:text-sm leading-relaxed">
                       <div className="text-gray-500 mb-1">// Where Digital Projects Come to Life</div>
                       <div className="text-blue-400">const <span className="text-white">projectBuzz</span> = {'{'}</div>
                       <div className="ml-4 text-green-400">tagline: <span className="text-yellow-300">'Where Digital Projects Come to Life'</span>,</div>
@@ -142,14 +142,7 @@ const EnhancedHero: React.FC = () => {
                 <div className="absolute -inset-6 bg-gradient-to-r from-white/10 via-transparent to-white/5 rounded-3xl blur-2xl opacity-50"></div>
               </div>
 
-              {/* Mobile Hero Visual - Simplified */}
-              <div className="lg:hidden mt-12 text-center">
-                <div className="inline-block bg-gray-900 border border-gray-800 rounded-xl p-6 shadow-xl">
-                  <div className="text-4xl mb-2">💾</div>
-                  <div className="text-white font-semibold">Digital Assets</div>
-                  <div className="text-gray-400 text-sm">Quality • Verified • Instant</div>
-                </div>
-              </div>
+
             </div>
           </div>
         </div>
