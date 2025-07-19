@@ -28,6 +28,9 @@ const PaymentSuccess: React.FC = () => {
   const [projectData, setProjectData] = useState<any>(null);
   const [error, setError] = useState<string>('');
   const [copiedField, setCopiedField] = useState<string>('');
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [downloadSuccess, setDownloadSuccess] = useState('');
+  const [downloadError, setDownloadError] = useState('');
 
   const orderId = searchParams.get('order_id');
 
@@ -83,17 +86,30 @@ const PaymentSuccess: React.FC = () => {
     }
   };
 
-  const handleDownloadAccess = async () => {
+  const handleDirectDownload = async () => {
     if (!projectData) return;
 
     try {
-      const accessResponse = await projectService.getProjectAccess(projectData._id);
-      if (accessResponse.success && accessResponse.data.githubRepo) {
-        window.open(accessResponse.data.githubRepo, '_blank');
+      setIsDownloading(true);
+
+      // Check if project has ZIP file for direct download
+      if (projectData.projectZipFile && projectData.projectZipFile.filename) {
+        await projectService.downloadProjectZip(projectData._id);
+        setDownloadSuccess('Project downloaded successfully!');
+      } else {
+        // Fallback to GitHub access if no ZIP file
+        const accessResponse = await projectService.getProjectAccess(projectData._id);
+        if (accessResponse.success && accessResponse.data.githubRepo) {
+          window.open(accessResponse.data.githubRepo, '_blank');
+        } else {
+          throw new Error('No download method available for this project');
+        }
       }
     } catch (error: any) {
-      console.error('Error accessing project:', error);
-      alert('Error accessing project. Please contact support.');
+      console.error('Error downloading project:', error);
+      setDownloadError(error.message || 'Error downloading project. Please contact support.');
+    } finally {
+      setIsDownloading(false);
     }
   };
 
@@ -286,11 +302,23 @@ const PaymentSuccess: React.FC = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <button
-                  onClick={handleDownloadAccess}
-                  className="bg-black text-white font-medium py-3 px-6 rounded-lg hover:bg-gray-800 transition-colors flex items-center justify-center space-x-2"
+                  onClick={handleDirectDownload}
+                  disabled={isDownloading}
+                  className="bg-black text-white font-medium py-3 px-6 rounded-lg hover:bg-gray-800 disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors flex items-center justify-center space-x-2"
                 >
-                  <Download className="w-4 h-4" />
-                  <span>Access GitHub Repository</span>
+                  {isDownloading ? (
+                    <>
+                      <Loader className="w-4 h-4 animate-spin" />
+                      <span>Downloading...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Download className="w-4 h-4" />
+                      <span>
+                        {projectData?.projectZipFile ? 'Download Project Files' : 'Access GitHub Repository'}
+                      </span>
+                    </>
+                  )}
                 </button>
 
                 {projectData.demoUrl && (
@@ -302,6 +330,32 @@ const PaymentSuccess: React.FC = () => {
                     <span>View Live Demo</span>
                   </button>
                 )}
+              </div>
+
+              {/* Download Status Messages */}
+              {downloadSuccess && (
+                <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg flex items-center space-x-2">
+                  <CheckCircle className="w-4 h-4 text-green-600" />
+                  <span className="text-green-800 text-sm">{downloadSuccess}</span>
+                </div>
+              )}
+
+              {downloadError && (
+                <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center space-x-2">
+                  <AlertCircle className="w-4 h-4 text-red-600" />
+                  <span className="text-red-800 text-sm">{downloadError}</span>
+                </div>
+              )}
+
+              {/* Download Instructions */}
+              <div className="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                <h4 className="font-medium text-gray-900 mb-2">📋 What's Included:</h4>
+                <ul className="text-sm text-gray-600 space-y-1">
+                  <li>• Complete source code and project files</li>
+                  <li>• Documentation and setup instructions</li>
+                  <li>• All assets and dependencies</li>
+                  <li>• Ready-to-use project structure</li>
+                </ul>
               </div>
             </div>
           )}
