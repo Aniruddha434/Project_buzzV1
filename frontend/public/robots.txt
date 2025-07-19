@@ -64,9 +64,9 @@ Allow: /projects/
 Crawl-delay: 1
 
 # Sitemap location
-Sitemap: https://project-buzz-v.vercel.app/sitemap.xml
-Sitemap: https://project-buzz-v.vercel.app/sitemap-projects.xml
-Sitemap: https://project-buzz-v.vercel.app/sitemap-categories.xml
+Sitemap: https://projectbuzz.tech/sitemap.xml
+Sitemap: https://projectbuzz.tech/sitemap-projects.xml
+Sitemap: https://projectbuzz.tech/sitemap-categories.xml
 
 # Host directive
-Host: https://project-buzz-v.vercel.app
+Host: https://projectbuzz.tech

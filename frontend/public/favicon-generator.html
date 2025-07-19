@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ProjectBuzz Favicon Generator</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f0f0f0; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; }
+        .favicon-preview { display: inline-block; margin: 10px; text-align: center; }
+        .favicon-preview canvas { border: 1px solid #ccc; margin-bottom: 5px; }
+        .download-btn { background: #007cba; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; margin: 5px; }
+        .download-btn:hover { background: #005a87; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ProjectBuzz Favicon Generator</h1>
+        <p>This tool generates all necessary favicon sizes for ProjectBuzz with the white Rubik's cube on black background.</p>
+        
+        <div id="previews"></div>
+        
+        <button onclick="generateAllFavicons()" style="background: #28a745; color: white; padding: 12px 24px; border: none; border-radius: 4px; font-size: 16px; cursor: pointer;">
+            Generate All Favicons
+        </button>
+    </div>
+
+    <script>
+        const sizes = [
+            { name: 'favicon-16x16.png', size: 16 },
+            { name: 'favicon-32x32.png', size: 32 },
+            { name: 'favicon-96x96.png', size: 96 },
+            { name: 'favicon-192x192.png', size: 192 },
+            { name: 'favicon-512x512.png', size: 512 },
+            { name: 'apple-touch-icon.png', size: 180 },
+            { name: 'apple-touch-icon-57x57.png', size: 57 },
+            { name: 'apple-touch-icon-60x60.png', size: 60 },
+            { name: 'apple-touch-icon-72x72.png', size: 72 },
+            { name: 'apple-touch-icon-76x76.png', size: 76 },
+            { name: 'apple-touch-icon-114x114.png', size: 114 },
+            { name: 'apple-touch-icon-120x120.png', size: 120 },
+            { name: 'apple-touch-icon-144x144.png', size: 144 },
+            { name: 'apple-touch-icon-152x152.png', size: 152 },
+            { name: 'mstile-70x70.png', size: 70 },
+            { name: 'mstile-144x144.png', size: 144 },
+            { name: 'mstile-150x150.png', size: 150 },
+            { name: 'mstile-310x150.png', size: 310, height: 150 },
+            { name: 'mstile-310x310.png', size: 310 }
+        ];
+
+        function drawProjectBuzzLogo(canvas, size) {
+            const ctx = canvas.getContext('2d');
+            const scale = size / 32;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, size, size);
+            
+            // Black background with rounded corners
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, size, size);
+            
+            // Scale and center the cube
+            ctx.save();
+            ctx.translate(size * 0.25, size * 0.1875);
+            ctx.scale(scale, scale);
+            
+            // Draw 3D cube
+            // Top face
+            ctx.fillStyle = 'white';
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = 0.5;
+            ctx.lineJoin = 'round';
+            
+            ctx.beginPath();
+            ctx.moveTo(16, 6);
+            ctx.lineTo(26, 10);
+            ctx.lineTo(16, 14);
+            ctx.lineTo(6, 10);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            
+            // Left face
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.beginPath();
+            ctx.moveTo(6, 10);
+            ctx.lineTo(6, 20);
+            ctx.lineTo(16, 24);
+            ctx.lineTo(16, 14);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            
+            // Right face
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+            ctx.beginPath();
+            ctx.moveTo(16, 14);
+            ctx.lineTo(16, 24);
+            ctx.lineTo(26, 20);
+            ctx.lineTo(26, 10);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            
+            ctx.restore();
+        }
+
+        function generateFavicon(name, size, height = null) {
+            const canvas = document.createElement('canvas');
+            const actualHeight = height || size;
+            canvas.width = size;
+            canvas.height = actualHeight;
+            
+            drawProjectBuzzLogo(canvas, Math.min(size, actualHeight));
+            
+            return canvas;
+        }
+
+        function downloadCanvas(canvas, filename) {
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function generateAllFavicons() {
+            const previewsDiv = document.getElementById('previews');
+            previewsDiv.innerHTML = '';
+            
+            sizes.forEach(({ name, size, height }) => {
+                const canvas = generateFavicon(name, size, height);
+                
+                const previewDiv = document.createElement('div');
+                previewDiv.className = 'favicon-preview';
+                
+                const previewCanvas = canvas.cloneNode();
+                const ctx = previewCanvas.getContext('2d');
+                ctx.drawImage(canvas, 0, 0);
+                
+                const downloadBtn = document.createElement('a');
+                downloadBtn.className = 'download-btn';
+                downloadBtn.textContent = `Download ${name}`;
+                downloadBtn.href = '#';
+                downloadBtn.onclick = (e) => {
+                    e.preventDefault();
+                    downloadCanvas(canvas, name);
+                };
+                
+                const label = document.createElement('div');
+                label.textContent = `${name} (${size}${height && height !== size ? `x${height}` : 'x' + size})`;
+                
+                previewDiv.appendChild(previewCanvas);
+                previewDiv.appendChild(document.createElement('br'));
+                previewDiv.appendChild(label);
+                previewDiv.appendChild(document.createElement('br'));
+                previewDiv.appendChild(downloadBtn);
+                
+                previewsDiv.appendChild(previewDiv);
+            });
+        }
+
+        // Generate previews on load
+        window.onload = generateAllFavicons;
+    </script>
+</body>
+</html>
