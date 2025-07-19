@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Github, ExternalLink, Eye, Calendar, Tag, User, ShoppingCart, CheckCircle, CreditCard, Shield, Lock, AlertCircle, Clock, Star, Download, FileText, Code, Zap, Target, BookOpen, Settings, Play } from 'lucide-react';
+import { X, Github, ExternalLink, Eye, Calendar, Tag, User, ShoppingCart, CheckCircle, CreditCard, Shield, Lock, AlertCircle, Clock, Star, Download, FileText, Code, Zap, BookOpen, Settings, Play } from 'lucide-react';
 import Button from './ui/Button';
 import Badge from './ui/Badge';
 import Input from './ui/Input';
@@ -97,7 +97,6 @@ const EnhancedProjectModal: React.FC<EnhancedProjectModalProps> = ({
   const [error, setError] = useState<string>('');
   const [existingPayment, setExistingPayment] = useState<any>(null);
   const [showExistingPaymentDialog, setShowExistingPaymentDialog] = useState(false);
-  const [useTestMode, setUseTestMode] = useState(false);
   const [discountCode, setDiscountCode] = useState<string>('');
   const [roleError, setRoleError] = useState<string>('');
   const [downloadError, setDownloadError] = useState<string>('');
@@ -117,7 +116,6 @@ const EnhancedProjectModal: React.FC<EnhancedProjectModalProps> = ({
       setRoleError('');
       setDownloadError('');
       setSelectedImageIndex(0);
-      setUseTestMode(false);
       setDiscountCode('');
     }
 
@@ -213,7 +211,7 @@ const EnhancedProjectModal: React.FC<EnhancedProjectModalProps> = ({
       }
 
       // Create payment order
-      const orderResponse = await paymentService.createOrder(project._id, customerPhone, useTestMode, discountCode || null);
+      const orderResponse = await paymentService.createOrder(project._id, customerPhone, discountCode || null);
 
       // Handle existing payment scenario
       if (!orderResponse.success && orderResponse.isExistingPayment) {
@@ -238,8 +236,7 @@ const EnhancedProjectModal: React.FC<EnhancedProjectModalProps> = ({
         razorpayKeyId: orderData.razorpayKeyId,
         amount: orderData.amount,
         currency: orderData.currency,
-        customerDetails: orderData.customerDetails,
-        testMode: useTestMode
+        customerDetails: orderData.customerDetails
       });
 
     } catch (error: any) {
@@ -266,13 +263,13 @@ const EnhancedProjectModal: React.FC<EnhancedProjectModalProps> = ({
 
   // Main modal content
   const modalContent = (
-    <div className="modal-detail-backdrop bg-black/80 backdrop-blur-sm overflow-y-auto">
+    <div className="modal-detail-backdrop enhanced-project-modal bg-black/80 backdrop-blur-sm overflow-y-auto">
       {/* Backdrop */}
       <div className="fixed inset-0 bg-black bg-opacity-80 transition-opacity" onClick={onClose} />
 
       {/* Modal */}
       <div className="flex min-h-full items-center justify-center p-4">
-        <div className="relative bg-black rounded-lg shadow-2xl max-w-7xl w-full max-h-[95vh] overflow-hidden border border-gray-800">
+        <div className="relative bg-black rounded-lg shadow-2xl max-w-7xl w-full max-h-[95vh] overflow-hidden border border-gray-800 transform transition-all duration-300 scale-100 hover:scale-[1.01]">
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b border-gray-800 bg-gray-900">
             <div className="flex items-center space-x-2 text-sm text-gray-400">
@@ -410,28 +407,39 @@ const EnhancedProjectModal: React.FC<EnhancedProjectModalProps> = ({
                       </div>
                     )}
 
-                    {/* Project Completion Status */}
-                    {project.completionStatus !== undefined && (
-                      <div>
-                        <h3 className="font-semibold text-white mb-3 flex items-center">
-                          <Target className="h-4 w-4 mr-2" />
-                          Completion Status
-                        </h3>
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm text-gray-400">Progress</span>
-                            <span className="text-sm font-medium text-white">{project.completionStatus}%</span>
-                          </div>
-                          <div className="w-full bg-gray-800 rounded-full h-2">
-                            <div
-                              className="bg-white h-2 rounded-full transition-all duration-300"
-                              style={{ width: `${project.completionStatus}%` }}
-                            ></div>
-                          </div>
-                          <div className="text-xs text-gray-500">
-                            {project.completionStatus === 100 ? 'Project completed' : 'Project in development'}
-                          </div>
-                        </div>
+                    {/* Enhanced Buy Button Section */}
+                    {!showCheckout && (
+                      <div className="space-y-4">
+                        {user && user.role === 'buyer' ? (
+                          isPurchased ? (
+                            <div className="flex items-center justify-center p-4 bg-green-900/20 border border-green-700 rounded-lg">
+                              <CheckCircle className="h-5 w-5 text-green-400 mr-2" />
+                              <span className="text-green-400 font-medium">
+                                You own this project
+                              </span>
+                            </div>
+                          ) : (
+                            <Button
+                              variant="primary"
+                              size="lg"
+                              leftIcon={<ShoppingCart className="h-6 w-6" />}
+                              onClick={handleBuyNowClick}
+                              className="w-full bg-black hover:bg-gray-800 text-white font-bold py-5 text-xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-200 border-2 border-white/30 hover:border-white/50"
+                            >
+                              Buy Now
+                            </Button>
+                          )
+                        ) : (
+                          <Button
+                            variant="primary"
+                            size="lg"
+                            leftIcon={<ShoppingCart className="h-6 w-6" />}
+                            onClick={() => window.location.href = '/login'}
+                            className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-5 text-xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-200"
+                          >
+                            {user ? 'Contact Seller' : 'Sign in to Buy'}
+                          </Button>
+                        )}
                       </div>
                     )}
 
@@ -472,70 +480,36 @@ const EnhancedProjectModal: React.FC<EnhancedProjectModalProps> = ({
                       </div>
                     )}
 
-                    {/* Action Buttons */}
-                    {!showCheckout && (
-                      <div className="space-y-3">
-                        {user && user.role === 'buyer' ? (
-                          isPurchased ? (
-                            <div className="flex items-center justify-center p-4 bg-gray-900 border border-gray-700 rounded-lg">
-                              <CheckCircle className="h-5 w-5 text-white mr-2" />
-                              <span className="text-white font-medium">
-                                You own this project
-                              </span>
-                            </div>
-                          ) : (
-                            <Button
-                              variant="primary"
-                              size="lg"
-                              leftIcon={<ShoppingCart className="h-5 w-5" />}
-                              onClick={handleBuyNowClick}
-                              className="w-full bg-black hover:bg-gray-800 text-white font-semibold py-3"
-                            >
-                              Buy Now - {formatCurrency(project.price)}
-                            </Button>
-                          )
-                        ) : (
+                    {/* Role Error Display */}
+                    {roleError && (
+                      <div className="mt-3">
+                        <InlineError
+                          message={roleError}
+                          variant="warning"
+                          dismissible
+                          onDismiss={() => setRoleError('')}
+                        />
+                      </div>
+                    )}
+
+                    {/* Demo Link */}
+                    {project.demoUrl && (
+                      <div className="mt-4">
+                        <a
+                          href={project.demoUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block"
+                        >
                           <Button
-                            variant="primary"
-                            size="lg"
-                            leftIcon={<ShoppingCart className="h-5 w-5" />}
-                            onClick={() => window.location.href = '/login'}
-                            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3"
+                            variant="outline"
+                            size="md"
+                            leftIcon={<ExternalLink className="h-4 w-4" />}
+                            className="w-full bg-gray-800 border-gray-700 text-white hover:bg-gray-700"
                           >
-                            {user ? 'Contact Seller' : 'Sign in to Buy'}
+                            View Live Demo
                           </Button>
-                        )}
-
-                        {/* Role Error Display */}
-                        {roleError && (
-                          <div className="mt-3">
-                            <InlineError
-                              message={roleError}
-                              variant="warning"
-                              dismissible
-                              onDismiss={() => setRoleError('')}
-                            />
-                          </div>
-                        )}
-
-                        {/* Demo Link */}
-                        {project.demoUrl && (
-                          <a
-                            href={project.demoUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="block"
-                          >
-                            <Button
-                              variant="outline"
-                              size="md"
-                              leftIcon={<ExternalLink className="h-4 w-4" />}
-                              className="w-full"
-                            >
-                              View Live Demo
-                            </Button>
-                          </a>
-                        )}
+                        </a>
                       </div>
                     )}
                   </div>
@@ -655,30 +629,7 @@ const EnhancedProjectModal: React.FC<EnhancedProjectModalProps> = ({
                           </p>
                         </div>
 
-                        {/* Test Mode Toggle */}
-                        <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                          <div>
-                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                              Test Mode
-                            </label>
-                            <p className="text-xs text-gray-500">
-                              {useTestMode ? 'Simulate payment success' : 'Use real Razorpay checkout'}
-                            </p>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => setUseTestMode(!useTestMode)}
-                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                              useTestMode ? 'bg-blue-600' : 'bg-gray-200'
-                            }`}
-                          >
-                            <span
-                              className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                                useTestMode ? 'translate-x-6' : 'translate-x-1'
-                              }`}
-                            />
-                          </button>
-                        </div>
+
 
                         {/* Security Info */}
                         <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
@@ -697,8 +648,8 @@ const EnhancedProjectModal: React.FC<EnhancedProjectModalProps> = ({
                           size="lg"
                           onClick={handlePayment}
                           disabled={isProcessing}
-                          className="w-full bg-black hover:bg-gray-800 text-white font-semibold py-4"
-                          leftIcon={<CreditCard className="h-5 w-5" />}
+                          className="w-full bg-black hover:bg-gray-800 text-white font-bold py-5 text-lg shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-200 border-2 border-white/30 hover:border-white/50 relative z-10"
+                          leftIcon={<CreditCard className="h-6 w-6" />}
                         >
                           {isProcessing ? 'Processing...' : `Pay ${formatCurrency(project.price)}`}
                         </Button>

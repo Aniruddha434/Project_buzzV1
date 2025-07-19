@@ -2,14 +2,13 @@ import api from '../api.js';
 
 const paymentService = {
   // Create payment order
-  async createOrder(projectId, customerPhone = '', testMode = false, discountCode = null) {
+  async createOrder(projectId, customerPhone = '', discountCode = null) {
     try {
-      console.log('🔄 Creating payment order:', { projectId, customerPhone, testMode, discountCode });
+      console.log('🔄 Creating payment order:', { projectId, customerPhone, discountCode });
 
       const requestData = {
         projectId,
-        customerPhone,
-        testMode
+        customerPhone
       };
 
       // Add discount code if provided
@@ -117,24 +116,11 @@ const paymentService = {
   // Initialize Razorpay checkout
   async initiateRazorpayPayment(paymentData) {
     try {
-      const { razorpayOrderId, razorpayKeyId, amount, currency, customerDetails, testMode } = paymentData;
+      const { razorpayOrderId, razorpayKeyId, amount, currency, customerDetails } = paymentData;
 
       // Debug logging
       console.log('Payment data received:', paymentData);
       console.log('Razorpay Order ID:', razorpayOrderId);
-
-      // Check if this is test mode - only simulate if explicitly requested
-      if (testMode === true) {
-        console.log('🧪 Test mode detected - simulating payment success');
-
-        // Simulate payment success after a short delay
-        setTimeout(() => {
-          alert('🎉 Payment Successful! (Test Mode)\n\nThis is a simulated payment for testing purposes.');
-          console.log('✅ Mock payment completed successfully');
-        }, 1000);
-
-        return { success: true, testMode: true };
-      }
 
       // Load Razorpay SDK if not already loaded
       if (!window.Razorpay) {

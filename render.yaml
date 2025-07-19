@@ -48,11 +48,11 @@ services:
       - key: BCRYPT_ROUNDS
         value: 14
       - key: RAZORPAY_KEY_ID
-        value: rzp_test_71doc1660gWGcy
+        value: rzp_live_your_production_key_id
       - key: RAZORPAY_KEY_SECRET
-        value: v7FdAKGWN9o6WGtPQVXgGcii
+        value: your_production_razorpay_secret
       - key: RAZORPAY_ENVIRONMENT
-        value: test
+        value: production
       - key: GOOGLE_CLIENT_ID
         value: your-production-google-client-id
       - key: GOOGLE_CLIENT_SECRET
