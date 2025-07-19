@@ -14,12 +14,8 @@ const messageSchema = new mongoose.Schema({
   templateId: {
     type: String,
     enum: [
-      'interested',
       'lower_price',
-      'best_offer',
-      'custom_request',
-      'timeline_question',
-      'feature_question'
+      'best_offer'
     ]
   },
   priceOffer: {

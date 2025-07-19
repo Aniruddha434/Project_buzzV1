@@ -21,12 +21,8 @@ interface NegotiationButtonProps {
 }
 
 const MESSAGE_TEMPLATES = [
-  { id: 'interested', content: "I'm interested in this project. Can we discuss the details?" },
   { id: 'lower_price', content: "Would you consider a lower price for this project?" },
-  { id: 'best_offer', content: "What's your best offer for this project?" },
-  { id: 'custom_request', content: "I have some specific requirements. Can we discuss customizations?" },
-  { id: 'timeline_question', content: "What's the expected timeline for this project?" },
-  { id: 'feature_question', content: "Can you provide more details about the features included?" }
+  { id: 'best_offer', content: "What's your best offer for this project?" }
 ];
 
 export const NegotiationButton: React.FC<NegotiationButtonProps> = ({
