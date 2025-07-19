@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext.tsx';
 import { projectService } from '../services/projectService.js';
 import { Calendar, Tag, User, Code, Clock, BookOpen, FileText, Settings, Play, Target, Eye, ShoppingCart, LogIn } from 'lucide-react';
 import { getImageUrl } from '../utils/imageUtils.js';
+import EnhancedProjectModal from '../components/EnhancedProjectModal';
 
 interface ProjectImage {
   url: string;
@@ -89,14 +90,28 @@ const ProjectSharePage: FC = () => {
     fetchProject();
   }, [id]);
 
+  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
+
   const handlePurchaseClick = () => {
     if (!user) {
       // Redirect to login with return URL
       navigate(`/login?redirect=/project/share/${id}`);
     } else {
-      // Redirect to main project page for purchase
-      navigate(`/project/${id}`);
+      // Open purchase modal directly on this page
+      setShowPurchaseModal(true);
     }
+  };
+
+  const handlePaymentSuccess = (orderId: string) => {
+    console.log('Payment successful:', orderId);
+    setShowPurchaseModal(false);
+    // Optionally redirect to success page or show success message
+    navigate('/payment/success');
+  };
+
+  const handlePaymentError = (error: string) => {
+    console.error('Payment error:', error);
+    // Handle payment error
   };
 
   if (loading) {
@@ -370,7 +385,7 @@ const ProjectSharePage: FC = () => {
               {user ? (
                 <>
                   <ShoppingCart className="h-5 w-5 mr-2" />
-                  Purchase for ₹{project.price.toFixed(2)}
+                  Purchase for ₹{project.price}
                 </>
               ) : (
                 <>
@@ -382,6 +397,17 @@ const ProjectSharePage: FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Enhanced Project Modal for Purchase */}
+      {showPurchaseModal && project && (
+        <EnhancedProjectModal
+          project={project}
+          isOpen={showPurchaseModal}
+          onClose={() => setShowPurchaseModal(false)}
+          onPaymentSuccess={handlePaymentSuccess}
+          onPaymentError={handlePaymentError}
+        />
+      )}
     </div>
   );
 };
