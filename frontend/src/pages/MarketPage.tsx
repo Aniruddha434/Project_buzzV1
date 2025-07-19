@@ -177,7 +177,7 @@ const MarketPage: React.FC = () => {
         ]}
       />
 
-      <div className="min-h-screen bg-black page-with-navbar-extra">
+      <div className="min-h-screen bg-black page-with-navbar-extra marketplace-page">
         <div className="projects-container py-8">
           {/* Header - SEO Optimized */}
           <header className="mb-8">
@@ -195,10 +195,9 @@ const MarketPage: React.FC = () => {
               }
             </p>
           </header>
-        </div>
 
-        {/* Search and Filters - Mobile Responsive */}
-        <div className="mb-6 sm:mb-8 space-y-3 sm:space-y-4">
+          {/* Search and Filters - Mobile Responsive */}
+          <div className="mb-6 sm:mb-8 space-y-3 sm:space-y-4">
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
             {/* Search */}
             <div className="flex-1">
@@ -250,13 +249,13 @@ const MarketPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Results Count */}
-          <div className="text-sm text-gray-400">
-            {loading ? 'Loading...' : `${filteredProjects.length} project${filteredProjects.length !== 1 ? 's' : ''} found`}
+            {/* Results Count */}
+            <div className="text-sm text-gray-400">
+              {loading ? 'Loading...' : `${filteredProjects.length} project${filteredProjects.length !== 1 ? 's' : ''} found`}
+            </div>
           </div>
-        </div>
 
-        {/* Projects Grid */}
+          {/* Projects Grid */}
         {loading ? (
           <div className="projects-grid-unified">
             {[1, 2, 3, 4, 5, 6].map((i) => (
@@ -298,6 +297,7 @@ const MarketPage: React.FC = () => {
             ))}
           </div>
         )}
+        </div>
 
         {/* Enhanced Project Modal with Integrated Checkout */}
         {selectedProject && (
