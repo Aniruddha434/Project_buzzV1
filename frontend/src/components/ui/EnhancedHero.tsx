@@ -69,9 +69,9 @@ const EnhancedHero: React.FC = () => {
                 {user ? (
                   <Link
                     to="/market"
-                    className="inline-flex items-center px-8 py-4 bg-black text-white font-semibold rounded-lg hover:bg-gray-900 transition-all duration-200 transform hover:scale-105 shadow-xl border border-gray-700"
+                    className="inline-flex items-center px-8 py-4 bg-white text-black font-semibold rounded-lg hover:bg-gray-100 transition-all duration-200 transform hover:scale-105 shadow-xl"
                   >
-                    Browse Projects
+                    Browse Market
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>
                 ) : (
