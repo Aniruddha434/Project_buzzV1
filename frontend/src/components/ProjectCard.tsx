@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Eye, ShoppingCart, CheckCircle, Code, ExternalLink, Github, X, ChevronLeft, ChevronRight, Share2, User, Download, Star, Heart } from 'lucide-react';
+import { Eye, ShoppingCart, CheckCircle, Code, ExternalLink, Github, X, ChevronLeft, ChevronRight, Share2, User, Download, Star, Heart, MessageCircle } from 'lucide-react';
 
 import { NegotiationButton } from './NegotiationButton';
 import ShareModal from './ShareModal';
@@ -344,7 +344,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
             </a>
           )}
         </div>
-      </div>
+        </div>
 
         {/* Content Section - 20% with action buttons */}
         <div className="project-card-content">
@@ -369,58 +369,65 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
             <div className="project-card-actions">
               {user && user.role === 'buyer' ? (
                 isPurchased ? (
-                  <div className="flex items-center justify-center p-2 bg-gray-900 border border-gray-700 rounded-lg">
-                    <CheckCircle className="h-3 w-3 text-white mr-1.5" />
+                  <div className="project-card-button bg-gray-900 border border-gray-700">
+                    <CheckCircle className="h-4 w-4 text-white mr-2" />
                     <span className="text-xs font-medium text-white">
                       Owned
                     </span>
                   </div>
                 ) : (
-                  <div className="flex flex-col sm:flex-row gap-2">
+                  <>
                     <button
-                      className="project-card-button flex-1 bg-black hover:bg-gray-800 text-white border border-gray-700"
+                      className="project-card-button buy-button"
                       onClick={(e) => {
                         e.stopPropagation();
+                        console.log('Buy button clicked for project:', project.title);
                         onClick?.(project);
                       }}
+
                     >
-                      <ShoppingCart className="h-3 w-3 mr-1.5" />
-                      <span className="text-xs">Buy {formatProjectPrice(project.price)}</span>
+                      <ShoppingCart className="h-4 w-4 mr-1" />
+                      <span>Buy {formatProjectPrice(project.price)}</span>
                     </button>
 
                     {/* Negotiation Button */}
-                    <div className="flex-1">
-                      <NegotiationButton
-                        projectId={project._id}
-                        projectTitle={project.title}
-                        originalPrice={project.price}
-                        onNegotiationStart={() => {
-                          console.log('Negotiation started for project:', project.title);
-                        }}
-                        className="w-full project-card-button bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-600"
-                        size="sm"
-                      />
-                    </div>
-                  </div>
+                    <NegotiationButton
+                      projectId={project._id}
+                      projectTitle={project.title}
+                      originalPrice={project.price}
+                      onNegotiationStart={() => {
+                        console.log('Negotiation started for project:', project.title);
+                      }}
+                      className="project-card-button bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-600"
+                      size="sm"
+                    />
+                  </>
                 )
               ) : (
-                <div className="flex flex-col sm:flex-row gap-2">
+                <>
                   <Link to={user ? `/project/${project._id}` : '/login'} className="flex-1">
-                    <button className="w-full project-card-button bg-black hover:bg-gray-800 text-white border border-gray-700">
-                      <ShoppingCart className="h-3 w-3 mr-1.5" />
-                      <span className="text-xs">{user ? 'View Details' : 'Sign in to Buy'}</span>
+                    <button
+                      className="project-card-button buy-button w-full"
+
+                    >
+                      <ShoppingCart className="h-4 w-4 mr-1" />
+                      <span>{user ? 'View Details' : 'Sign in to Buy'}</span>
                     </button>
                   </Link>
-                  <button
-                    className="project-card-button bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-600"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setShowShareModal(true);
-                    }}
-                  >
-                    <Heart className="h-3 w-3" />
-                  </button>
-                </div>
+                  <Link to="/login" className="flex-1">
+                    <button
+                      className="project-card-button bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-600 w-full"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        console.log('Negotiate button clicked for project:', project.title);
+                      }}
+
+                    >
+                      <MessageCircle className="h-4 w-4 mr-1" />
+                      <span>Sign in to Negotiate</span>
+                    </button>
+                  </Link>
+                </>
               )}
             </div>
           )}

@@ -1013,7 +1013,7 @@ body > div[class*="modal-detail-backdrop"] {
   position: relative;
   z-index: 1;
   width: 100%;
-  height: 280px; /* Fixed height to prevent overlapping */
+  height: 360px; /* Increased height to accommodate buttons */
 }
 
 .project-card-unified:hover {
@@ -1023,7 +1023,7 @@ body > div[class*="modal-detail-backdrop"] {
 /* Mobile-optimized project card */
 @media (max-width: 640px) {
   .project-card-unified {
-    height: 260px; /* Slightly smaller on mobile */
+    height: 340px; /* Increased mobile height for buttons */
     border-radius: 0.5rem;
   }
 
@@ -1032,32 +1032,39 @@ body > div[class*="modal-detail-backdrop"] {
   }
 }
 
-/* Project card image container - 80% dominant */
+/* Project card image container - 65% to allow more space for buttons */
 .project-card-image {
   @apply relative bg-muted overflow-hidden cursor-pointer;
-  height: 80%; /* 80% of card height for image dominance */
+  height: 65%; /* Reduced to 65% to give more space for buttons */
   flex-shrink: 0;
 }
 
 @media (max-width: 640px) {
   .project-card-image {
-    height: 78%; /* Slightly less on mobile for better proportions */
+    height: 60%; /* Even less on mobile for stacked buttons */
+  }
+
+  .project-card-content {
+    height: 40%; /* Increased to 40% on mobile for better button visibility */
+    min-height: 130px; /* Increased minimum height for mobile */
   }
 }
 
-/* Project card content - 20% with action buttons */
+/* Project card content - 35% with action buttons */
 .project-card-content {
   @apply p-3 flex flex-col justify-between;
-  height: 20%; /* 20% of card height for info + actions */
+  height: 35%; /* Increased to 35% for better button visibility */
   flex-shrink: 0;
-  min-height: 56px; /* Ensure space for buttons */
+  min-height: 110px; /* Increased minimum height for buttons */
+  overflow: visible; /* Ensure content is not clipped */
+  position: relative; /* Ensure proper positioning */
 }
 
 @media (max-width: 640px) {
   .project-card-content {
     @apply p-2;
-    height: 22%; /* Slightly more on mobile for stacked buttons */
-    min-height: 64px;
+    height: 30%; /* More space on mobile for stacked buttons */
+    min-height: 90px; /* Even more space on mobile */
   }
 }
 
@@ -1129,53 +1136,99 @@ body > div[class*="modal-detail-backdrop"] {
   }
 }
 
-/* Project card action buttons */
-.project-card-actions {
-  @apply mt-2;
-}
-
-.project-card-button {
-  @apply flex items-center justify-center px-2 py-1.5 rounded-md text-xs font-medium transition-colors;
-  min-height: 32px; /* Touch-friendly on desktop */
-}
-
-@media (max-width: 640px) {
-  .project-card-button {
-    @apply py-2 px-3 text-xs;
-    min-height: var(--mobile-min-touch-target); /* 44px for mobile */
-  }
-
-  .project-card-actions {
-    @apply mt-1;
-  }
-
-  /* Stack buttons vertically on mobile */
-  .project-card-actions .flex {
-    @apply flex-col gap-1;
-  }
-}
-
-/* Project card buttons */
-.project-card-button {
-  @apply py-2 px-3 rounded-lg text-sm font-medium transition-colors flex items-center justify-center;
-  min-height: var(--mobile-min-touch-target);
-}
-
-@media (max-width: 640px) {
-  .project-card-button {
-    @apply py-3 px-4 text-base;
-    min-height: 48px; /* Larger touch target on mobile */
-  }
-}
-
 /* Project card action buttons container */
 .project-card-actions {
-  @apply space-y-2 mt-auto;
+  @apply mt-auto; /* Push buttons to bottom of content area */
+  display: flex;
+  flex-direction: row; /* Changed to row for side-by-side layout */
+  gap: 8px; /* Horizontal gap between buttons */
+  width: 100%;
+  flex-shrink: 0; /* Prevent buttons from shrinking */
+  padding-top: 8px; /* Add some top padding */
 }
 
+/* Project card buttons - unified styling */
+.project-card-button {
+  @apply py-2 px-2 rounded-lg text-xs font-medium transition-all duration-200 flex items-center justify-center;
+  min-height: 36px; /* Compact height for horizontal layout */
+  border: 1px solid transparent;
+  white-space: nowrap;
+  flex: 1; /* Equal width distribution */
+  flex-shrink: 0; /* Prevent button shrinking */
+  min-width: 0; /* Allow text truncation if needed */
+  position: relative;
+  z-index: 1;
+}
+
+/* Enhanced buy button styling */
+.project-card-button.buy-button {
+  @apply bg-black hover:bg-gray-800 text-white border-gray-700;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  font-weight: 600;
+  z-index: 2; /* Higher z-index for buy button */
+}
+
+.project-card-button.buy-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  border-color: #fff;
+}
+
+.project-card-button.buy-button:active {
+  transform: translateY(0);
+  z-index: 10; /* Highest z-index when clicked */
+}
+
+/* Enhanced modal buy buttons */
+.enhanced-project-modal .bg-black {
+  position: relative;
+  z-index: 5;
+}
+
+.enhanced-project-modal button[class*="bg-black"]:hover {
+  z-index: 10;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+}
+
+/* Ensure buy buttons are always clickable and prominent */
+button[class*="Buy Now"],
+button[class*="Pay "] {
+  position: relative;
+  z-index: 5;
+  isolation: isolate;
+}
+
+/* Ensure buttons are always visible */
+.project-card-button:focus {
+  @apply outline-none ring-2 ring-blue-500 ring-offset-2 ring-offset-gray-900;
+}
+
+/* Ensure NegotiationButton integrates with horizontal layout */
+.project-card-actions .negotiation-button,
+.project-card-actions button[class*="bg-muted"] {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Handle text overflow in horizontal button layout */
+.project-card-button span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Mobile responsive button styling */
 @media (max-width: 640px) {
+  .project-card-button {
+    @apply py-2 px-2 text-xs;
+    min-height: 40px; /* Adequate mobile touch target */
+    font-size: 0.65rem; /* Smaller text for mobile horizontal layout */
+  }
+
   .project-card-actions {
-    @apply space-y-3;
+    gap: 6px; /* Smaller gap for horizontal mobile layout */
+    padding-top: 8px; /* Consistent top padding */
+    flex-direction: row; /* Maintain horizontal layout on mobile */
   }
 }
 
@@ -1230,17 +1283,19 @@ body > div[class*="modal-detail-backdrop"] {
   }
 }
 
+
+
 /* Project card container to prevent overlapping */
 .project-card-container {
   display: flex;
   flex-direction: column;
   height: 100%;
-  min-height: 280px;
+  min-height: 360px; /* Match new card height */
 }
 
 @media (max-width: 640px) {
   .project-card-container {
-    min-height: 260px;
+    min-height: 340px; /* Match new mobile card height */
   }
 }
 
@@ -1248,12 +1303,12 @@ body > div[class*="modal-detail-backdrop"] {
 .project-card-skeleton {
   @apply bg-gray-800 rounded-lg animate-pulse;
   aspect-ratio: 4/3;
-  height: 260px;
+  height: 340px; /* Match mobile card height */
 }
 
 @media (min-width: 640px) {
   .project-card-skeleton {
-    height: 280px;
+    height: 360px; /* Match desktop card height */
   }
 }
 
