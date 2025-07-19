@@ -8,14 +8,10 @@ import { body, validationResult, param } from 'express-validator';
 
 const router = express.Router();
 
-// Predefined message templates
+// Predefined message templates - Simplified to essential templates only
 const MESSAGE_TEMPLATES = {
-  interested: "I'm interested in this project. Can we discuss the details?",
   lower_price: "Would you consider a lower price for this project?",
-  best_offer: "What's your best offer for this project?",
-  custom_request: "I have some specific requirements. Can we discuss customizations?",
-  timeline_question: "What's the expected timeline for this project?",
-  feature_question: "Can you provide more details about the features included?"
+  best_offer: "What's your best offer for this project?"
 };
 
 // Start negotiation
