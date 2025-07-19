@@ -4,6 +4,7 @@ import { CreditCard, AlertCircle } from 'lucide-react';
 import Button from './ui/Button';
 import Badge from './ui/Badge';
 import paymentService from '../services/paymentService';
+import PaymentLoadingOverlay from './PaymentLoadingOverlay';
 
 interface PaymentModalProps {
   isOpen?: boolean;
@@ -35,6 +36,17 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   const [existingPayment, setExistingPayment] = useState<any>(null);
   const [showExistingPaymentDialog, setShowExistingPaymentDialog] = useState(false);
 
+  // Payment loading overlay states
+  const [paymentLoadingState, setPaymentLoadingState] = useState<{
+    isVisible: boolean;
+    status: 'processing' | 'verifying' | 'success' | 'error' | 'cancelled';
+    message?: string;
+    errorMessage?: string;
+  }>({
+    isVisible: false,
+    status: 'processing'
+  });
+
   // Reset state when modal opens/closes and manage body scroll
   useEffect(() => {
     if (showExistingPaymentDialog) {
@@ -65,14 +77,29 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     // Validate phone number
     const cleanPhone = customerPhone.replace(/\D/g, '');
     if (cleanPhone.length !== 10) {
-      console.error('Please enter a valid 10-digit mobile number');
+      setPaymentLoadingState({
+        isVisible: true,
+        status: 'error',
+        errorMessage: 'Please enter a valid 10-digit mobile number'
+      });
       return;
     }
 
     try {
       setIsProcessing(true);
+      setPaymentLoadingState({
+        isVisible: true,
+        status: 'processing',
+        message: 'Initializing payment...'
+      });
 
       // Create payment order
+      setPaymentLoadingState({
+        isVisible: true,
+        status: 'processing',
+        message: 'Creating payment order...'
+      });
+
       const orderResponse = await paymentService.createOrder(
         project._id,
         cleanPhone,
@@ -83,6 +110,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
       if (!orderResponse.success && orderResponse.isExistingPayment) {
         setExistingPayment(orderResponse.data);
         setShowExistingPaymentDialog(true);
+        setPaymentLoadingState({ isVisible: false, status: 'processing' });
         setIsProcessing(false);
         return;
       }
@@ -92,6 +120,13 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
       }
 
       const orderData = orderResponse.data;
+
+      // Update loading state before opening Razorpay
+      setPaymentLoadingState({
+        isVisible: true,
+        status: 'processing',
+        message: 'Opening payment gateway...'
+      });
 
       // Open Razorpay checkout
       const options = {
@@ -107,14 +142,43 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         theme: {
           color: '#000000'
         },
-        handler: (response: any) => {
+        handler: async (response: any) => {
           console.log('Payment successful:', response);
-          onPaymentSuccess(response.razorpay_order_id);
+          setPaymentLoadingState({
+            isVisible: true,
+            status: 'verifying',
+            message: 'Verifying payment with bank...'
+          });
+
+          // Add a small delay to show verification state
+          setTimeout(() => {
+            setPaymentLoadingState({
+              isVisible: true,
+              status: 'success',
+              message: 'Payment completed successfully!'
+            });
+
+            // Auto-close after 2 seconds and trigger success callback
+            setTimeout(() => {
+              setPaymentLoadingState({ isVisible: false, status: 'processing' });
+              onPaymentSuccess(response.razorpay_order_id);
+            }, 2000);
+          }, 1500);
         },
         modal: {
           ondismiss: () => {
             console.log('Payment cancelled by user');
-            setIsProcessing(false);
+            setPaymentLoadingState({
+              isVisible: true,
+              status: 'cancelled',
+              message: 'Payment was cancelled'
+            });
+
+            // Auto-close after 2 seconds
+            setTimeout(() => {
+              setPaymentLoadingState({ isVisible: false, status: 'processing' });
+              setIsProcessing(false);
+            }, 2000);
           }
         }
       };
@@ -122,10 +186,19 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
       const razorpay = new (window as any).Razorpay(options);
       razorpay.open();
 
+      // Hide loading overlay when Razorpay modal opens
+      setTimeout(() => {
+        setPaymentLoadingState({ isVisible: false, status: 'processing' });
+      }, 1000);
+
     } catch (error: any) {
       console.error('Payment error:', error);
       const errorMessage = error.response?.data?.message || error.message || 'Payment failed';
-      onPaymentError(errorMessage);
+      setPaymentLoadingState({
+        isVisible: true,
+        status: 'error',
+        errorMessage: errorMessage
+      });
     } finally {
       setIsProcessing(false);
     }
@@ -151,6 +224,11 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     try {
       setIsProcessing(true);
       setShowExistingPaymentDialog(false);
+      setPaymentLoadingState({
+        isVisible: true,
+        status: 'processing',
+        message: 'Resuming existing payment...'
+      });
 
       // Open Razorpay checkout with existing order
       const options = {
@@ -168,14 +246,40 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         theme: {
           color: '#000000'
         },
-        handler: (response: any) => {
+        handler: async (response: any) => {
           console.log('Payment successful:', response);
-          onPaymentSuccess(response.razorpay_order_id);
+          setPaymentLoadingState({
+            isVisible: true,
+            status: 'verifying',
+            message: 'Verifying payment with bank...'
+          });
+
+          setTimeout(() => {
+            setPaymentLoadingState({
+              isVisible: true,
+              status: 'success',
+              message: 'Payment completed successfully!'
+            });
+
+            setTimeout(() => {
+              setPaymentLoadingState({ isVisible: false, status: 'processing' });
+              onPaymentSuccess(response.razorpay_order_id);
+            }, 2000);
+          }, 1500);
         },
         modal: {
           ondismiss: () => {
             console.log('Payment cancelled by user');
-            setIsProcessing(false);
+            setPaymentLoadingState({
+              isVisible: true,
+              status: 'cancelled',
+              message: 'Payment was cancelled'
+            });
+
+            setTimeout(() => {
+              setPaymentLoadingState({ isVisible: false, status: 'processing' });
+              setIsProcessing(false);
+            }, 2000);
           }
         }
       };
@@ -185,7 +289,11 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 
     } catch (error: any) {
       console.error('Error resuming payment:', error);
-      onPaymentError(error.message || 'Failed to resume payment');
+      setPaymentLoadingState({
+        isVisible: true,
+        status: 'error',
+        errorMessage: error.message || 'Failed to resume payment'
+      });
     } finally {
       setIsProcessing(false);
     }
@@ -310,12 +418,48 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 
 
 
+  // Payment loading overlay handlers
+  const handlePaymentRetry = () => {
+    setPaymentLoadingState({ isVisible: false, status: 'processing' });
+    handleDirectPayment();
+  };
+
+  const handlePaymentClose = () => {
+    setPaymentLoadingState({ isVisible: false, status: 'processing' });
+    if (paymentLoadingState.status === 'error') {
+      onPaymentError(paymentLoadingState.errorMessage || 'Payment failed');
+    }
+  };
+
   // Default modal rendering (when no trigger)
   if (showExistingPaymentDialog) {
-    return renderExistingPaymentDialog();
+    return (
+      <>
+        {renderExistingPaymentDialog()}
+        <PaymentLoadingOverlay
+          isVisible={paymentLoadingState.isVisible}
+          status={paymentLoadingState.status}
+          message={paymentLoadingState.message}
+          errorMessage={paymentLoadingState.errorMessage}
+          onRetry={handlePaymentRetry}
+          onClose={handlePaymentClose}
+          estimatedTime={30}
+        />
+      </>
+    );
   }
 
-  return null;
+  return (
+    <PaymentLoadingOverlay
+      isVisible={paymentLoadingState.isVisible}
+      status={paymentLoadingState.status}
+      message={paymentLoadingState.message}
+      errorMessage={paymentLoadingState.errorMessage}
+      onRetry={handlePaymentRetry}
+      onClose={handlePaymentClose}
+      estimatedTime={30}
+    />
+  );
 };
 
 export default PaymentModal;
