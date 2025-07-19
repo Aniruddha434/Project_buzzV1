@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { CheckCircle, ArrowRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import FeaturedProjects from '../components/FeaturedProjects';
-import { DemoOne } from '../components/ui/demo-one';
+import { EnhancedHero } from '../components/ui/EnhancedHero';
 import { WhyChooseProjectBuzzPins, HowItWorksPins, JoinCommunityPins } from '../components/ProjectBuzzPins';
 import Footer from '../components/Footer';
 import Button from '../components/ui/Button';
@@ -19,8 +19,8 @@ const HomePro: React.FC = () => {
     name: 'ProjectBuzz',
     alternateName: 'Project Buzz',
     url: 'https://projectbuzz.tech',
-    description: 'ProjectBuzz is the premier digital marketplace for developers to buy and sell high-quality programming projects, source code, and innovative solutions.',
-    keywords: 'ProjectBuzz, project buzz, digital marketplace, buy projects, sell projects, developer marketplace, code marketplace, programming projects',
+    description: 'Where Digital Projects Come to Life - ProjectBuzz is the premier digital marketplace for developers to buy and sell high-quality programming projects, source code, and innovative solutions.',
+    keywords: 'ProjectBuzz, project buzz, digital marketplace, where digital projects come to life, buy projects, sell projects, developer marketplace, code marketplace, programming projects',
     potentialAction: {
       '@type': 'SearchAction',
       target: 'https://projectbuzz.tech/market?search={search_term_string}',
@@ -41,10 +41,10 @@ const HomePro: React.FC = () => {
     <>
       {/* SEO Head Component */}
       <SEOHead
-        title="ProjectBuzz - Digital Marketplace for Developers | Buy & Sell Projects"
-        description="Discover, buy, and sell high-quality programming projects on ProjectBuzz. The premier digital marketplace for developers with ready-made solutions, source code, and innovative projects worldwide."
+        title="ProjectBuzz - Where Digital Projects Come to Life | Developer Marketplace"
+        description="Where Digital Projects Come to Life - ProjectBuzz is the premier marketplace for developers to buy ready-made projects, sell coding solutions, and discover innovative programming projects worldwide."
         keywords={[
-          'ProjectBuzz', 'project buzz', 'digital marketplace',
+          'ProjectBuzz', 'project buzz', 'digital marketplace', 'where digital projects come to life',
           'buy projects', 'sell projects', 'developer marketplace', 'code marketplace', 'programming projects',
           'buy ready-made projects', 'sell coding projects online', 'developer project marketplace',
           'purchase source code projects', 'marketplace for developers', 'buy programming projects',
@@ -59,9 +59,9 @@ const HomePro: React.FC = () => {
       />
 
       <div className="min-h-screen bg-black page-with-navbar">
-        {/* Hero Section with Rubik's Cube - SEO Optimized */}
-        <header role="banner" aria-label="ProjectBuzz Homepage Hero">
-          <DemoOne />
+        {/* Enhanced Hero Section - SEO Optimized */}
+        <header role="banner" aria-label="ProjectBuzz Digital Marketplace Hero">
+          <EnhancedHero />
         </header>
 
 
