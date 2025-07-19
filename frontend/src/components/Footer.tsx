@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import {
   Github, Twitter, Linkedin, Mail, Phone, MapPin,
-  Heart, Shield, Users, Star, ArrowRight
+  Shield, Users, Star, ArrowRight
 } from 'lucide-react';
 import ProjectBuzzLogo from './ui/ProjectBuzzLogo';
 
@@ -215,14 +215,9 @@ const Footer: React.FC = () => {
 
         {/* Bottom Bar */}
         <div className="py-6 border-t border-gray-800">
-          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+          <div className="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0">
             <div className="text-gray-400 text-sm">
               © 2024 ProjectBuzz. All rights reserved.
-            </div>
-            <div className="flex items-center text-gray-400 text-sm">
-              <span>Made with</span>
-              <Heart className="h-4 w-4 mx-1 text-red-500" />
-              <span>by Aniruddha Gayki</span>
             </div>
           </div>
         </div>
