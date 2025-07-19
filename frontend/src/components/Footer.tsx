@@ -11,7 +11,7 @@ const Footer: React.FC = () => {
     <footer className="bg-black border-t border-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Main Footer Content */}
-        <div className="py-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="py-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* Company Info */}
           <div className="space-y-4">
             <ProjectBuzzLogo
@@ -82,10 +82,49 @@ const Footer: React.FC = () => {
               </li>
               <li>
                 <Link
-                  to="/terms-and-conditions"
+                  to="/contact"
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
+                >
+                  Contact Us
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/pricing"
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
+                >
+                  Pricing
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Legal & Policies */}
+          <div>
+            <h3 className="text-white font-semibold mb-4">Legal & Policies</h3>
+            <ul className="space-y-3">
+              <li>
+                <Link
+                  to="/terms"
                   className="text-gray-400 hover:text-white transition-colors text-sm"
                 >
                   Terms & Conditions
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/privacy"
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
+                >
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/refunds"
+                  className="text-gray-400 hover:text-white transition-colors text-sm"
+                >
+                  Refunds & Cancellations
                 </Link>
               </li>
             </ul>

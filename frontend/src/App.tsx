@@ -30,6 +30,13 @@ const AdminManagement = lazy(() => import('./pages/AdminManagement.tsx'));
 const Negotiations = lazy(() => import('./pages/Negotiations.tsx'));
 const ConnectionTest = lazy(() => import('./pages/ConnectionTest.jsx'));
 
+// Legal and Policy Pages
+const ContactPage = lazy(() => import('./pages/ContactPage.tsx'));
+const PricingPage = lazy(() => import('./pages/PricingPage.tsx'));
+const TermsPage = lazy(() => import('./pages/TermsPage.tsx'));
+const PrivacyPage = lazy(() => import('./pages/PrivacyPage.tsx'));
+const RefundsPage = lazy(() => import('./pages/RefundsPage.tsx'));
+
 import NavbarEnhanced from './components/NavbarEnhanced.tsx';
 import ProtectedRoute from './components/ProtectedRoute.tsx';
 import ErrorBoundary from './components/ErrorBoundary.tsx';
@@ -78,6 +85,13 @@ const App: React.FC = () => {
             <Route path="/seller-registration-old" element={<SellerRegistration />} />
             <Route path="/unauthorized" element={<UnauthorizedPage />} />
             <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+
+            {/* Legal and Policy Pages */}
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/pricing" element={<PricingPage />} />
+            <Route path="/terms" element={<TermsPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/refunds" element={<RefundsPage />} />
 
             {/* Public Project Share Route */}
             <Route path="/project/share/:id" element={<ProjectShare />} />
