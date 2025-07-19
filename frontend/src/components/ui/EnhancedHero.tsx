@@ -110,9 +110,9 @@ const EnhancedHero: React.FC = () => {
                     {/* Editor Header */}
                     <div className="flex items-center px-4 py-3 bg-gray-800 border-b border-gray-700">
                       <div className="flex space-x-2">
-                        <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-                        <div className="w-3 h-3 bg-yellow-500 rounded-full animate-pulse delay-100"></div>
-                        <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse delay-200"></div>
+                        <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                        <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
                       </div>
                       <div className="ml-4 text-sm text-gray-400 font-mono">ProjectBuzz.js</div>
                     </div>
@@ -135,13 +135,7 @@ const EnhancedHero: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Floating Status Badges */}
-                  <div className="absolute -top-3 -right-3 bg-white text-black px-3 py-1 rounded-full text-xs font-bold shadow-lg animate-bounce">
-                    ✨ Live
-                  </div>
-                  <div className="absolute -bottom-3 -left-3 bg-green-600 text-white px-3 py-1 rounded-full text-xs font-semibold border border-green-500 animate-pulse">
-                    💾 Digital Assets
-                  </div>
+
                 </div>
 
                 {/* Background Glow Effect */}
