@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import type { FC } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.tsx';
 import { projectService } from '../services/projectService.js';
-import { Calendar, Tag, User, Code, Clock, BookOpen, FileText, Settings, Play, Target, Eye, ShoppingCart, LogIn } from 'lucide-react';
+import { Calendar, Tag, User, Code, Clock, Eye, ShoppingCart, LogIn, ArrowLeft, Share2 } from 'lucide-react';
 import { getImageUrl } from '../utils/imageUtils.js';
 import EnhancedProjectModal from '../components/EnhancedProjectModal';
 
@@ -52,6 +52,7 @@ const ProjectSharePage: FC = () => {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [project, setProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -92,10 +93,22 @@ const ProjectSharePage: FC = () => {
 
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
 
+  // Check if user just registered and should auto-open purchase modal
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const autoOpenPurchase = urlParams.get('purchase');
+
+    if (user && autoOpenPurchase === 'true' && project) {
+      setShowPurchaseModal(true);
+      // Clean up URL
+      navigate(`/project/share/${id}`, { replace: true });
+    }
+  }, [user, project, location.search, id, navigate]);
+
   const handlePurchaseClick = () => {
     if (!user) {
-      // Redirect to login with return URL
-      navigate(`/login?redirect=/project/share/${id}`);
+      // Redirect to login with return URL that includes purchase parameter
+      navigate(`/login?redirect=/project/share/${id}?purchase=true`);
     } else {
       // Open purchase modal directly on this page
       setShowPurchaseModal(true);
@@ -105,36 +118,43 @@ const ProjectSharePage: FC = () => {
   const handlePaymentSuccess = (orderId: string) => {
     console.log('Payment successful:', orderId);
     setShowPurchaseModal(false);
-    // Optionally redirect to success page or show success message
+    // Redirect to success page
     navigate('/payment/success');
   };
 
   const handlePaymentError = (error: string) => {
     console.error('Payment error:', error);
-    // Handle payment error
+    // Handle payment error - keep modal open for retry
   };
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen bg-black">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
-        <p className="ml-4 text-lg text-gray-300">Loading project details...</p>
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="h-16"></div>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-white mx-auto mb-4"></div>
+          <p className="text-gray-400">Loading project...</p>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-black p-4">
-        <div className="bg-gray-900 p-8 rounded-lg shadow-xl text-center border border-gray-700">
-          <svg className="mx-auto h-16 w-16 text-red-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <h1 className="text-2xl font-bold text-red-400 mb-3">Error</h1>
-          <p className="text-gray-300 mb-6">{error}</p>
-          <Link to="/" className="px-6 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
-            Back to Homepage
-          </Link>
+      <div className="min-h-screen bg-black">
+        <div className="h-16"></div>
+        <div className="max-w-2xl mx-auto px-4 py-16 text-center">
+          <div className="bg-gray-900 border border-gray-800 rounded-lg p-8">
+            <h1 className="text-2xl font-bold text-white mb-3">Project Not Available</h1>
+            <p className="text-gray-400 mb-6">{error}</p>
+            <Link
+              to="/"
+              className="inline-flex items-center px-6 py-3 bg-white text-black font-semibold rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to ProjectBuzz
+            </Link>
+          </div>
         </div>
       </div>
     );
@@ -142,200 +162,157 @@ const ProjectSharePage: FC = () => {
 
   if (!project) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-black p-4">
-        <div className="bg-gray-900 p-8 rounded-lg shadow-xl text-center border border-gray-700">
-          <h1 className="text-2xl font-bold text-gray-300 mb-3">Project Not Found</h1>
-          <p className="text-gray-400 mb-6">The project you are looking for does not exist or is not available for sharing.</p>
-          <Link to="/" className="px-6 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
-            Back to Homepage
-          </Link>
+      <div className="min-h-screen bg-black">
+        <div className="h-16"></div>
+        <div className="max-w-2xl mx-auto px-4 py-16 text-center">
+          <div className="bg-gray-900 border border-gray-800 rounded-lg p-8">
+            <h1 className="text-2xl font-bold text-white mb-3">Project Not Found</h1>
+            <p className="text-gray-400 mb-6">The project you are looking for does not exist or is not available for sharing.</p>
+            <Link
+              to="/"
+              className="inline-flex items-center px-6 py-3 bg-white text-black font-semibold rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to ProjectBuzz
+            </Link>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-black py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto bg-gray-900 shadow-2xl rounded-xl overflow-hidden border border-gray-700">
-        {/* Shared Project Banner */}
-        <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <div className="bg-white/20 p-2 rounded-lg">
-                <Eye className="h-5 w-5 text-white" />
+    <div className="min-h-screen bg-black">
+      {/* Header spacing to prevent navbar overlap */}
+      <div className="h-16"></div>
+
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Back Navigation */}
+        <div className="mb-6">
+          <Link
+            to="/"
+            className="inline-flex items-center text-gray-400 hover:text-white transition-colors text-sm"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to ProjectBuzz
+          </Link>
+        </div>
+
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Project Images - Left Column */}
+          <div className="lg:col-span-2">
+            {(project.images && project.images.length > 0) || project.image ? (
+              <div className="relative bg-gray-900 rounded-lg overflow-hidden border border-gray-800">
+                <img
+                  src={getImageUrl((project.images && project.images.length > 0) ? project.images[0].url : project.image?.url || '')}
+                  alt={project.title}
+                  className="w-full h-64 sm:h-80 lg:h-96 object-cover"
+                />
+                {project.images && project.images.length > 1 && (
+                  <div className="absolute bottom-4 right-4 bg-black/70 text-white px-3 py-1 rounded-full text-sm">
+                    +{project.images.length - 1} more
+                  </div>
+                )}
               </div>
-              <div>
-                <h2 className="text-white font-semibold">Shared Project</h2>
-                <p className="text-blue-100 text-sm">View this amazing project from ProjectBuzz</p>
+            ) : (
+              <div className="bg-gray-900 rounded-lg border border-gray-800 h-64 sm:h-80 lg:h-96 flex items-center justify-center">
+                <div className="text-center text-gray-500">
+                  <Code className="h-12 w-12 mx-auto mb-2" />
+                  <p>No preview available</p>
+                </div>
+              </div>
+            )}
+
+            {/* Project Description - Below Image */}
+            <div className="mt-6">
+              <h1 className="text-2xl sm:text-3xl font-bold text-white mb-4">{project.title}</h1>
+              <div className="prose prose-invert max-w-none">
+                <p className="text-gray-300 leading-relaxed">{project.description}</p>
               </div>
             </div>
-            <Link
-              to="/"
-              className="text-white hover:text-blue-200 text-sm font-medium"
-            >
-              Visit ProjectBuzz →
-            </Link>
+          </div>
+
+          {/* Purchase Panel - Right Column */}
+          <div className="lg:col-span-1">
+            <div className="bg-gray-900 border border-gray-800 rounded-lg p-6 sticky top-24">
+              {/* Price */}
+              <div className="mb-6">
+                <div className="text-3xl font-bold text-white mb-2">₹{project.price}</div>
+                <div className="text-sm text-gray-400">One-time purchase</div>
+              </div>
+
+              {/* Purchase Button */}
+              <button
+                onClick={handlePurchaseClick}
+                className="w-full bg-white hover:bg-gray-100 text-black font-semibold py-3 px-4 rounded-lg transition-colors mb-4 flex items-center justify-center"
+              >
+                {user ? (
+                  <>
+                    <ShoppingCart className="h-5 w-5 mr-2" />
+                    Buy Now
+                  </>
+                ) : (
+                  <>
+                    <LogIn className="h-5 w-5 mr-2" />
+                    Sign in to Buy
+                  </>
+                )}
+              </button>
+
+              {/* Project Info */}
+              <div className="space-y-4 text-sm">
+                <div className="flex justify-between py-2 border-b border-gray-800">
+                  <span className="text-gray-400">Category</span>
+                  <span className="text-white capitalize">{project.category}</span>
+                </div>
+
+                {project.seller && (
+                  <div className="flex justify-between py-2 border-b border-gray-800">
+                    <span className="text-gray-400">Seller</span>
+                    <span className="text-white">{project.seller.displayName || project.seller.email || 'Unknown'}</span>
+                  </div>
+                )}
+
+                {project.stats && (
+                  <>
+                    <div className="flex justify-between py-2 border-b border-gray-800">
+                      <span className="text-gray-400">Sales</span>
+                      <span className="text-white">{project.stats.sales || 0}</span>
+                    </div>
+                    <div className="flex justify-between py-2 border-b border-gray-800">
+                      <span className="text-gray-400">Views</span>
+                      <span className="text-white">{project.stats.views || 0}</span>
+                    </div>
+                  </>
+                )}
+
+                <div className="flex justify-between py-2">
+                  <span className="text-gray-400">Last Updated</span>
+                  <span className="text-white">{new Date(project.updatedAt).toLocaleDateString()}</span>
+                </div>
+              </div>
+
+              {/* Share Button */}
+              <div className="mt-6 pt-6 border-t border-gray-800">
+                <button className="w-full bg-gray-800 hover:bg-gray-700 text-white py-2 px-4 rounded-lg transition-colors flex items-center justify-center text-sm">
+                  <Share2 className="h-4 w-4 mr-2" />
+                  Share Project
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Project Images */}
-        {(project.images && project.images.length > 0) || project.image ? (
-          <div className="relative h-64 bg-gray-800">
-            <img
-              src={getImageUrl((project.images && project.images.length > 0) ? project.images[0].url : project.image?.url || '')}
-              alt={project.title}
-              className="w-full h-full object-cover"
-            />
-            {project.images && project.images.length > 1 && (
-              <div className="absolute bottom-4 right-4 bg-black/50 text-white px-2 py-1 rounded text-sm">
-                +{project.images.length - 1} more images
-              </div>
-            )}
-          </div>
-        ) : null}
-
-        <div className="p-6 sm:p-10">
-          <div className="mb-6">
-            <Link to="/" className="text-sm text-blue-400 hover:text-blue-300 hover:underline">
-              ← Explore More Projects on ProjectBuzz
-            </Link>
-          </div>
-
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-white mb-3 tracking-tight">{project.title}</h1>
-          <p className="text-2xl font-semibold text-blue-400 mb-6">₹{project.price.toFixed(2)}</p>
-
-          <div className="prose prose-invert max-w-none text-gray-300 mb-8">
-            <p>{project.description}</p>
-          </div>
-
-          {/* Purchase Call-to-Action */}
-          <div className="mb-8 p-6 bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-xl border border-blue-500/30">
-            <div className="text-center">
-              <h3 className="text-xl font-semibold text-white mb-2">Ready to get this project?</h3>
-              <p className="text-gray-300 mb-4">
-                {user ?
-                  "Click below to purchase and get instant access to all project files." :
-                  "Sign up or log in to purchase and get instant access to all project files."
-                }
-              </p>
-              <div className="flex gap-3 justify-center">
-                <button
-                  onClick={handlePurchaseClick}
-                  className="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition duration-150 transform hover:scale-105"
-                >
-                  {user ? (
-                    <>
-                      <ShoppingCart className="h-5 w-5 mr-2" />
-                      Purchase Now
-                    </>
-                  ) : (
-                    <>
-                      <LogIn className="h-5 w-5 mr-2" />
-                      Login to Purchase
-                    </>
-                  )}
-                </button>
-                <Link
-                  to="/"
-                  className="inline-flex items-center px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg shadow-md transition duration-150"
-                >
-                  Browse More Projects
-                </Link>
-              </div>
-            </div>
-          </div>
-
-          {/* Project Overview Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            {/* Basic Info Card */}
-            <div className="p-6 bg-gradient-to-br from-blue-900/50 to-blue-800/50 rounded-xl border border-blue-700/50">
-              <h3 className="text-lg font-semibold text-blue-300 mb-4 flex items-center">
-                <User className="h-5 w-5 mr-2" />
-                Project Info
-              </h3>
-              <div className="space-y-3 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-blue-200">Seller:</span>
-                  <span className="font-medium text-blue-100">{project.seller?.displayName || project.seller?.email || 'Unknown'}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-blue-200">Category:</span>
-                  <span className="font-medium text-blue-100 capitalize">{project.category}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-blue-200">Updated:</span>
-                  <span className="font-medium text-blue-100">{new Date(project.updatedAt).toLocaleDateString()}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Stats Card */}
-            <div className="p-6 bg-gradient-to-br from-green-900/50 to-green-800/50 rounded-xl border border-green-700/50">
-              <h3 className="text-lg font-semibold text-green-300 mb-4 flex items-center">
-                <Eye className="h-5 w-5 mr-2" />
-                Statistics
-              </h3>
-              <div className="space-y-3 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-green-200">Views:</span>
-                  <span className="font-medium text-green-100">{project.stats?.views || 0}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-green-200">Sales:</span>
-                  <span className="font-medium text-green-100">{project.stats?.sales || 0}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Complexity & Progress Card */}
-            <div className="p-6 bg-gradient-to-br from-purple-900/50 to-purple-800/50 rounded-xl border border-purple-700/50">
-              <h3 className="text-lg font-semibold text-purple-300 mb-4 flex items-center">
-                <Target className="h-5 w-5 mr-2" />
-                Progress
-              </h3>
-              <div className="space-y-4">
-                {project.projectDetails?.complexityLevel && (
-                  <div>
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-purple-200 text-sm">Complexity:</span>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        project.projectDetails.complexityLevel === 'beginner' ? 'bg-green-600/30 text-green-300 border border-green-500/50' :
-                        project.projectDetails.complexityLevel === 'intermediate' ? 'bg-yellow-600/30 text-yellow-300 border border-yellow-500/50' :
-                        'bg-red-600/30 text-red-300 border border-red-500/50'
-                      }`}>
-                        {project.projectDetails.complexityLevel}
-                      </span>
-                    </div>
-                  </div>
-                )}
-                {project.completionStatus !== undefined && (
-                  <div>
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-purple-200 text-sm">Completion:</span>
-                      <span className="font-medium text-purple-100">{project.completionStatus}%</span>
-                    </div>
-                    <div className="w-full bg-purple-800/50 rounded-full h-2">
-                      <div
-                        className="bg-purple-500 h-2 rounded-full transition-all duration-300"
-                        style={{ width: `${project.completionStatus}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
+        {/* Additional Project Details */}
+        <div className="mt-12 space-y-8">
           {/* Technologies */}
           {project.tags && project.tags.length > 0 && (
-            <div className="p-6 bg-gray-800/50 rounded-xl border border-gray-700 mb-8">
-              <h3 className="text-lg font-semibold text-gray-200 mb-4 flex items-center">
-                <Tag className="h-5 w-5 mr-2" />
-                Technologies Used
-              </h3>
+            <div>
+              <h3 className="text-lg font-semibold text-white mb-4">Technologies Used</h3>
               <div className="flex flex-wrap gap-2">
                 {project.tags.map((tag, index) => (
-                  <span key={index} className="px-3 py-1 bg-blue-600/30 text-blue-300 text-sm rounded-full font-medium border border-blue-500/50">
+                  <span key={index} className="px-3 py-1 bg-gray-800 text-gray-300 text-sm rounded-full border border-gray-700">
                     {tag}
                   </span>
                 ))}
@@ -343,59 +320,54 @@ const ProjectSharePage: FC = () => {
             </div>
           )}
 
-          {/* Limited Project Details for Public View */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-            {/* Tech Stack */}
-            {project.projectDetails?.techStack && (
-              <div className="p-6 bg-gradient-to-br from-blue-900/30 to-blue-800/30 rounded-xl border border-blue-700/50">
-                <h3 className="text-lg font-semibold text-blue-300 mb-4 flex items-center">
-                  <Code className="h-5 w-5 mr-2" />
-                  Technology Stack
-                </h3>
-                <div className="p-4 bg-gray-800/50 rounded-lg border border-blue-600/30">
-                  <p className="text-gray-300 whitespace-pre-wrap">{project.projectDetails.techStack}</p>
+          {/* Project Details Grid */}
+          {(project.projectDetails?.techStack || project.projectDetails?.timeline) && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Tech Stack */}
+              {project.projectDetails?.techStack && (
+                <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
+                  <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                    <Code className="h-5 w-5 mr-2" />
+                    Technology Stack
+                  </h3>
+                  <div className="text-gray-300 whitespace-pre-wrap text-sm leading-relaxed">
+                    {project.projectDetails.techStack}
+                  </div>
                 </div>
-              </div>
-            )}
-
-            {/* Timeline */}
-            {project.projectDetails?.timeline && (
-              <div className="p-6 bg-gradient-to-br from-green-900/30 to-green-800/30 rounded-xl border border-green-700/50">
-                <h3 className="text-lg font-semibold text-green-300 mb-4 flex items-center">
-                  <Clock className="h-5 w-5 mr-2" />
-                  Development Timeline
-                </h3>
-                <div className="p-4 bg-gray-800/50 rounded-lg border border-green-600/30">
-                  <p className="text-gray-300 whitespace-pre-wrap">{project.projectDetails.timeline}</p>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Final Call-to-Action */}
-          <div className="mt-8 p-6 bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-blue-500/30 rounded-lg text-center">
-            <h3 className="text-lg font-semibold text-white mb-2">Want to access the full project?</h3>
-            <p className="text-gray-300 mb-4">
-              Get instant access to source code, documentation, and all project files.
-            </p>
-            <button
-              onClick={handlePurchaseClick}
-              className="inline-flex items-center px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-md transition duration-150 transform hover:scale-105"
-            >
-              {user ? (
-                <>
-                  <ShoppingCart className="h-5 w-5 mr-2" />
-                  Purchase for ₹{project.price}
-                </>
-              ) : (
-                <>
-                  <LogIn className="h-5 w-5 mr-2" />
-                  Login to Purchase
-                </>
               )}
-            </button>
-          </div>
+
+              {/* Timeline */}
+              {project.projectDetails?.timeline && (
+                <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
+                  <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+                    <Clock className="h-5 w-5 mr-2" />
+                    Development Timeline
+                  </h3>
+                  <div className="text-gray-300 whitespace-pre-wrap text-sm leading-relaxed">
+                    {project.projectDetails.timeline}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Complexity Level */}
+          {project.projectDetails?.complexityLevel && (
+            <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
+              <h3 className="text-lg font-semibold text-white mb-4">Project Complexity</h3>
+              <div className="flex items-center">
+                <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                  project.projectDetails.complexityLevel === 'beginner' ? 'bg-green-900 text-green-300 border border-green-800' :
+                  project.projectDetails.complexityLevel === 'intermediate' ? 'bg-yellow-900 text-yellow-300 border border-yellow-800' :
+                  'bg-red-900 text-red-300 border border-red-800'
+                }`}>
+                  {project.projectDetails.complexityLevel.charAt(0).toUpperCase() + project.projectDetails.complexityLevel.slice(1)}
+                </span>
+              </div>
+            </div>
+          )}
         </div>
+
       </div>
 
       {/* Enhanced Project Modal for Purchase */}
