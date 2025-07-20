@@ -5,6 +5,13 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
 
+  // Path resolution
+  resolve: {
+    alias: {
+      "@": "/src",
+    },
+  },
+
   // Development server configuration
   server: {
     port: 5173,
