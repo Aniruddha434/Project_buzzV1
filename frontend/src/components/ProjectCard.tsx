@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Eye, ShoppingCart, CheckCircle, Code, ExternalLink, Github, X, ChevronLeft, ChevronRight, Share2, User, Download, Star, Heart, MessageCircle } from 'lucide-react';
 
 import { NegotiationButton } from './NegotiationButton';
 import ShareModal from './ShareModal';
+import OptimizedImage from './OptimizedImage';
 import { getImageUrl } from '../utils/imageUtils.js';
 import {
   formatProjectPrice,
@@ -84,11 +85,21 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   showShareIcon = true,
   onClick
 }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
   const [modalImageIndex, setModalImageIndex] = useState(0);
   const [showShareModal, setShowShareModal] = useState(false);
+
+  // Helper function to determine source
+  const getSourceFromPath = (pathname: string): string => {
+    if (pathname.includes('/market')) return 'market';
+    if (pathname.includes('/dashboard')) return 'dashboard';
+    if (pathname === '/') return 'home';
+    return 'project-card';
+  };
 
   // Using centralized getImageUrl from utils
 
@@ -225,14 +236,17 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
           </div>
           {currentImage?.url ? (
             <div className="relative w-full h-full group">
-              <img
+              <OptimizedImage
                 key={`${project._id}-${currentImageIndex}`} // Unique key for smooth transitions
-                src={getImageUrl(currentImage.url)}
+                src={currentImage.url}
                 alt={`${project.title} - Image ${currentImageIndex + 1}`}
                 className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-500"
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none';
-                  e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                lazy={true}
+                responsive={true}
+                quality="medium"
+                onError={() => {
+                  // Handle error by showing fallback
+                  console.warn(`Failed to load image for project ${project.title}`);
                 }}
               />
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
@@ -382,9 +396,22 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                       onClick={(e) => {
                         e.stopPropagation();
                         console.log('Buy button clicked for project:', project.title);
-                        onClick?.(project);
-                      }}
 
+                        if (!user) {
+                          navigate(`/login?redirect=${encodeURIComponent(location.pathname)}`);
+                          return;
+                        }
+
+                        if (user.role !== 'buyer') {
+                          alert('Only buyers can purchase projects');
+                          return;
+                        }
+
+                        // Navigate to payment page
+                        const returnUrl = encodeURIComponent(location.pathname + location.search);
+                        const source = getSourceFromPath(location.pathname);
+                        navigate(`/payment/${project._id}?returnUrl=${returnUrl}&source=${source}`);
+                      }}
                     >
                       <ShoppingCart className="h-4 w-4 mr-1" />
                       <span>Buy {formatProjectPrice(project.price)}</span>

@@ -3,7 +3,8 @@ import type { FC } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.tsx';
 import { projectService } from '../services/projectService.js';
-import { Calendar, Tag, User, Code, Clock, BookOpen, FileText, Download, Settings, Play, Target, Zap, Eye, Share2 } from 'lucide-react';
+import { Calendar, Tag, User, Code, Clock, BookOpen, FileText, Download, Settings, Play, Target, Zap, Eye, Share2, ShoppingCart, LogIn, CheckCircle } from 'lucide-react';
+import UniversalBuyButton from '../components/UniversalBuyButton';
 import ShareModal from '../components/ShareModal';
 import { getImageUrl } from '../utils/imageUtils.js';
 
@@ -180,66 +181,75 @@ const ProjectDetailsPage: FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-black py-6 px-4 sm:px-6 lg:px-8 pt-20">
-      <div className="max-w-4xl mx-auto bg-black shadow-2xl rounded-lg overflow-hidden border border-gray-800">
+    <div className="min-h-screen bg-black py-4 px-4 sm:px-6 lg:px-8 pt-16">
+      <div className="max-w-5xl mx-auto bg-black shadow-2xl rounded-lg overflow-hidden border border-gray-800">
         {/* Project Images */}
         {(project.images && project.images.length > 0) || project.image ? (
-          <div className="relative h-56 bg-gray-900">
+          <div className="relative h-48 bg-gray-900">
             <img
               src={getImageUrl((project.images && project.images.length > 0) ? project.images[0].url : project.image?.url || '')}
               alt={project.title}
               className="w-full h-full object-cover"
             />
             {project.images && project.images.length > 1 && (
-              <div className="absolute bottom-3 right-3 bg-black/80 text-white px-2 py-1 rounded text-xs">
+              <div className="absolute bottom-2 right-2 bg-black/80 text-white px-2 py-1 rounded text-xs">
                 +{project.images.length - 1} more
               </div>
             )}
           </div>
         ) : null}
 
-        <div className="p-6 sm:p-8">
-          <div className="mb-4">
+        <div className="p-4 sm:p-6">
+          <div className="mb-3">
             <Link to="/projects" className="text-sm text-gray-400 hover:text-white transition-colors">&larr; Back to Projects</Link>
           </div>
 
-          <div className="flex items-start justify-between mb-6">
+          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between mb-4 gap-4">
             <div className="flex-1">
-              <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">{project.title}</h1>
-              <p className="text-xl font-semibold text-white">₹{project.price.toFixed(2)}</p>
-            </div>
+              <h1 className="text-xl sm:text-2xl font-bold text-white mb-2">{project.title}</h1>
+              <p className="text-lg font-semibold text-white mb-3">₹{project.price.toFixed(2)}</p>
 
-            {/* Share Button */}
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => {
-                  console.log('Share button clicked for project:', project._id);
-                  setShowShareModal(true);
-                }}
-                className="flex items-center gap-2 px-3 py-2 bg-gray-900 hover:bg-gray-800 text-gray-300 hover:text-white rounded-md transition-colors border border-gray-700"
-                title="Share this project"
-              >
-                <Share2 className="h-4 w-4" />
-                <span className="hidden sm:inline text-sm">Share</span>
-              </button>
+              {/* Action Buttons */}
+              <div className="flex items-center gap-3 mb-3">
+                {/* Universal Buy Button */}
+                <UniversalBuyButton
+                  project={project}
+                  user={user}
+                  isPurchased={isPurchased}
+                  preferModal={false}
+                />
+
+                {/* Share Button */}
+                <button
+                  onClick={() => {
+                    console.log('Share button clicked for project:', project._id);
+                    setShowShareModal(true);
+                  }}
+                  className="inline-flex items-center px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white rounded text-sm transition-colors border border-gray-700"
+                  title="Share this project"
+                >
+                  <Share2 className="h-3.5 w-3.5 mr-1.5" />
+                  <span className="hidden sm:inline">Share</span>
+                </button>
+              </div>
             </div>
           </div>
 
-          <div className="mb-6">
+          <div className="mb-4">
             <p className="text-gray-300 text-sm leading-relaxed">{project.description}</p>
           </div>
 
           {/* Project Information */}
-          <div className="mb-6 space-y-6">
+          <div className="mb-4 space-y-4">
             {/* Project Overview Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               {/* Basic Info Card */}
-              <div className="p-4 bg-gray-900 rounded-lg border border-gray-800">
-                <h3 className="text-sm font-medium text-white mb-3 flex items-center">
-                  <User className="h-4 w-4 mr-2" />
+              <div className="p-3 bg-gray-900 rounded-lg border border-gray-800">
+                <h3 className="text-sm font-medium text-white mb-2 flex items-center">
+                  <User className="h-3.5 w-3.5 mr-1.5" />
                   Project Info
                 </h3>
-                <div className="space-y-2 text-xs">
+                <div className="space-y-1.5 text-xs">
                   <div className="flex justify-between">
                     <span className="text-gray-400">Seller:</span>
                     <span className="text-white">{project.seller?.displayName || project.seller?.email || 'Unknown'}</span>
@@ -263,12 +273,12 @@ const ProjectDetailsPage: FC = () => {
 
               {/* Stats Card - Hidden for buyers who purchased */}
               {!isPurchased && (
-                <div className="p-4 bg-gray-900 rounded-lg border border-gray-800">
-                  <h3 className="text-sm font-medium text-white mb-3 flex items-center">
-                    <Eye className="h-4 w-4 mr-2" />
+                <div className="p-3 bg-gray-900 rounded-lg border border-gray-800">
+                  <h3 className="text-sm font-medium text-white mb-2 flex items-center">
+                    <Eye className="h-3.5 w-3.5 mr-1.5" />
                     Statistics
                   </h3>
-                  <div className="space-y-2 text-xs">
+                  <div className="space-y-1.5 text-xs">
                     <div className="flex justify-between">
                       <span className="text-gray-400">Views:</span>
                       <span className="text-white">{project.stats?.views || 0}</span>
@@ -286,12 +296,12 @@ const ProjectDetailsPage: FC = () => {
               )}
 
               {/* Complexity & Progress Card */}
-              <div className="p-4 bg-gray-900 rounded-lg border border-gray-800">
-                <h3 className="text-sm font-medium text-white mb-3 flex items-center">
-                  <Target className="h-4 w-4 mr-2" />
+              <div className="p-3 bg-gray-900 rounded-lg border border-gray-800">
+                <h3 className="text-sm font-medium text-white mb-2 flex items-center">
+                  <Target className="h-3.5 w-3.5 mr-1.5" />
                   Progress
                 </h3>
-                <div className="space-y-3">
+                <div className="space-y-2">
                   {project.projectDetails?.complexityLevel && (
                     <div>
                       <div className="flex justify-between items-center mb-1">
@@ -326,12 +336,12 @@ const ProjectDetailsPage: FC = () => {
 
             {/* Technologies */}
             {project.tags && project.tags.length > 0 && (
-              <div className="p-4 bg-gray-900 rounded-lg border border-gray-800">
-                <h3 className="text-sm font-medium text-white mb-3 flex items-center">
-                  <Tag className="h-4 w-4 mr-2" />
+              <div className="p-3 bg-gray-900 rounded-lg border border-gray-800">
+                <h3 className="text-sm font-medium text-white mb-2 flex items-center">
+                  <Tag className="h-3.5 w-3.5 mr-1.5" />
                   Technologies Used
                 </h3>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-1.5">
                   {project.tags.map((tag, index) => (
                     <span key={index} className="px-2 py-1 bg-gray-800 text-gray-300 text-xs rounded border border-gray-700">
                       {tag}
@@ -342,15 +352,15 @@ const ProjectDetailsPage: FC = () => {
             )}
 
             {/* Detailed Project Information Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
               {/* Tech Stack */}
               {project.projectDetails?.techStack && (
-                <div className="p-4 bg-gray-900 rounded-lg border border-gray-800">
-                  <h3 className="text-sm font-medium text-white mb-3 flex items-center">
-                    <Code className="h-4 w-4 mr-2" />
+                <div className="p-3 bg-gray-900 rounded-lg border border-gray-800">
+                  <h3 className="text-sm font-medium text-white mb-2 flex items-center">
+                    <Code className="h-3.5 w-3.5 mr-1.5" />
                     Technology Stack
                   </h3>
-                  <div className="p-3 bg-gray-800 rounded border border-gray-700">
+                  <div className="p-2.5 bg-gray-800 rounded border border-gray-700">
                     <p className="text-gray-300 text-xs whitespace-pre-wrap">{project.projectDetails.techStack}</p>
                   </div>
                 </div>
@@ -358,12 +368,12 @@ const ProjectDetailsPage: FC = () => {
 
               {/* Timeline */}
               {project.projectDetails?.timeline && (
-                <div className="p-4 bg-gray-900 rounded-lg border border-gray-800">
-                  <h3 className="text-sm font-medium text-white mb-3 flex items-center">
-                    <Clock className="h-4 w-4 mr-2" />
+                <div className="p-3 bg-gray-900 rounded-lg border border-gray-800">
+                  <h3 className="text-sm font-medium text-white mb-2 flex items-center">
+                    <Clock className="h-3.5 w-3.5 mr-1.5" />
                     Development Timeline
                   </h3>
-                  <div className="p-3 bg-gray-800 rounded border border-gray-700">
+                  <div className="p-2.5 bg-gray-800 rounded border border-gray-700">
                     <p className="text-gray-300 text-xs whitespace-pre-wrap">{project.projectDetails.timeline}</p>
                   </div>
                 </div>
@@ -371,12 +381,12 @@ const ProjectDetailsPage: FC = () => {
 
               {/* Prerequisites */}
               {project.projectDetails?.prerequisites && (
-                <div className="p-4 bg-gray-900 rounded-lg border border-gray-800">
-                  <h3 className="text-sm font-medium text-white mb-3 flex items-center">
-                    <BookOpen className="h-4 w-4 mr-2" />
+                <div className="p-3 bg-gray-900 rounded-lg border border-gray-800">
+                  <h3 className="text-sm font-medium text-white mb-2 flex items-center">
+                    <BookOpen className="h-3.5 w-3.5 mr-1.5" />
                     Prerequisites
                   </h3>
-                  <div className="p-3 bg-gray-800 rounded border border-gray-700">
+                  <div className="p-2.5 bg-gray-800 rounded border border-gray-700">
                     <p className="text-gray-300 text-xs whitespace-pre-wrap">{project.projectDetails.prerequisites}</p>
                   </div>
                 </div>
@@ -384,9 +394,9 @@ const ProjectDetailsPage: FC = () => {
 
               {/* Documentation Files */}
               {project.documentationFiles && project.documentationFiles.length > 0 && (
-                <div className="p-4 bg-gray-900 rounded-lg border border-gray-800">
-                  <h3 className="text-sm font-medium text-white mb-3 flex items-center">
-                    <FileText className="h-4 w-4 mr-2" />
+                <div className="p-3 bg-gray-900 rounded-lg border border-gray-800">
+                  <h3 className="text-sm font-medium text-white mb-2 flex items-center">
+                    <FileText className="h-3.5 w-3.5 mr-1.5" />
                     Documentation Files
                   </h3>
                   <div className="space-y-2">
@@ -518,27 +528,19 @@ const ProjectDetailsPage: FC = () => {
               </div>
             </div>
           ) : (
-            <div className="mt-6 p-4 bg-gray-900 border-l-4 border-gray-700 rounded">
+            <div className="mt-4 p-3 bg-gray-900 border-l-4 border-gray-700 rounded">
               <h3 className="text-sm font-medium text-white">Private Resources</h3>
               <p className="text-gray-300 text-sm mt-1">
                 To access project files and the GitHub repository (if available), you need to purchase this project.
               </p>
-              {user && project.status === 'approved' && (
-                <Link
-                  to={`/projects?projectId=${project._id}`} // Link to projects page to purchase
-                  className="mt-3 inline-block px-4 py-2 bg-white text-black text-sm font-medium rounded hover:bg-gray-100 transition-colors"
-                >
-                  Purchase Project
-                </Link>
-              )}
-              {!user && project.status === 'approved' && (
-                 <Link
-                  to={`/login?redirect=/project/${project._id}`} // Redirect back to project after login
-                  className="mt-3 inline-block px-4 py-2 bg-white text-black text-sm font-medium rounded hover:bg-gray-100 transition-colors"
-                >
-                  Login to Purchase
-                </Link>
-              )}
+              <div className="mt-3">
+                <UniversalBuyButton
+                  project={project}
+                  user={user}
+                  isPurchased={isPurchased}
+                  preferModal={false}
+                />
+              </div>
             </div>
           )}
         </div>

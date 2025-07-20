@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { X, Github, ExternalLink, Eye, Calendar, Tag, User, ShoppingCart, CheckCircle, CreditCard, Shield, Lock, AlertCircle, Clock, Star, Download, FileText, Code, Zap, BookOpen, Settings, Play } from 'lucide-react';
 import Button from './ui/Button';
 import Badge from './ui/Badge';
@@ -7,6 +8,7 @@ import Input from './ui/Input';
 import paymentService from '../services/paymentService';
 import { projectService } from '../services/projectService';
 import { getImageUrl } from '../utils/imageUtils';
+import { useAuth } from '../context/AuthContext';
 import InlineError from './ui/InlineError';
 
 interface ProjectImage {
@@ -95,8 +97,6 @@ const EnhancedProjectModal: React.FC<EnhancedProjectModalProps> = ({
   const [currentOrder, setCurrentOrder] = useState<any>(null);
   const [paymentStatus, setPaymentStatus] = useState<string>('');
   const [error, setError] = useState<string>('');
-  const [existingPayment, setExistingPayment] = useState<any>(null);
-  const [showExistingPaymentDialog, setShowExistingPaymentDialog] = useState(false);
   const [discountCode, setDiscountCode] = useState<string>('');
   const [roleError, setRoleError] = useState<string>('');
   const [downloadError, setDownloadError] = useState<string>('');
@@ -213,14 +213,7 @@ const EnhancedProjectModal: React.FC<EnhancedProjectModalProps> = ({
       // Create payment order
       const orderResponse = await paymentService.createOrder(project._id, customerPhone, discountCode || null);
 
-      // Handle existing payment scenario
-      if (!orderResponse.success && orderResponse.isExistingPayment) {
-        console.log('📋 Existing payment found, showing dialog');
-        setExistingPayment(orderResponse.data);
-        setShowExistingPaymentDialog(true);
-        setIsProcessing(false);
-        return;
-      }
+      console.log('🔍 Order response:', orderResponse);
 
       if (!orderResponse.success) {
         throw new Error(orderResponse.message || 'Failed to create payment order');
@@ -249,16 +242,25 @@ const EnhancedProjectModal: React.FC<EnhancedProjectModalProps> = ({
     }
   };
 
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const handleBuyNowClick = () => {
     if (!user) {
-      window.location.href = '/login';
+      const currentPath = location.pathname;
+      navigate(`/login?redirect=${encodeURIComponent(currentPath)}`);
       return;
     }
     if (user.role !== 'buyer') {
       setRoleError('Only buyers can purchase projects. Please contact support if you need to change your role.');
       return;
     }
-    setShowCheckout(true);
+
+    // Navigate to dedicated payment page
+    const returnUrl = encodeURIComponent(location.pathname + location.search);
+    const source = 'modal';
+    navigate(`/payment/${project._id}?returnUrl=${returnUrl}&source=${source}`);
+    onClose(); // Close the modal when navigating to payment page
   };
 
   // Main modal content
@@ -291,12 +293,12 @@ const EnhancedProjectModal: React.FC<EnhancedProjectModalProps> = ({
 
           {/* Content */}
           <div className="overflow-y-auto max-h-[calc(95vh-80px)]">
-            <div className={`grid gap-8 p-6 ${showCheckout ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1 lg:grid-cols-3'}`}>
+            <div className={`grid gap-4 p-4 ${showCheckout ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1 lg:grid-cols-3'}`}>
               {/* Left Column - Images and Details */}
               <div className={showCheckout ? 'lg:col-span-1' : 'lg:col-span-2'}>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Images */}
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     {/* Main Image */}
                     <div className="aspect-square bg-gray-100 dark:bg-gray-800 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700">
                       {currentImage?.url ? (
@@ -342,50 +344,50 @@ const EnhancedProjectModal: React.FC<EnhancedProjectModalProps> = ({
                   </div>
 
                   {/* Project Details */}
-                  <div className="space-y-6">
+                  <div className="space-y-4">
                     {/* Title and Category */}
                     <div>
                       <div className="flex items-center space-x-2 mb-2">
-                        <Badge variant="default" className="capitalize bg-blue-100 text-blue-800">
+                        <Badge variant="default" className="capitalize bg-blue-100 text-blue-800 text-xs">
                           {project.category}
                         </Badge>
-                        <Badge variant="default" className="bg-green-100 text-green-800">
+                        <Badge variant="default" className="bg-green-100 text-green-800 text-xs">
                           Digital Product
                         </Badge>
                       </div>
-                      <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 leading-tight">
+                      <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-2 leading-tight">
                         {project.title}
                       </h1>
-                      <div className="flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-400 mb-4">
+                      <div className="flex items-center space-x-4 text-xs text-gray-600 dark:text-gray-400 mb-3">
                         <div className="flex items-center">
-                          <User className="h-4 w-4 mr-1" />
+                          <User className="h-3.5 w-3.5 mr-1" />
                           <span className="text-blue-600 hover:text-blue-800 cursor-pointer">
                             {project.seller?.displayName || 'Unknown Seller'}
                           </span>
                         </div>
                         <div className="flex items-center">
-                          <Calendar className="h-4 w-4 mr-1" />
+                          <Calendar className="h-3.5 w-3.5 mr-1" />
                           <span>{formatDate(project.createdAt)}</span>
                         </div>
                       </div>
                     </div>
 
                     {/* Price */}
-                    <div className="p-4 bg-gray-900 border border-gray-800 rounded-lg">
-                      <div className="flex items-baseline space-x-2 mb-2">
-                        <span className="text-3xl font-bold text-white">
+                    <div className="p-3 bg-gray-900 border border-gray-800 rounded-lg">
+                      <div className="flex items-baseline space-x-2 mb-1">
+                        <span className="text-lg font-bold text-white">
                           {formatCurrency(project.price)}
                         </span>
                       </div>
-                      <div className="text-sm text-gray-400">
+                      <div className="text-xs text-gray-400">
                         Digital download • Instant access
                       </div>
                     </div>
 
                     {/* Description Preview */}
-                    <div className="space-y-3">
-                      <h3 className="font-semibold text-white">About this project</h3>
-                      <p className="text-sm text-gray-400 line-clamp-4">
+                    <div className="space-y-2">
+                      <h3 className="text-sm font-semibold text-white">About this project</h3>
+                      <p className="text-xs text-gray-400 line-clamp-4">
                         {project.description}
                       </p>
                     </div>
@@ -393,13 +395,13 @@ const EnhancedProjectModal: React.FC<EnhancedProjectModalProps> = ({
                     {/* Technologies */}
                     {project.tags && project.tags.length > 0 && (
                       <div>
-                        <h3 className="font-semibold text-white mb-3 flex items-center">
-                          <Tag className="h-4 w-4 mr-2" />
+                        <h3 className="text-sm font-semibold text-white mb-2 flex items-center">
+                          <Tag className="h-3.5 w-3.5 mr-1.5" />
                           Technologies
                         </h3>
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex flex-wrap gap-1.5">
                           {project.tags.slice(0, 6).map((tag, index) => (
-                            <span key={index} className="px-3 py-1 bg-gray-900 border border-gray-700 text-gray-300 text-sm rounded-md">
+                            <span key={index} className="px-2 py-1 bg-gray-900 border border-gray-700 text-gray-300 text-xs rounded">
                               {tag}
                             </span>
                           ))}
@@ -407,38 +409,32 @@ const EnhancedProjectModal: React.FC<EnhancedProjectModalProps> = ({
                       </div>
                     )}
 
-                    {/* Enhanced Buy Button Section */}
+                    {/* Optimized Buy Button Section */}
                     {!showCheckout && (
-                      <div className="space-y-4">
+                      <div className="space-y-3">
                         {user && user.role === 'buyer' ? (
                           isPurchased ? (
-                            <div className="flex items-center justify-center p-4 bg-green-900/20 border border-green-700 rounded-lg">
-                              <CheckCircle className="h-5 w-5 text-green-400 mr-2" />
-                              <span className="text-green-400 font-medium">
-                                You own this project
-                              </span>
+                            <div className="inline-flex items-center px-3 py-1.5 bg-green-900/20 border border-green-700 rounded text-sm">
+                              <CheckCircle className="h-3.5 w-3.5 text-green-400 mr-1.5" />
+                              <span className="text-green-400 font-medium">Owned</span>
                             </div>
                           ) : (
-                            <Button
-                              variant="primary"
-                              size="lg"
-                              leftIcon={<ShoppingCart className="h-6 w-6" />}
+                            <button
                               onClick={handleBuyNowClick}
-                              className="w-full bg-black hover:bg-gray-800 text-white font-bold py-5 text-xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-200 border-2 border-white/30 hover:border-white/50"
+                              className="inline-flex items-center px-3 py-1.5 bg-black hover:bg-gray-900 text-white text-sm font-medium rounded border border-gray-600 hover:border-gray-500 transition-colors"
                             >
+                              <ShoppingCart className="h-3.5 w-3.5 mr-1.5" />
                               Buy Now
-                            </Button>
+                            </button>
                           )
                         ) : (
-                          <Button
-                            variant="primary"
-                            size="lg"
-                            leftIcon={<ShoppingCart className="h-6 w-6" />}
+                          <button
                             onClick={() => window.location.href = '/login'}
-                            className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-5 text-xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-200"
+                            className="inline-flex items-center px-3 py-1.5 bg-black hover:bg-gray-900 text-white text-sm font-medium rounded border border-gray-600 hover:border-gray-500 transition-colors"
                           >
+                            <ShoppingCart className="h-3.5 w-3.5 mr-1.5" />
                             {user ? 'Contact Seller' : 'Sign in to Buy'}
-                          </Button>
+                          </button>
                         )}
                       </div>
                     )}
@@ -925,6 +921,8 @@ const EnhancedProjectModal: React.FC<EnhancedProjectModalProps> = ({
           </div>
         </div>
       </div>
+
+
     </div>
   );
 

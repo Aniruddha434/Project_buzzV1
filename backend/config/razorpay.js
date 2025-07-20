@@ -14,18 +14,34 @@ const initializeRazorpay = () => {
     console.log('🔍 Checking Razorpay environment variables...');
     console.log('RAZORPAY_KEY_ID:', process.env.RAZORPAY_KEY_ID ? `${process.env.RAZORPAY_KEY_ID.substring(0, 10)}...` : 'NOT FOUND');
     console.log('RAZORPAY_KEY_SECRET:', process.env.RAZORPAY_KEY_SECRET ? `${process.env.RAZORPAY_KEY_SECRET.substring(0, 10)}...` : 'NOT FOUND');
+    console.log('RAZORPAY_ENVIRONMENT:', process.env.RAZORPAY_ENVIRONMENT || 'test');
+
+    // Check if we're in development mode with mock keys
+    const isDevelopmentMode = process.env.NODE_ENV === 'development' &&
+                             process.env.RAZORPAY_ENVIRONMENT === 'development';
+
+    if (isDevelopmentMode) {
+      console.log('🧪 Running in development mode with mock Razorpay');
+      console.log('✅ Mock Razorpay initialized - no real API calls will be made');
+      return true; // Don't initialize real Razorpay instance
+    }
 
     if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
       console.warn('⚠️ Razorpay credentials not found in environment variables');
       return false;
     }
 
-    razorpayInstance = new Razorpay({
-      key_id: process.env.RAZORPAY_KEY_ID,
-      key_secret: process.env.RAZORPAY_KEY_SECRET
-    });
+    // Only initialize real Razorpay for production/test with real keys
+    if (process.env.RAZORPAY_KEY_ID.startsWith('rzp_')) {
+      razorpayInstance = new Razorpay({
+        key_id: process.env.RAZORPAY_KEY_ID,
+        key_secret: process.env.RAZORPAY_KEY_SECRET
+      });
+      console.log(`✅ Razorpay initialized in ${process.env.RAZORPAY_ENVIRONMENT || 'test'} mode`);
+    } else {
+      console.log('🧪 Mock Razorpay keys detected - using development mode');
+    }
 
-    console.log(`✅ Razorpay initialized in ${process.env.RAZORPAY_ENVIRONMENT || 'test'} mode`);
     return true;
   } catch (error) {
     console.error('❌ Failed to initialize Razorpay:', error);
@@ -48,14 +64,19 @@ const generateCustomerId = (userId) => {
 // Create payment order
 const createPaymentOrder = async (orderData) => {
   try {
-    // Check if Razorpay is properly initialized
-    if (!razorpayInstance) {
-      console.warn('⚠️ Razorpay not properly configured, using mock response');
+    // Always use mock response in development mode
+    const isDevelopmentMode = process.env.NODE_ENV === 'development' &&
+                             process.env.RAZORPAY_ENVIRONMENT === 'development';
+
+    if (isDevelopmentMode || !razorpayInstance) {
+      console.log('🧪 Using mock Razorpay order for development');
       return {
-        id: `order_${orderData.orderId}`,
+        id: `order_${orderData.orderId}_mock`,
         amount: orderData.amount * 100, // Convert to paise
         currency: orderData.currency || 'INR',
-        status: 'created'
+        status: 'created',
+        receipt: orderData.orderId,
+        notes: orderData.orderMeta || {}
       };
     }
 

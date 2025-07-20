@@ -21,6 +21,7 @@ import HomePro from './pages/HomePro';
 const SellerDashboardPro = lazy(() => import('./pages/SellerDashboardPro.tsx'));
 const BuyerDashboardNew = lazy(() => import('./pages/BuyerDashboardNew.tsx'));
 const PaymentSuccess = lazy(() => import('./pages/PaymentSuccess.tsx'));
+const PaymentPage = lazy(() => import('./pages/PaymentPage.tsx'));
 const MarketPage = lazy(() => import('./pages/MarketPage.tsx'));
 const ModernDashboard = lazy(() => import('./pages/ModernDashboard.tsx'));
 const About = lazy(() => import('./pages/About.tsx'));
@@ -114,6 +115,11 @@ const App: React.FC = () => {
             {/* Project Details page */}
             <Route element={<ProtectedRoute />}>
               <Route path="/project/:id" element={<ProjectDetails />} />
+            </Route>
+
+            {/* Payment Page */}
+            <Route element={<ProtectedRoute allowedRoles={['buyer']} />}>
+              <Route path="/payment/:projectId" element={<PaymentPage />} />
             </Route>
 
 

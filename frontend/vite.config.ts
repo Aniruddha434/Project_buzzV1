@@ -1,5 +1,5 @@
 import { defineConfig, loadEnv } from 'vite'
-import react from '@vitejs/plugin-react'
+import react from '@vitejs/plugin-react-swc'
 import path from 'path'
 
 // https://vite.dev/config/
@@ -7,9 +7,7 @@ export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
 
   return {
-    plugins: [react({
-      jsxImportSource: 'react'
-    })],
+    plugins: [react()],
 
     // Path resolution with enhanced aliases
     resolve: {
@@ -91,33 +89,91 @@ export default defineConfig(({ command, mode }) => {
       // Rollup options for advanced optimization
       rollupOptions: {
         output: {
-          // Manual chunk splitting for better caching
-          manualChunks: {
-            // Vendor chunks
-            'react-vendor': ['react', 'react-dom'],
-            'router-vendor': ['react-router-dom'],
-            'ui-vendor': ['framer-motion', 'lucide-react'],
-            'three-vendor': ['three', '@react-three/fiber', '@react-three/drei'],
+          // Enhanced manual chunk splitting for better caching and performance
+          manualChunks: (id) => {
+            // Vendor chunks - split by library type
+            if (id.includes('node_modules')) {
+              // React ecosystem
+              if (id.includes('react') || id.includes('react-dom')) {
+                return 'react-vendor';
+              }
 
-            // Utility chunks
-            'utils': ['axios', 'clsx', 'tailwind-merge'],
+              // Router
+              if (id.includes('react-router')) {
+                return 'router-vendor';
+              }
+
+              // UI and animation libraries
+              if (id.includes('framer-motion') || id.includes('lucide-react') ||
+                  id.includes('@radix-ui') || id.includes('@headlessui')) {
+                return 'ui-vendor';
+              }
+
+              // Three.js ecosystem
+              if (id.includes('three') || id.includes('@react-three')) {
+                return 'three-vendor';
+              }
+
+              // HTTP and utilities
+              if (id.includes('axios') || id.includes('clsx') ||
+                  id.includes('tailwind-merge') || id.includes('class-variance-authority')) {
+                return 'utils-vendor';
+              }
+
+              // Toast and notifications
+              if (id.includes('react-hot-toast')) {
+                return 'toast-vendor';
+              }
+
+              // All other node_modules
+              return 'vendor';
+            }
+
+            // App chunks - split by feature
+            if (id.includes('/pages/')) {
+              return 'pages';
+            }
+
+            if (id.includes('/components/')) {
+              return 'components';
+            }
+
+            if (id.includes('/utils/') || id.includes('/hooks/') || id.includes('/context/')) {
+              return 'app-utils';
+            }
           },
 
           // Asset naming for better caching
-          chunkFileNames: 'js/[name]-[hash].js',
+          chunkFileNames: (chunkInfo) => {
+            const facadeModuleId = chunkInfo.facadeModuleId ? chunkInfo.facadeModuleId.split('/').pop() : 'chunk';
+            return `js/[name]-[hash].js`;
+          },
           assetFileNames: (assetInfo) => {
             const info = assetInfo.name?.split('.') || []
             const ext = info[info.length - 1]
-            if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(ext || '')) {
+            if (/png|jpe?g|svg|gif|tiff|bmp|ico|webp/i.test(ext || '')) {
               return `images/[name]-[hash][extname]`
             }
             if (/woff2?|eot|ttf|otf/i.test(ext || '')) {
               return `fonts/[name]-[hash][extname]`
             }
+            if (/css/i.test(ext || '')) {
+              return `css/[name]-[hash][extname]`
+            }
             return `assets/[name]-[hash][extname]`
           },
           entryFileNames: 'js/[name]-[hash].js',
         },
+
+        // External dependencies (if needed)
+        external: [],
+
+        // Tree shaking configuration
+        treeshake: {
+          moduleSideEffects: false,
+          propertyReadSideEffects: false,
+          unknownGlobalSideEffects: false
+        }
       },
     },
 
@@ -149,9 +205,22 @@ export default defineConfig(({ command, mode }) => {
         '@react-three/fiber',
         '@react-three/drei',
         'three',
-        'react-reconciler'
+        'react-reconciler',
+        '@radix-ui/react-dialog',
+        '@radix-ui/react-icons',
+        '@radix-ui/react-label',
+        '@radix-ui/react-radio-group',
+        '@radix-ui/react-slot',
+        '@headlessui/react',
+        'class-variance-authority',
+        'clsx',
+        'tailwind-merge',
+        'react-hot-toast',
+        'web-vitals'
       ],
-      force: true
+      force: true,
+      // Exclude problematic dependencies
+      exclude: ['@types/three']
     },
 
     // ESBuild configuration

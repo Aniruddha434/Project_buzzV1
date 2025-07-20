@@ -31,7 +31,7 @@ const paymentService = {
       if (error.response?.status === 400 &&
           error.response?.data?.message?.includes('already have a pending payment')) {
 
-        // Return the existing payment data with a special flag
+        // Return the existing payment data with enhanced information
         const existingPaymentData = error.response.data.data;
         console.log('📋 Found existing payment order:', existingPaymentData);
 
@@ -39,7 +39,11 @@ const paymentService = {
           success: false,
           isExistingPayment: true,
           message: error.response.data.message,
-          data: existingPaymentData
+          data: {
+            ...existingPaymentData,
+            timeRemainingMinutes: existingPaymentData.timeRemainingMinutes || 0,
+            canCancel: existingPaymentData.canCancel || false
+          }
         };
       }
 
@@ -92,6 +96,23 @@ const paymentService = {
     }
   },
 
+  // Cancel pending payment for a project
+  async cancelPendingPayment(projectId) {
+    try {
+      console.log('🔄 Cancelling pending payment for project:', projectId);
+
+      const response = await api.post('/payments/cancel-pending', {
+        projectId
+      });
+
+      console.log('✅ Pending payment cancelled successfully:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('❌ Error cancelling pending payment:', error);
+      throw error;
+    }
+  },
+
   // Get user payment history
   async getPaymentHistory(params = {}) {
     try {
@@ -121,6 +142,45 @@ const paymentService = {
       // Debug logging
       console.log('Payment data received:', paymentData);
       console.log('Razorpay Order ID:', razorpayOrderId);
+
+      // Check if we're using mock keys for development
+      const isMockPayment = razorpayKeyId === 'rzp_test_mock_development' ||
+                           razorpayOrderId?.includes('mock');
+
+      if (isMockPayment) {
+        console.log('🧪 Mock payment detected - simulating payment success');
+        // Simulate payment success after a short delay
+        setTimeout(async () => {
+          const mockResponse = {
+            razorpay_payment_id: `pay_mock_${Date.now()}`,
+            razorpay_order_id: razorpayOrderId,
+            razorpay_signature: 'mock_signature_for_development'
+          };
+          console.log('✅ Mock payment successful:', mockResponse);
+
+          // For mock payments, skip verification and directly mark as successful
+          try {
+            console.log('🧪 Mock payment - skipping verification, marking as successful');
+
+            // Call success callback directly for mock payments
+            if (this.onPaymentSuccess) {
+              this.onPaymentSuccess(razorpayOrderId);
+            }
+
+            // Show success message
+            console.log('✅ Mock payment completed successfully');
+          } catch (error) {
+            console.error('❌ Mock payment error:', error);
+            if (this.onPaymentError) {
+              this.onPaymentError('Mock payment failed');
+            }
+          }
+        }, 1000);
+        return { success: true, mock: true };
+      }
+
+      // For real payments, proceed with actual Razorpay integration
+      console.log('💳 Real payment detected - opening Razorpay checkout');
 
       // Load Razorpay SDK if not already loaded
       if (!window.Razorpay) {

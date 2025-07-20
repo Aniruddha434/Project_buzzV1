@@ -33,6 +33,8 @@
     "atlas:cleanup": "node scripts/atlas-cleanup.js",
     "atlas:test-auth": "node scripts/test-atlas-auth.js",
     "mark-featured": "node scripts/mark-featured-projects.js",
+    "optimize:performance": "cd backend && node ../scripts/optimize-performance.js",
+    "test:performance": "node scripts/test-performance.js",
     "postinstall": "echo '🎉 Installation complete! Run npm run setup to configure environment files.'"
   },
   "keywords": [

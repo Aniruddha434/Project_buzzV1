@@ -6,6 +6,8 @@ import { body, validationResult, param, query } from 'express-validator';
 import { verifyToken, requireRole } from '../middleware/auth.js';
 import Project from '../models/Project.js';
 import User from '../models/User.js';
+import imageOptimizationService from '../services/imageOptimizationService.js';
+import { projectCacheMiddleware, invalidateCache, imageCacheMiddleware } from '../middleware/cache.js';
 
 const router = express.Router();
 
@@ -414,6 +416,57 @@ router.get('/images/:filename', (req, res) => {
   res.sendFile(imagePath);
 });
 
+// Serve optimized images with caching
+router.get('/images/optimized/:filename', imageCacheMiddleware(86400), (req, res) => {
+  const filename = req.params.filename;
+  const optimizedPath = path.join(process.cwd(), 'uploads', 'optimized', filename);
+  const origin = req.get('Origin');
+
+  console.log(`🖼️  Optimized image request: ${filename} from origin: ${origin || 'no-origin'}`);
+
+  // Check if optimized file exists
+  if (!fs.existsSync(optimizedPath)) {
+    console.log(`❌ Optimized image not found: ${filename}`);
+    return res.status(404).json({
+      success: false,
+      message: 'Optimized image not found'
+    });
+  }
+
+  // Set comprehensive CORS headers
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, HEAD, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Cache-Control, Pragma');
+  res.header('Access-Control-Allow-Credentials', 'false');
+  res.header('Access-Control-Max-Age', '86400');
+  res.header('Access-Control-Expose-Headers', 'Content-Length, Content-Type, Last-Modified, ETag');
+  res.header('Cross-Origin-Resource-Policy', 'cross-origin');
+
+  // Set content type based on file extension
+  const ext = path.extname(filename).toLowerCase();
+  const contentTypes = {
+    '.webp': 'image/webp',
+    '.jpg': 'image/jpeg',
+    '.jpeg': 'image/jpeg',
+    '.png': 'image/png',
+    '.gif': 'image/gif'
+  };
+
+  if (contentTypes[ext]) {
+    res.setHeader('Content-Type', contentTypes[ext]);
+  } else {
+    res.setHeader('Content-Type', 'application/octet-stream');
+  }
+
+  // Set aggressive caching headers for optimized images
+  res.setHeader('Cache-Control', 'public, max-age=31536000, immutable'); // 1 year cache
+  res.setHeader('ETag', `"optimized-${filename}-${Date.now()}"`);
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+
+  console.log(`✅ Serving optimized image: ${filename}`);
+  res.sendFile(optimizedPath);
+});
+
 // Serve documentation files with proper CORS headers and purchase verification
 router.get('/docs/:filename', verifyToken, async (req, res) => {
   try {
@@ -590,8 +643,8 @@ router.get('/debug', verifyToken, (req, res) => {
   });
 });
 
-// GET /api/projects - Get all approved projects (public)
-router.get('/', async (req, res) => {
+// GET /api/projects - Get all approved projects (public) with caching
+router.get('/', projectCacheMiddleware(1800), async (req, res) => {
   try {
     const {
       page = 1,
@@ -751,12 +804,13 @@ const conditionalUpload = (req, res, next) => {
   next();
 };
 
-// POST /api/projects - Create new project
+// POST /api/projects - Create new project with cache invalidation
 router.post('/',
   verifyToken,
   requireRole(['seller']),
   conditionalUpload,
   createProjectValidation,
+  invalidateCache(['projectbuzz:projects:*', 'projectbuzz:featured:*', 'projectbuzz:stats:*']),
   async (req, res) => {
     try {
       console.log('=== POST /api/projects - CREATE PROJECT ===');
@@ -859,16 +913,54 @@ router.post('/',
 
       // Add images data if uploaded
       if (req.files && req.files.images && req.files.images.length > 0) {
-        projectData.images = req.files.images.map((file, index) => ({
-          filename: file.filename,
-          originalName: file.originalname,
-          mimetype: file.mimetype,
-          size: file.size,
-          url: getImageUrl(file.filename),
-          uploadedAt: new Date(),
-          isPrimary: index === 0, // First image is primary
-          order: index
-        }));
+        // Process and optimize images
+        const optimizedImages = [];
+
+        for (const [index, file] of req.files.images.entries()) {
+          try {
+            // Optimize image if it's large enough
+            let optimizationResults = null;
+            if (file.path && imageOptimizationService.needsOptimization(file.path)) {
+              console.log(`🔄 Optimizing image: ${file.originalname}`);
+              optimizationResults = await imageOptimizationService.optimizeImage(file.path, file.filename);
+            }
+
+            const imageData = {
+              filename: file.filename,
+              originalName: file.originalname,
+              mimetype: file.mimetype,
+              size: file.size,
+              url: getImageUrl(file.filename),
+              uploadedAt: new Date(),
+              isPrimary: index === 0, // First image is primary
+              order: index,
+              optimized: optimizationResults ? {
+                available: true,
+                formats: Object.keys(optimizationResults.optimized),
+                sources: imageOptimizationService.getResponsiveImageSources(file.filename)
+              } : { available: false }
+            };
+
+            optimizedImages.push(imageData);
+          } catch (optimizationError) {
+            console.error(`❌ Image optimization failed for ${file.originalname}:`, optimizationError.message);
+
+            // Continue with unoptimized image
+            optimizedImages.push({
+              filename: file.filename,
+              originalName: file.originalname,
+              mimetype: file.mimetype,
+              size: file.size,
+              url: getImageUrl(file.filename),
+              uploadedAt: new Date(),
+              isPrimary: index === 0,
+              order: index,
+              optimized: { available: false }
+            });
+          }
+        }
+
+        projectData.images = optimizedImages;
 
         // Set first image as main image for backward compatibility
         projectData.image = {

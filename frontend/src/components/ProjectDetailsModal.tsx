@@ -493,14 +493,10 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
                                 console.error('Payment error:', error);
                               }}
                               trigger={
-                                <Button
-                                  variant="primary"
-                                  size="lg"
-                                  leftIcon={<ShoppingCart className="h-5 w-5" />}
-                                  className="w-full bg-black hover:bg-gray-800 text-white font-semibold py-3"
-                                >
+                                <button className="inline-flex items-center px-3 py-1.5 bg-black hover:bg-gray-900 text-white text-sm font-medium rounded border border-gray-600 hover:border-gray-500 transition-colors">
+                                  <ShoppingCart className="h-3.5 w-3.5 mr-1.5" />
                                   Buy Now
-                                </Button>
+                                </button>
                               }
                             />
                           </div>
@@ -517,15 +513,13 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
                         </div>
                       )
                     ) : (
-                      <Button
-                        variant="primary"
-                        size="lg"
-                        leftIcon={<ShoppingCart className="h-5 w-5" />}
+                      <button
                         onClick={onClose}
-                        className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3"
+                        className="inline-flex items-center px-3 py-1.5 bg-black hover:bg-gray-900 text-white text-sm font-medium rounded border border-gray-600 hover:border-gray-500 transition-colors"
                       >
+                        <ShoppingCart className="h-3.5 w-3.5 mr-1.5" />
                         {user ? 'Contact Seller' : 'Sign in to Buy'}
-                      </Button>
+                      </button>
                     )}
 
                     {/* Demo Link */}

@@ -25,6 +25,74 @@ const router = express.Router();
 // Initialize Razorpay on module load
 initializeRazorpay();
 
+// User endpoint to cancel their own pending payment
+router.post('/cancel-pending',
+  verifyToken,
+  requireRole(['buyer']),
+  [
+    body('projectId').isMongoId().withMessage('Invalid project ID')
+  ],
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          success: false,
+          message: 'Validation failed',
+          errors: errors.array()
+        });
+      }
+
+      const { projectId } = req.body;
+      const user = req.user;
+
+      // Find the user's pending payment for this project
+      const pendingPayment = await Payment.findOne({
+        user: user._id,
+        project: projectId,
+        status: { $in: ['PENDING', 'ACTIVE'] }
+      });
+
+      if (!pendingPayment) {
+        return res.status(404).json({
+          success: false,
+          message: 'No pending payment found for this project'
+        });
+      }
+
+      // Cancel the payment
+      pendingPayment.status = 'CANCELLED';
+      pendingPayment.metadata = {
+        ...pendingPayment.metadata,
+        cancelledBy: 'user-request',
+        cancelledAt: new Date(),
+        cancelReason: 'User requested cancellation'
+      };
+
+      await pendingPayment.save();
+
+      console.log(`✅ User ${user._id} cancelled pending payment ${pendingPayment.orderId} for project ${projectId}`);
+
+      res.json({
+        success: true,
+        message: 'Pending payment cancelled successfully',
+        data: {
+          orderId: pendingPayment.orderId,
+          status: pendingPayment.status,
+          cancelledAt: new Date()
+        }
+      });
+
+    } catch (error) {
+      console.error('Error cancelling pending payment:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to cancel pending payment'
+      });
+    }
+  }
+);
+
 // POST /api/payments/create-order - Create payment order
 router.post('/create-order',
   verifyToken,
@@ -126,20 +194,26 @@ router.post('/create-order',
         cashfreeOrderId: existingPayment.cashfreeOrderId
       } : 'None');
 
+      // Auto-cancel existing payment and proceed with new one for seamless UX
       if (existingPayment && !existingPayment.isExpired()) {
-        console.log('❌ Blocking payment creation due to existing non-expired payment');
-        return res.status(400).json({
-          success: false,
-          message: 'You already have a pending payment for this project',
-          data: {
-            orderId: existingPayment.orderId,
-            razorpayOrderId: existingPayment.razorpayOrderId || existingPayment.cashfreeOrderId,
-            status: existingPayment.status,
-            createdAt: existingPayment.createdAt,
-            expiryTime: existingPayment.expiryTime,
-            isExpired: existingPayment.isExpired()
-          }
+        console.log('🔄 Auto-cancelling existing payment for seamless user experience');
+        console.log('📋 Existing payment details:', {
+          orderId: existingPayment.orderId,
+          status: existingPayment.status,
+          createdAt: existingPayment.createdAt
         });
+
+        // Cancel the existing payment
+        existingPayment.status = 'CANCELLED';
+        existingPayment.metadata = {
+          ...existingPayment.metadata,
+          cancelledBy: 'auto-cancel-new-payment',
+          cancelledAt: new Date(),
+          cancelReason: 'Automatically cancelled due to new payment request'
+        };
+
+        await existingPayment.save();
+        console.log('✅ Existing payment auto-cancelled, proceeding with new payment');
       }
 
       // If there's an expired payment, clean it up
@@ -215,7 +289,7 @@ router.post('/create-order',
           customerEmail: orderData.customerEmail,
           customerPhone: orderData.customerPhone
         },
-        expiryTime: new Date(Date.now() + 30 * 60 * 1000), // 30 minutes
+        expiryTime: new Date(Date.now() + 10 * 60 * 1000), // 10 minutes for faster cleanup
         discountCode: discountCodeData ? {
           code: discountCodeData.code,
           discountAmount: discountCodeData.discountAmount,
@@ -529,12 +603,26 @@ router.post('/verify-payment',
 
       const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
 
-      // Verify payment signature
-      const isValidSignature = verifyPaymentSignature(
-        razorpay_order_id,
-        razorpay_payment_id,
-        razorpay_signature
-      );
+      // Check if this is a mock payment in development mode
+      const isDevelopmentMode = process.env.NODE_ENV === 'development' &&
+                               process.env.RAZORPAY_ENVIRONMENT === 'development';
+      const isMockPayment = isDevelopmentMode &&
+                           (razorpay_payment_id?.includes('mock') ||
+                            razorpay_signature === 'mock_signature_for_development');
+
+      let isValidSignature = false;
+
+      if (isMockPayment) {
+        console.log('🧪 Mock payment verification - skipping signature check');
+        isValidSignature = true;
+      } else {
+        // Verify payment signature for real payments
+        isValidSignature = verifyPaymentSignature(
+          razorpay_order_id,
+          razorpay_payment_id,
+          razorpay_signature
+        );
+      }
 
       if (!isValidSignature) {
         return res.status(400).json({
@@ -561,8 +649,23 @@ router.post('/verify-payment',
         });
       }
 
-      // Get payment details from Razorpay
-      const paymentDetails = await getPaymentDetails(razorpay_payment_id);
+      // Get payment details from Razorpay (or mock for development)
+      let paymentDetails;
+      if (isMockPayment) {
+        console.log('🧪 Using mock payment details');
+        paymentDetails = {
+          id: razorpay_payment_id,
+          method: 'mock',
+          status: 'captured',
+          amount: payment.amount,
+          currency: 'INR',
+          bank: 'Mock Bank',
+          wallet: null,
+          vpa: null
+        };
+      } else {
+        paymentDetails = await getPaymentDetails(razorpay_payment_id);
+      }
 
       // Update payment record
       payment.razorpayPaymentId = razorpay_payment_id;
