@@ -35,7 +35,7 @@
     "mark-featured": "node scripts/mark-featured-projects.js",
     "optimize:performance": "cd backend && node ../scripts/optimize-performance.js",
     "test:performance": "node scripts/test-performance.js",
-    "fix:image-urls": "node scripts/fix-image-urls.js",
+    "fix:image-urls": "cd backend && node scripts/fix-image-urls.js",
     "postinstall": "echo '🎉 Installation complete! Run npm run setup to configure environment files.'"
   },
   "keywords": [

@@ -13,11 +13,11 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
 // Load environment variables
-const envPath = join(dirname(fileURLToPath(import.meta.url)), '../backend/.env');
+const envPath = join(dirname(fileURLToPath(import.meta.url)), '../.env');
 dotenv.config({ path: envPath });
 
 // Import models
-import Project from '../backend/models/Project.js';
+import Project from '../models/Project.js';
 
 class ImageUrlFixer {
   constructor() {
