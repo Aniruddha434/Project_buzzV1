@@ -4,6 +4,8 @@ import { ArrowLeft, ShoppingCart, Shield, CreditCard, CheckCircle, AlertCircle, 
 import { useAuth } from '../context/AuthContext';
 import paymentService from '../services/paymentService';
 import api from '../api';
+import OptimizedImage from '../components/OptimizedImage';
+import useDiscountEligibility from '../hooks/useDiscountEligibility';
 
 interface Project {
   _id: string;
@@ -25,6 +27,7 @@ const PaymentPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const discountEligibility = useDiscountEligibility();
 
   // State management
   const [project, setProject] = useState<Project | null>(null);
@@ -140,7 +143,7 @@ const PaymentPage: React.FC = () => {
     }
   };
 
-  // Apply discount code - using real backend validation
+  // Apply discount code - using enhanced backend validation
   const applyDiscount = async () => {
     if (!discountCode.trim() || !project) return;
 
@@ -149,19 +152,33 @@ const PaymentPage: React.FC = () => {
 
       console.log('🔄 Validating discount code:', discountCode.trim());
 
-      // Call backend API to validate discount code
-      const response = await api.post('/negotiations/validate-code', {
-        code: discountCode.trim(),
-        projectId: project._id
-      });
+      // Try the new discount API first, then fall back to negotiations API
+      let response;
+      try {
+        response = await api.post('/discounts/validate', {
+          code: discountCode.trim(),
+          projectId: project._id
+        });
+      } catch (discountApiError) {
+        console.log('🔄 Falling back to negotiations API');
+        // Fall back to existing negotiations API for backward compatibility
+        response = await api.post('/negotiations/validate-code', {
+          code: discountCode.trim(),
+          projectId: project._id
+        });
+      }
 
       if (response.data.success && response.data.valid) {
-        const { discountAmount, finalPrice, originalPrice } = response.data;
+        const discountData = response.data.discountCode || response.data;
+        const discountAmount = discountData.discountAmount;
+        const finalPrice = discountData.finalPrice;
+        const originalPrice = discountData.originalPrice;
 
         console.log('✅ Discount code valid:', {
           discountAmount,
           finalPrice,
-          originalPrice
+          originalPrice,
+          type: discountData.type || 'negotiation'
         });
 
         setDiscountAmount(discountAmount);
@@ -272,11 +289,14 @@ const PaymentPage: React.FC = () => {
               
               <div className="flex space-x-4">
                 {project.images && project.images.length > 0 && (
-                  <img
-                    src={project.images[0]}
-                    alt={project.title}
-                    className="w-20 h-20 object-cover rounded-lg"
-                  />
+                  <div className="w-20 h-20 rounded-lg overflow-hidden bg-gray-800 flex-shrink-0">
+                    <OptimizedImage
+                      src={project.images[0]}
+                      alt={project.title}
+                      className="w-full h-full object-cover"
+                      fallback="/placeholder-project.jpg"
+                    />
+                  </div>
                 )}
                 <div className="flex-1">
                   <h3 className="font-medium text-white">{project.title}</h3>
@@ -345,29 +365,7 @@ const PaymentPage: React.FC = () => {
                     Discount Code (Optional)
                   </label>
 
-                  {/* Welcome Code Suggestion */}
-                  {!discountApplied && user && (
-                    <div className="mb-3 p-3 bg-gradient-to-r from-yellow-900/20 to-orange-900/20 border border-yellow-700/30 rounded-lg">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center">
-                          <span className="text-yellow-400 mr-2">🎁</span>
-                          <div>
-                            <p className="text-yellow-300 text-sm font-medium">First-time buyer?</p>
-                            <p className="text-yellow-400/80 text-xs">Try code WELCOME20 for 20% off!</p>
-                          </div>
-                        </div>
-                        <button
-                          onClick={() => {
-                            setDiscountCode('WELCOME20');
-                            handleDiscountCodeChange('WELCOME20');
-                          }}
-                          className="px-3 py-1 bg-yellow-600 hover:bg-yellow-700 text-white text-xs font-medium rounded transition-colors"
-                        >
-                          Apply
-                        </button>
-                      </div>
-                    </div>
-                  )}
+
 
                   <div className="flex space-x-2">
                     <input
