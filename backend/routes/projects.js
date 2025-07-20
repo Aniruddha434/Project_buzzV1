@@ -353,12 +353,20 @@ router.get('/images/:filename', (req, res) => {
         'http://localhost:5174',
         'http://localhost:3000',
         'http://127.0.0.1:5173',
-        'http://127.0.0.1:5174'
+        'http://127.0.0.1:5174',
+        // Production Vercel URLs
+        'https://project-buzz-v.vercel.app',
+        'https://projectbuzz.vercel.app',
+        'https://projectbuzz.tech',
+        'https://www.projectbuzz.tech'
       ];
 
       if (allowedOrigins.includes(origin)) {
         res.header('Access-Control-Allow-Origin', origin);
         console.log(`✅ CORS: Allowing whitelisted origin: ${origin}`);
+      } else if (origin.includes('vercel.app') && origin.includes('project-buzz')) {
+        res.header('Access-Control-Allow-Origin', origin);
+        console.log(`✅ CORS: Allowing Vercel deployment origin: ${origin}`);
       } else {
         res.header('Access-Control-Allow-Origin', '*');
         console.log(`⚠️  CORS: Using wildcard for unknown origin: ${origin}`);

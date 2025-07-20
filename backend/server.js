@@ -254,9 +254,15 @@ const corsOptions = {
     }
 
     // Allow Vercel deployment URLs (they have dynamic subdomains)
-    if (origin.includes('vercel.app') &&
+    if (origin && origin.includes('vercel.app') &&
         (origin.includes('project-buzz') || origin.includes('projectbuzz'))) {
       console.log('✅ CORS: Allowing Vercel deployment URL');
+      return callback(null, true);
+    }
+
+    // Temporary fix: Allow all HTTPS origins for production debugging
+    if (origin && origin.startsWith('https://') && origin.includes('vercel.app')) {
+      console.log('✅ CORS: Allowing HTTPS Vercel origin for debugging');
       return callback(null, true);
     }
 
