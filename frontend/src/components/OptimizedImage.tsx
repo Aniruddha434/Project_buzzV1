@@ -67,8 +67,10 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
     const baseUrl = getImageUrl(originalSrc);
     const filename = originalSrc.split('/').pop() || '';
     const baseName = filename.split('.')[0];
-    const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
-    
+
+    // Use production backend URL
+    const backendUrl = import.meta.env.VITE_BACKEND_URL || 'https://project-buzzv1-2.onrender.com';
+
     // Generate different quality/size variants
     const variants = {
       webp: {

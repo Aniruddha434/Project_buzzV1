@@ -30,7 +30,15 @@ export const getImageUrl = (imageUrl) => {
     return getPlaceholderUrl('No+Image');
   }
 
-  // If it's already a full URL, return as is
+  // Fix URLs that contain localhost or development URLs
+  if (imageUrl.includes('localhost:5000') || imageUrl.includes('http://localhost')) {
+    // Replace localhost with production backend URL
+    const correctedUrl = imageUrl.replace(/http:\/\/localhost:5000/g, BACKEND_URL);
+    console.log(`🔧 Fixed localhost URL: ${imageUrl} → ${correctedUrl}`);
+    return correctedUrl;
+  }
+
+  // If it's already a full production URL, return as is
   if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
     return imageUrl;
   }
