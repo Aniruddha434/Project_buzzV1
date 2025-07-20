@@ -346,6 +346,25 @@ class EmailService {
     });
   }
 
+  // Send welcome email to new buyers with discount code
+  async sendWelcomeBuyerEmail(user) {
+    return this.sendEmail({
+      to: user.email,
+      subject: '🎉 Welcome to ProjectBuzz - Get 20% off your first purchase!',
+      template: 'welcome-buyer',
+      data: {
+        userName: user.displayName || user.email.split('@')[0],
+        userEmail: user.email,
+        marketUrl: `${process.env.FRONTEND_URL}/market`,
+        discountCode: 'WELCOME20',
+        discountPercentage: 20,
+        maxDiscount: 500,
+        minPurchase: 100,
+        validDays: 30
+      }
+    });
+  }
+
   // Test email functionality
   async sendTestEmail(to) {
     return this.sendEmail({

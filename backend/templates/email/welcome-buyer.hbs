@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to {{appName}} - Your First Purchase Discount Inside!</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8fafc;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 10px;
+        }
+        .welcome-badge {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+        .title {
+            color: #1f2937;
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #6b7280;
+            font-size: 18px;
+            margin-bottom: 0;
+        }
+        .discount-banner {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 30px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        .discount-banner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(255,255,255,0.1) 10px,
+                rgba(255,255,255,0.1) 20px
+            );
+            animation: shine 3s linear infinite;
+        }
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+        .discount-code {
+            background: rgba(255,255,255,0.2);
+            border: 2px dashed rgba(255,255,255,0.5);
+            padding: 15px 25px;
+            border-radius: 8px;
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin: 15px 0;
+            position: relative;
+            z-index: 1;
+        }
+        .discount-details {
+            font-size: 16px;
+            margin-top: 15px;
+            position: relative;
+            z-index: 1;
+        }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .feature-item {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #10b981;
+        }
+        .feature-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .feature-title {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+        .feature-desc {
+            color: #6b7280;
+            font-size: 14px;
+        }
+        .cta-section {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #1f2937, #111827);
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: transform 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .terms {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        .terms h4 {
+            color: #92400e;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        .terms ul {
+            color: #92400e;
+            font-size: 14px;
+            margin-bottom: 0;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid #e5e7eb;
+            color: #6b7280;
+            font-size: 14px;
+        }
+        .footer a {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">{{appName}}</div>
+            <div class="welcome-badge">🎉 Welcome Aboard!</div>
+            <h1 class="title">Welcome to {{appName}}!</h1>
+            <p class="subtitle">Your journey to amazing digital projects starts here</p>
+        </div>
+
+        <p>Hi {{userName}},</p>
+        
+        <p>Welcome to {{appName}} - the premier marketplace for digital projects! We're thrilled to have you join our community of developers and project enthusiasts.</p>
+
+        <div class="discount-banner">
+            <h3 style="margin-top: 0; font-size: 24px;">🎁 Special Welcome Offer</h3>
+            <p style="font-size: 18px; margin: 10px 0;">Get 20% off your first purchase!</p>
+            <div class="discount-code">WELCOME20</div>
+            <div class="discount-details">
+                ✨ Valid for 30 days from registration<br>
+                💰 Maximum discount: ₹500<br>
+                🛒 Minimum purchase: ₹100
+            </div>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-item">
+                <div class="feature-icon">🚀</div>
+                <div class="feature-title">Quality Projects</div>
+                <div class="feature-desc">Discover verified, high-quality digital projects from talented developers</div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">⚡</div>
+                <div class="feature-title">Instant Access</div>
+                <div class="feature-desc">Download your purchased projects immediately after payment</div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">🔒</div>
+                <div class="feature-title">Secure Payments</div>
+                <div class="feature-desc">Safe and secure transactions with multiple payment options</div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">💬</div>
+                <div class="feature-title">Direct Communication</div>
+                <div class="feature-desc">Connect directly with sellers for support and customizations</div>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <a href="{{marketUrl}}" class="btn">Start Browsing Projects</a>
+        </div>
+
+        <div class="terms">
+            <h4>💡 How to Use Your Welcome Code</h4>
+            <ul>
+                <li>Browse our marketplace and find a project you love</li>
+                <li>Add it to your cart and proceed to checkout</li>
+                <li>Enter <strong>WELCOME20</strong> in the discount code field</li>
+                <li>Enjoy 20% off your first purchase!</li>
+                <li>Code expires 30 days from your registration date</li>
+            </ul>
+        </div>
+
+        <p>Ready to explore? Check out our featured projects and find your next development solution!</p>
+
+        <div class="footer">
+            <p>{{appName}} - Where Digital Projects Come to Life</p>
+            <p>
+                <a href="{{appUrl}}">Visit {{appName}}</a> | 
+                <a href="{{marketUrl}}">Browse Projects</a> | 
+                <a href="mailto:{{supportEmail}}">Contact Support</a>
+            </p>
+            <p>&copy; {{currentYear}} {{appName}}. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

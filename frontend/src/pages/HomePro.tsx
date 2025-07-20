@@ -8,6 +8,7 @@ import { WhyChooseProjectBuzzPins, HowItWorksPins, JoinCommunityPins } from '../
 import Footer from '../components/Footer';
 import Button from '../components/ui/Button';
 import SEOHead from '../components/SEO/SEOHead';
+import WelcomeBanner from '../components/WelcomeBanner';
 
 const HomePro: React.FC = () => {
   const { user } = useAuth();
@@ -59,6 +60,9 @@ const HomePro: React.FC = () => {
       />
 
       <div className="min-h-screen bg-black page-with-navbar">
+        {/* Welcome Banner for New Users */}
+        <WelcomeBanner />
+
         {/* Enhanced Hero Section - SEO Optimized */}
         <header role="banner" aria-label="ProjectBuzz Digital Marketplace Hero">
           <EnhancedHero />

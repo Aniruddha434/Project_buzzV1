@@ -344,12 +344,37 @@ const PaymentPage: React.FC = () => {
                   <label className="block text-sm font-medium text-gray-300 mb-2">
                     Discount Code (Optional)
                   </label>
+
+                  {/* Welcome Code Suggestion */}
+                  {!discountApplied && user && (
+                    <div className="mb-3 p-3 bg-gradient-to-r from-yellow-900/20 to-orange-900/20 border border-yellow-700/30 rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center">
+                          <span className="text-yellow-400 mr-2">🎁</span>
+                          <div>
+                            <p className="text-yellow-300 text-sm font-medium">First-time buyer?</p>
+                            <p className="text-yellow-400/80 text-xs">Try code WELCOME20 for 20% off!</p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => {
+                            setDiscountCode('WELCOME20');
+                            handleDiscountCodeChange('WELCOME20');
+                          }}
+                          className="px-3 py-1 bg-yellow-600 hover:bg-yellow-700 text-white text-xs font-medium rounded transition-colors"
+                        >
+                          Apply
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
                   <div className="flex space-x-2">
                     <input
                       type="text"
                       value={discountCode}
                       onChange={(e) => handleDiscountCodeChange(e.target.value)}
-                      placeholder="Enter discount code (e.g., NEGO-ABC123)"
+                      placeholder="Enter discount code (e.g., WELCOME20, NEGO-ABC123)"
                       className={`flex-1 px-3 py-2 bg-gray-800 border rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-1 transition-colors ${
                         discountApplied
                           ? 'border-green-500 focus:border-green-500 focus:ring-green-500'

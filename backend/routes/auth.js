@@ -547,12 +547,45 @@ router.post('/verify-otp', [
 
       const token = generateToken(user._id);
 
+      // For buyers, create welcome discount code and send welcome email
+      if (user.role === 'buyer') {
+        try {
+          // Import DiscountCode model and create welcome code
+          const DiscountCode = (await import('../models/DiscountCode.js')).default;
+          const welcomeCode = await DiscountCode.createWelcomeCode(user._id);
+
+          if (welcomeCode) {
+            console.log('🎫 Welcome discount code created for new buyer:', user.email);
+          }
+
+          // Send welcome email with discount code
+          const emailService = (await import('../services/emailService.js')).default;
+          const emailResult = await emailService.sendWelcomeBuyerEmail(user);
+
+          if (emailResult.success) {
+            console.log('📧 Welcome email sent to new buyer:', user.email);
+          } else {
+            console.warn('⚠️ Failed to send welcome email:', emailResult.error);
+          }
+        } catch (error) {
+          console.error('❌ Error setting up welcome benefits for new buyer:', error);
+          // Don't fail registration if welcome setup fails
+        }
+      }
+
       res.status(201).json({
         success: true,
         message: 'Registration completed successfully',
         data: {
           user: user.toJSON(),
-          token
+          token,
+          welcomeOffer: user.role === 'buyer' ? {
+            hasWelcomeCode: true,
+            discountCode: 'WELCOME20',
+            discountPercentage: 20,
+            maxDiscount: 500,
+            validDays: 30
+          } : undefined
         }
       });
 

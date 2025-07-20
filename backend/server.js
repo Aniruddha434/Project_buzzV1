@@ -56,6 +56,7 @@ import payoutRoutes from './routes/payouts.js';
 import notificationRoutes from './routes/notifications.js';
 import adminManagementRoutes from './routes/adminManagement.js';
 import negotiationRoutes from './routes/negotiations.js';
+import discountRoutes from './routes/discounts.js';
 
 // Configure Passport after environment variables are loaded
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
@@ -514,6 +515,7 @@ app.use('/api/payouts', payoutRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/admin-management', adminManagementRoutes);
 app.use('/api/negotiations', negotiationRoutes);
+app.use('/api/discounts', discountRoutes);
 
 // Health check route
 app.get('/', (req, res) => {
