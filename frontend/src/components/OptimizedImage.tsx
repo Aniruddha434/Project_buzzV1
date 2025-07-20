@@ -65,23 +65,19 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   // Generate responsive image sources
   const generateImageSources = (originalSrc: string) => {
     const baseUrl = getImageUrl(originalSrc);
-    const filename = originalSrc.split('/').pop() || '';
-    const baseName = filename.split('.')[0];
 
-    // Use production backend URL
-    const backendUrl = import.meta.env.VITE_BACKEND_URL || 'https://project-buzzv1-2.onrender.com';
-
-    // Generate different quality/size variants
+    // For now, just use the original image URL for all sizes
+    // TODO: Implement actual image optimization on the backend
     const variants = {
       webp: {
-        small: `${backendUrl}/api/projects/images/optimized/${baseName}_400w.webp`,
-        medium: `${backendUrl}/api/projects/images/optimized/${baseName}_800w.webp`,
-        large: `${backendUrl}/api/projects/images/optimized/${baseName}_original.webp`
+        small: baseUrl,
+        medium: baseUrl,
+        large: baseUrl
       },
       jpeg: {
-        small: `${backendUrl}/api/projects/images/optimized/${baseName}_400w_fallback.jpeg`,
-        medium: `${backendUrl}/api/projects/images/optimized/${baseName}_800w_fallback.jpeg`,
-        large: `${backendUrl}/api/projects/images/optimized/${baseName}_fallback.jpeg`
+        small: baseUrl,
+        medium: baseUrl,
+        large: baseUrl
       }
     };
 
@@ -157,55 +153,21 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
         />
       )}
       
-      {/* Optimized image with responsive sources */}
-      {responsive ? (
-        <picture>
-          {/* WebP sources for modern browsers */}
-          <source
-            srcSet={generateSrcSet('webp')}
-            sizes={getSizes()}
-            type="image/webp"
-          />
-          
-          {/* JPEG fallback for older browsers */}
-          <source
-            srcSet={generateSrcSet('jpeg')}
-            sizes={getSizes()}
-            type="image/jpeg"
-          />
-          
-          {/* Final fallback */}
-          <img
-            ref={imgRef}
-            src={fallbackSrc}
-            alt={alt}
-            loading={lazy ? 'lazy' : 'eager'}
-            decoding="async"
-            width={width}
-            height={height}
-            className={`transition-opacity duration-300 ${
-              loaded ? 'opacity-100' : 'opacity-0'
-            } ${className}`}
-            onLoad={handleLoad}
-            onError={handleError}
-          />
-        </picture>
-      ) : (
-        <img
-          ref={imgRef}
-          src={fallbackSrc}
-          alt={alt}
-          loading={lazy ? 'lazy' : 'eager'}
-          decoding="async"
-          width={width}
-          height={height}
-          className={`transition-opacity duration-300 ${
-            loaded ? 'opacity-100' : 'opacity-0'
-          } ${className}`}
-          onLoad={handleLoad}
-          onError={handleError}
-        />
-      )}
+      {/* Simplified image loading - use original image for now */}
+      <img
+        ref={imgRef}
+        src={fallbackSrc}
+        alt={alt}
+        loading={lazy ? 'lazy' : 'eager'}
+        decoding="async"
+        width={width}
+        height={height}
+        className={`transition-opacity duration-300 ${
+          loaded ? 'opacity-100' : 'opacity-0'
+        } ${className}`}
+        onLoad={handleLoad}
+        onError={handleError}
+      />
       
       {/* Error state */}
       {error && (

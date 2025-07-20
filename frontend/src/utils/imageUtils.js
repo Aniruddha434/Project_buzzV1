@@ -37,36 +37,29 @@ const BACKEND_URL = getBackendUrl();
  */
 export const getImageUrl = (imageUrl) => {
   if (!imageUrl) {
-    console.log('🖼️  No image URL provided, using placeholder');
     return getPlaceholderUrl('No+Image');
   }
-
-  console.log(`🖼️  Processing image URL: ${imageUrl} | Backend: ${BACKEND_URL}`);
 
   // Fix URLs that contain localhost or development URLs
   if (imageUrl.includes('localhost:5000') || imageUrl.includes('http://localhost')) {
     // Replace localhost with production backend URL
     const correctedUrl = imageUrl.replace(/http:\/\/localhost:5000/g, BACKEND_URL);
-    console.log(`🔧 Fixed localhost URL: ${imageUrl} → ${correctedUrl}`);
     return correctedUrl;
   }
 
   // If it's already a full production URL, return as is
   if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
-    console.log(`✅ Using full URL as-is: ${imageUrl}`);
     return imageUrl;
   }
 
   // If it starts with /api/, prepend the backend URL
   if (imageUrl.startsWith('/api/')) {
     const fullUrl = `${BACKEND_URL}${imageUrl}`;
-    console.log(`🔗 Prepended backend URL: ${imageUrl} → ${fullUrl}`);
     return fullUrl;
   }
 
   // If it's just a filename, construct the full path
   const fullUrl = `${BACKEND_URL}/api/projects/images/${imageUrl}`;
-  console.log(`📁 Constructed full path: ${imageUrl} → ${fullUrl}`);
   return fullUrl;
 };
 
