@@ -104,14 +104,18 @@ const PerformanceOptimizer: React.FC<PerformanceOptimizerProps> = ({ children })
     if (!isDevelopment) {
       // Only preload in production
       const criticalEndpoints = [
-        '/api/projects/featured',
-        '/api/projects/approved'
+        '/projects/featured',
+        '/projects/approved'
       ];
+
+      // Get the correct API base URL
+      const apiBaseUrl = import.meta.env.VITE_API_URL ||
+                        `${import.meta.env.VITE_BACKEND_URL || 'https://project-buzzv1-2.onrender.com'}/api`;
 
       criticalEndpoints.forEach((endpoint) => {
         const link = document.createElement('link');
         link.rel = 'prefetch';
-        link.href = `${import.meta.env.VITE_API_URL}${endpoint}`;
+        link.href = `${apiBaseUrl}${endpoint}`;
         document.head.appendChild(link);
       });
     }

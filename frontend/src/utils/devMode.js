@@ -28,7 +28,26 @@ export const getApiUrl = () => {
     return 'http://localhost:5000/api';
   } else {
     console.log('🌐 Production mode detected - using production API');
-    return 'https://project-buzzv1-2.onrender.com/api';
+
+    // Check if VITE_API_URL is set and use it, but ensure it doesn't have double /api
+    const envApiUrl = import.meta.env.VITE_API_URL;
+    if (envApiUrl) {
+      // If it already ends with /api, use it as is
+      if (envApiUrl.endsWith('/api')) {
+        console.log('🔗 Using VITE_API_URL:', envApiUrl);
+        return envApiUrl;
+      } else {
+        // If it doesn't end with /api, add it
+        const fullApiUrl = `${envApiUrl}/api`;
+        console.log('🔗 Using VITE_API_URL with /api added:', fullApiUrl);
+        return fullApiUrl;
+      }
+    }
+
+    // Fallback to hardcoded production URL
+    const fallbackUrl = 'https://project-buzzv1-2.onrender.com/api';
+    console.log('🔗 Using fallback production API URL:', fallbackUrl);
+    return fallbackUrl;
   }
 };
 
