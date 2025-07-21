@@ -20,6 +20,7 @@ import MultiImageUpload from '../components/MultiImageUpload';
 import WalletDashboard from '../components/WalletDashboard';
 import { NegotiationDashboard } from '../components/NegotiationDashboard';
 import api from '../api';
+import { getImageUrl } from '../utils/imageUtils';
 
 // Interface for Project data
 interface Project {
@@ -850,7 +851,7 @@ const SellerDashboardPro: React.FC = () => {
                           {images.length > 0 ? (
                             <div className="h-40 bg-gray-100 dark:bg-gray-700 rounded-t-xl overflow-hidden relative">
                               <img
-                                src={currentImg?.url}
+                                src={getImageUrl(currentImg?.url)}
                                 alt={project.title}
                                 className="w-full h-full object-cover transition-all duration-500"
                                 onError={(e) => {
@@ -1629,7 +1630,7 @@ const SellerDashboardPro: React.FC = () => {
                       {images.map((image, idx) => (
                         <div key={idx} className="relative group">
                           <img
-                            src={image.url}
+                            src={getImageUrl(image.url)}
                             alt={`${selectedProject.title} - Image ${idx + 1}`}
                             className="w-full h-48 object-cover rounded-lg"
                           />
