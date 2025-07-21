@@ -364,6 +364,14 @@ const SellerDashboardPro: React.FC = () => {
     setIsSubmitting(true);
     setError(null);
 
+    // Enhanced validation and debugging
+    console.log('=== PROJECT CREATION DEBUG ===');
+    console.log('Form data:', formData);
+    console.log('Project images:', projectImages);
+    console.log('Documentation files:', documentationFiles);
+    console.log('Project ZIP file:', projectZipFile);
+    console.log('Accepted terms:', acceptedTerms);
+
     try {
       const projectData = {
         ...formData,
@@ -385,7 +393,13 @@ const SellerDashboardPro: React.FC = () => {
         }
       };
 
+      console.log('=== SUBMITTING PROJECT DATA ===');
+      console.log('Project data structure:', JSON.stringify(projectData, null, 2));
+      console.log('Project data keys:', Object.keys(projectData));
+      console.log('Project details keys:', Object.keys(projectData.projectDetails));
+
       await projectService.createProject(projectData);
+      console.log('✅ Project creation successful!');
       setSuccess('Project created successfully! It is now pending approval.');
       setShowAddModal(false);
       resetForm();
