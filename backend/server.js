@@ -204,8 +204,24 @@ if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
 
 const app = express();
 
-// Security middleware
-app.use(helmet());
+// Security middleware with relaxed CSP for development
+app.use(helmet({
+  contentSecurityPolicy: process.env.NODE_ENV === 'production' ? undefined : {
+    directives: {
+      defaultSrc: ["'self'"],
+      imgSrc: ["'self'", "data:", "blob:", "*"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https:"],
+      scriptSrc: ["'self'"],
+      connectSrc: ["'self'", "*"],
+      fontSrc: ["'self'", "https:", "data:"],
+      objectSrc: ["'none'"],
+      mediaSrc: ["'self'"],
+      frameSrc: ["'self'"],
+    },
+  },
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  crossOriginEmbedderPolicy: false
+}));
 
 // CORS configuration - Comprehensive solution for development and production
 const corsOptions = {
@@ -375,14 +391,32 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Serve static images with CORS headers as fallback
+// Enhanced image serving middleware with maximum CORS permissiveness
 app.use('/api/projects/images', (req, res, next) => {
-  // Set CORS headers for static image serving
+  const origin = req.get('Origin');
+  console.log(`🖼️  Image middleware: ${req.path} from origin: ${origin || 'no-origin'}`);
+
+  // Set the most permissive CORS headers possible for images
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, HEAD, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  res.header('Access-Control-Allow-Headers', '*');
+  res.header('Access-Control-Allow-Credentials', 'false');
+  res.header('Access-Control-Max-Age', '86400');
+
+  // Additional headers to prevent CORS issues
   res.header('Cross-Origin-Resource-Policy', 'cross-origin');
-  res.header('Cache-Control', 'public, max-age=86400');
+  res.header('Cross-Origin-Embedder-Policy', 'unsafe-none');
+  res.header('Referrer-Policy', 'no-referrer-when-downgrade');
+
+  // Caching headers for better performance
+  res.header('Cache-Control', 'public, max-age=86400, immutable');
+  res.header('Vary', 'Origin');
+
+  // Handle preflight requests for images
+  if (req.method === 'OPTIONS') {
+    console.log(`🔄 Image CORS preflight for ${req.path}`);
+    return res.sendStatus(200);
+  }
   next();
 }, express.static(path.join(process.cwd(), 'uploads', 'images')));
 

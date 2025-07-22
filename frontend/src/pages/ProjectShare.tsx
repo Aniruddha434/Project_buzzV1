@@ -208,7 +208,18 @@ const ProjectSharePage: FC = () => {
                   src={getImageUrl((project.images && project.images.length > 0) ? project.images[0].url : project.image?.url || '')}
                   alt={project.title}
                   className="w-full h-64 sm:h-80 lg:h-96 object-cover"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                    const fallback = e.currentTarget.nextElementSibling;
+                    if (fallback) fallback.classList.remove('hidden');
+                  }}
                 />
+                <div className="hidden w-full h-64 sm:h-80 lg:h-96 bg-gray-800 flex items-center justify-center rounded-lg">
+                  <div className="text-gray-400 text-center">
+                    <div className="text-6xl mb-4">📷</div>
+                    <div className="text-lg">Image not available</div>
+                  </div>
+                </div>
                 {project.images && project.images.length > 1 && (
                   <div className="absolute bottom-4 right-4 bg-black/70 text-white px-3 py-1 rounded-full text-sm">
                     +{project.images.length - 1} more

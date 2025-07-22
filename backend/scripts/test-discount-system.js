@@ -8,7 +8,7 @@ import Project from '../models/Project.js';
 // Load environment variables
 dotenv.config();
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/projectbuzz';
+const MONGODB_URI = process.env.MONGO_URI || process.env.MONGODB_URI || process.env.DATABASE_URL || 'mongodb://localhost:27017/projectbuzz';
 
 async function connectDB() {
   try {
@@ -23,22 +23,27 @@ async function connectDB() {
 async function testDiscountSystem() {
   console.log('\n🧪 ===== TESTING DISCOUNT SYSTEM =====\n');
 
+  const testId = Date.now(); // Unique identifier for this test run
+  const testEmail = `testbuyer${testId}@example.com`;
+
   try {
     // Test 1: Create a test buyer
     console.log('📝 Test 1: Creating test buyer...');
-    
-    // Clean up any existing test user
-    await User.deleteOne({ email: 'testbuyer@example.com' });
+
+    // Clean up any existing test data
+    await User.deleteMany({ email: { $regex: /testbuyer.*@example\.com/ } });
     await DiscountCode.deleteMany({ code: 'WELCOME20' });
-    
+    await Project.deleteMany({ title: { $regex: /Test.*Project/ } });
+    await Payment.deleteMany({ orderId: { $regex: /test-order/ } });
+
     const testBuyer = new User({
-      email: 'testbuyer@example.com',
+      email: testEmail,
       password: 'testpassword123',
       displayName: 'Test Buyer',
       role: 'buyer',
       emailVerified: true
     });
-    
+
     await testBuyer.save();
     console.log('✅ Test buyer created:', testBuyer.email);
 
@@ -66,9 +71,9 @@ async function testDiscountSystem() {
 
     // Test 4: Create a test project
     console.log('\n📝 Test 4: Creating test project...');
-    
+
     const testProject = new Project({
-      title: 'Test Project for Discount',
+      title: `Test Project for Discount ${testId}`,
       description: 'A test project to verify discount functionality',
       price: 500,
       category: 'web',
@@ -77,7 +82,7 @@ async function testDiscountSystem() {
       tags: ['test'],
       isActive: true
     });
-    
+
     await testProject.save();
     console.log('✅ Test project created:', testProject.title);
 
@@ -111,7 +116,7 @@ async function testDiscountSystem() {
     console.log('\n📝 Test 6: Testing minimum purchase amount...');
     
     const cheapProject = new Project({
-      title: 'Cheap Test Project',
+      title: `Cheap Test Project ${testId}`,
       description: 'A cheap project below minimum purchase amount',
       price: 50, // Below minimum of 100
       category: 'other',
@@ -136,7 +141,7 @@ async function testDiscountSystem() {
     console.log('\n📝 Test 7: Testing maximum discount cap...');
     
     const expensiveProject = new Project({
-      title: 'Expensive Test Project',
+      title: `Expensive Test Project ${testId}`,
       description: 'An expensive project to test discount cap',
       price: 5000, // 20% would be 1000, but cap is 500
       category: 'web',
@@ -166,8 +171,26 @@ async function testDiscountSystem() {
 
     // Test 8: Test code usage (mark as used)
     console.log('\n📝 Test 8: Testing code usage...');
-    
-    await welcomeCode.use('test-payment-id');
+
+    // Create a mock payment first to get a valid ObjectId
+    const mockPaymentForCode = new Payment({
+      orderId: `test-order-for-code-${testId}`,
+      razorpayOrderId: `razorpay-test-for-code-${testId}`,
+      user: testBuyer._id,
+      project: testProject._id,
+      amount: 400,
+      currency: 'INR',
+      status: 'PAID',
+      customerDetails: {
+        customerId: `test-customer-${testId}`,
+        customerName: 'Test Buyer',
+        customerEmail: testEmail,
+        customerPhone: '9876543210'
+      }
+    });
+
+    await mockPaymentForCode.save();
+    await welcomeCode.use(mockPaymentForCode._id);
     
     const usedValidation = await DiscountCode.validateForPurchase('WELCOME20', testBuyer._id, testProject._id);
     console.log('Used code validation:', usedValidation);
@@ -183,15 +206,21 @@ async function testDiscountSystem() {
     
     // Create a mock successful payment
     const mockPayment = new Payment({
-      orderId: 'test-order-123',
-      razorpayOrderId: 'razorpay-test-123',
+      orderId: `test-order-${testId}`,
+      razorpayOrderId: `razorpay-test-${testId}`,
       user: testBuyer._id,
       project: testProject._id,
       amount: 400,
       currency: 'INR',
-      status: 'SUCCESS'
+      status: 'PAID',
+      customerDetails: {
+        customerId: `test-customer-main-${testId}`,
+        customerName: 'Test Buyer',
+        customerEmail: testEmail,
+        customerPhone: '9876543210'
+      }
     });
-    
+
     await mockPayment.save();
     
     const postPurchaseEligibility = await DiscountCode.isEligibleForWelcomeCode(testBuyer._id);

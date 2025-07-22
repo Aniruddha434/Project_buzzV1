@@ -24,6 +24,7 @@ import {
 import { useAuth } from '../context/AuthContext.tsx';
 import { projectService } from '../services/projectService.js';
 import paymentService from '../services/paymentService.js';
+import { getImageUrl, getPlaceholderUrl } from '../utils/imageUtils.js';
 import { useNavigate } from 'react-router-dom';
 import ProjectCard from '../components/ProjectCard';
 import PaymentModal from '../components/PaymentModal';
@@ -105,9 +106,10 @@ const ModernDashboard: React.FC = () => {
   const getProjectImage = (project: Project) => {
     if (project.images && project.images.length > 0) {
       const primaryImage = project.images.find(img => img.isPrimary);
-      return primaryImage?.url || project.images[0]?.url;
+      const imageUrl = primaryImage?.url || project.images[0]?.url;
+      return imageUrl ? getImageUrl(imageUrl) : getPlaceholderUrl('Project+Image', '400x300');
     }
-    return project.image?.url;
+    return project.image?.url ? getImageUrl(project.image.url) : getPlaceholderUrl('Project+Image', '400x300');
   };
 
   const handleProjectClick = (project: Project) => {

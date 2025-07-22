@@ -246,7 +246,7 @@ discountCodeSchema.statics.createWelcomeCode = async function(buyerId) {
     const Payment = mongoose.model('Payment');
     const existingPurchase = await Payment.findOne({
       user: buyerId,
-      status: 'SUCCESS'
+      status: 'PAID'
     });
 
     if (existingPurchase) {
@@ -298,7 +298,7 @@ discountCodeSchema.statics.isEligibleForWelcomeCode = async function(buyerId) {
     const Payment = mongoose.model('Payment');
     const existingPurchase = await Payment.findOne({
       user: buyerId,
-      status: 'SUCCESS'
+      status: 'PAID'
     });
 
     if (existingPurchase) {

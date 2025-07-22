@@ -190,7 +190,18 @@ const ProjectDetailsPage: FC = () => {
               src={getImageUrl((project.images && project.images.length > 0) ? project.images[0].url : project.image?.url || '')}
               alt={project.title}
               className="w-full h-full object-cover"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+                const fallback = e.currentTarget.nextElementSibling;
+                if (fallback) fallback.classList.remove('hidden');
+              }}
             />
+            <div className="hidden w-full h-full bg-gray-800 flex items-center justify-center">
+              <div className="text-gray-400 text-center">
+                <div className="text-4xl mb-2">📷</div>
+                <div className="text-sm">Image not available</div>
+              </div>
+            </div>
             {project.images && project.images.length > 1 && (
               <div className="absolute bottom-2 right-2 bg-black/80 text-white px-2 py-1 rounded text-xs">
                 +{project.images.length - 1} more

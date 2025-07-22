@@ -1,0 +1,10 @@
+# Vercel Environment Variables for ProjectBuzz Live Mode
+# Copy these to: https://vercel.com/your-username/project-buzz-v/settings/environment-variables
+
+VITE_RAZORPAY_KEY_ID=rzp_live_59WYRlNY6SscZC
+
+# Other existing variables remain the same
+VITE_API_URL=https://project-buzzv1-2.onrender.com/api
+VITE_BACKEND_URL=https://project-buzzv1-2.onrender.com
+VITE_FRONTEND_URL=https://project-buzz-v.vercel.app
+VITE_GOOGLE_CLIENT_ID=584078217672-hdcv33j1da7p6m4lv4q3pi1g8759asdl.apps.googleusercontent.com

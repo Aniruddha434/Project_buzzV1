@@ -263,7 +263,7 @@ export const NegotiationDashboard: React.FC<NegotiationDashboardProps> = ({ onNe
                   >
                     <div className="flex items-center justify-between mb-2">
                       <h4 className="font-medium text-sm text-foreground truncate">
-                        {negotiation.project.title}
+                        {negotiation.project?.title || 'Project Not Found'}
                       </h4>
                       {getStatusIcon(negotiation.status)}
                     </div>
@@ -276,7 +276,7 @@ export const NegotiationDashboard: React.FC<NegotiationDashboardProps> = ({ onNe
                       </span>
                     </div>
                     <div className="text-xs text-muted-foreground">
-                      {userRole === 'buyer' ? `Seller: ${negotiation.seller.username}` : `Buyer: ${negotiation.buyer.username}`}
+                      {userRole === 'buyer' ? `Seller: ${negotiation.seller?.username || 'Unknown'}` : `Buyer: ${negotiation.buyer?.username || 'Unknown'}`}
                     </div>
                   </div>
                 ))}
@@ -294,7 +294,7 @@ export const NegotiationDashboard: React.FC<NegotiationDashboardProps> = ({ onNe
             <div className="p-4 border-b border-border bg-muted/50">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="font-semibold text-foreground">{selectedNegotiation.project.title}</h3>
+                  <h3 className="font-semibold text-foreground">{selectedNegotiation.project?.title || 'Project Not Found'}</h3>
                   <p className="text-sm text-muted-foreground">
                     Original: ₹{selectedNegotiation.originalPrice} |
                     Current: ₹{selectedNegotiation.currentOffer || selectedNegotiation.originalPrice}
@@ -308,32 +308,38 @@ export const NegotiationDashboard: React.FC<NegotiationDashboardProps> = ({ onNe
 
             {/* Messages */}
             <div className="flex-1 overflow-y-auto p-4 space-y-3 max-h-[400px] lg:max-h-none">
-              {selectedNegotiation.messages.map((message) => (
-                <div
-                  key={message._id}
-                  className={`flex ${
-                    message.sender._id === selectedNegotiation.buyer._id ? 'justify-end' : 'justify-start'
-                  }`}
-                >
+              {selectedNegotiation.messages?.length > 0 ? (
+                selectedNegotiation.messages.map((message) => (
                   <div
-                    className={`max-w-xs p-3 rounded-lg shadow-sm ${
-                      message.sender._id === selectedNegotiation.buyer._id
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-muted text-foreground border border-border'
+                    key={message._id}
+                    className={`flex ${
+                      message.sender?._id === selectedNegotiation.buyer?._id ? 'justify-end' : 'justify-start'
                     }`}
                   >
-                    <p className="text-sm">{message.content}</p>
-                    {message.priceOffer && (
-                      <p className="text-xs mt-1 font-medium">
-                        Offer: ₹{message.priceOffer}
+                    <div
+                      className={`max-w-xs p-3 rounded-lg shadow-sm ${
+                        message.sender?._id === selectedNegotiation.buyer?._id
+                          ? 'bg-primary text-primary-foreground'
+                          : 'bg-muted text-foreground border border-border'
+                      }`}
+                    >
+                      <p className="text-sm">{message.content}</p>
+                      {message.priceOffer && (
+                        <p className="text-xs mt-1 font-medium">
+                          Offer: ₹{message.priceOffer}
+                        </p>
+                      )}
+                      <p className="text-xs mt-1 opacity-70">
+                        {new Date(message.timestamp).toLocaleString()}
                       </p>
-                    )}
-                    <p className="text-xs mt-1 opacity-70">
-                      {new Date(message.timestamp).toLocaleString()}
-                    </p>
+                    </div>
                   </div>
+                ))
+              ) : (
+                <div className="text-center text-muted-foreground py-8">
+                  No messages yet. Start the conversation!
                 </div>
-              ))}
+              )}
             </div>
 
             {/* Actions */}
@@ -366,8 +372,8 @@ export const NegotiationDashboard: React.FC<NegotiationDashboardProps> = ({ onNe
                       type="number"
                       value={priceOffer}
                       onChange={(e) => setPriceOffer(e.target.value)}
-                      placeholder={`Min ₹${selectedNegotiation.minimumPrice}`}
-                      min={selectedNegotiation.minimumPrice}
+                      placeholder={`Min ₹${selectedNegotiation.minimumPrice || 0}`}
+                      min={selectedNegotiation.minimumPrice || 0}
                       className="pl-10 bg-background border-border text-foreground"
                     />
                   </div>
@@ -384,7 +390,7 @@ export const NegotiationDashboard: React.FC<NegotiationDashboardProps> = ({ onNe
 
                 {/* Seller Actions - Only show if user is the seller */}
                 {selectedNegotiation.currentOffer &&
-                 (selectedNegotiation.seller._id === user?._id || selectedNegotiation.seller === user?._id) && (
+                 (selectedNegotiation.seller?._id === user?._id || selectedNegotiation.seller === user?._id) && (
                   <div className="flex gap-2">
                     <Button
                       onClick={acceptOffer}
@@ -441,10 +447,10 @@ export const NegotiationDashboard: React.FC<NegotiationDashboardProps> = ({ onNe
             {selectedNegotiation.discountCode && (
               <div className="p-4 border-t border-border bg-green-500/10">
                 <div className="text-sm text-green-400">
-                  <strong>Discount Code:</strong> {selectedNegotiation.discountCode.code}
+                  <strong>Discount Code:</strong> {selectedNegotiation.discountCode?.code || 'N/A'}
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  Expires: {new Date(selectedNegotiation.discountCode.expiresAt).toLocaleString()}
+                  Expires: {selectedNegotiation.discountCode?.expiresAt ? new Date(selectedNegotiation.discountCode.expiresAt).toLocaleString() : 'N/A'}
                 </div>
               </div>
             )}

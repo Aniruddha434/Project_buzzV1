@@ -1,0 +1,14 @@
+# Render Environment Variables for ProjectBuzz Live Mode
+# Copy these to: https://dashboard.render.com/web/srv-your-service-id/env
+
+RAZORPAY_KEY_ID=rzp_live_59WYRlNY6SscZC
+RAZORPAY_KEY_SECRET=[YOUR_LIVE_SECRET_FROM_CSV]
+RAZORPAY_ENVIRONMENT=production
+
+# Other existing variables remain the same
+NODE_ENV=production
+MONGO_URI=mongodb+srv://aniruddhagayki0:oWSKPA8ZqqjnrcSt@cluster0.hujehyy.mongodb.net/projectbuzz?retryWrites=true&w=majority
+JWT_SECRET=your-production-jwt-secret-minimum-64-characters-long-and-very-secure
+FRONTEND_URL=https://project-buzz-v.vercel.app
+BACKEND_URL=https://project-buzzv1-2.onrender.com
+CORS_ORIGIN=https://project-buzz-v.vercel.app,https://projectbuzz.tech

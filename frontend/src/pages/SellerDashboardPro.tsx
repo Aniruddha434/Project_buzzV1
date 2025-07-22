@@ -19,8 +19,8 @@ import LoadingSpinner from '../components/ui/LoadingSpinner';
 import MultiImageUpload from '../components/MultiImageUpload';
 import WalletDashboard from '../components/WalletDashboard';
 import { NegotiationDashboard } from '../components/NegotiationDashboard';
+import { getImageUrl } from '../utils/imageUtils.js';
 import api from '../api';
-import { getImageUrl } from '../utils/imageUtils';
 
 // Interface for Project data
 interface Project {
@@ -124,6 +124,11 @@ const SellerDashboardPro: React.FC = () => {
   const [documentationFiles, setDocumentationFiles] = useState<File[]>([]);
   const [projectZipFile, setProjectZipFile] = useState<File | null>(null);
   const [projectImages, setProjectImages] = useState<Array<{
+    file: File;
+    preview: string;
+    id: string;
+  }>>([]);
+  const [editProjectImages, setEditProjectImages] = useState<Array<{
     file: File;
     preview: string;
     id: string;
@@ -364,14 +369,6 @@ const SellerDashboardPro: React.FC = () => {
     setIsSubmitting(true);
     setError(null);
 
-    // Enhanced validation and debugging
-    console.log('=== PROJECT CREATION DEBUG ===');
-    console.log('Form data:', formData);
-    console.log('Project images:', projectImages);
-    console.log('Documentation files:', documentationFiles);
-    console.log('Project ZIP file:', projectZipFile);
-    console.log('Accepted terms:', acceptedTerms);
-
     try {
       const projectData = {
         ...formData,
@@ -393,13 +390,7 @@ const SellerDashboardPro: React.FC = () => {
         }
       };
 
-      console.log('=== SUBMITTING PROJECT DATA ===');
-      console.log('Project data structure:', JSON.stringify(projectData, null, 2));
-      console.log('Project data keys:', Object.keys(projectData));
-      console.log('Project details keys:', Object.keys(projectData.projectDetails));
-
       await projectService.createProject(projectData);
-      console.log('✅ Project creation successful!');
       setSuccess('Project created successfully! It is now pending approval.');
       setShowAddModal(false);
       resetForm();
@@ -449,7 +440,7 @@ const SellerDashboardPro: React.FC = () => {
       prerequisites: (project as any).projectDetails?.prerequisites || ''
     });
     // Clear images for editing (user can add new ones)
-    setProjectImages([]);
+    setEditProjectImages([]);
     setDocumentationFiles([]);
     setShowEditModal(true);
   };
@@ -476,16 +467,19 @@ const SellerDashboardPro: React.FC = () => {
       await projectService.updateProject(editingProject._id, updateData);
 
       // Add new images if any were selected
-      if (projectImages.length > 0) {
-        const imageFiles = projectImages.map(img => img.file);
+      if (editProjectImages.length > 0) {
+        const imageFiles = editProjectImages.map(img => img.file);
         await projectService.addProjectImages(editingProject._id, imageFiles);
-        setSuccess(`Project updated successfully! ${projectImages.length} new image(s) added.`);
+        setSuccess(`Project updated successfully! ${editProjectImages.length} new image(s) added.`);
       } else {
         setSuccess('Project updated successfully!');
       }
 
       setShowEditModal(false);
       setEditingProject(null);
+      // Clean up edit project images
+      editProjectImages.forEach(img => URL.revokeObjectURL(img.preview));
+      setEditProjectImages([]);
       resetForm();
       await fetchData();
     } catch (err: any) {
@@ -1140,6 +1134,7 @@ const SellerDashboardPro: React.FC = () => {
                 Project Images/Screenshots (Optional - Up to 5 images, 5MB each)
               </label>
               <MultiImageUpload
+                key="create-project-images"
                 images={projectImages}
                 onImagesChange={setProjectImages}
                 maxImages={5}
@@ -1478,8 +1473,9 @@ const SellerDashboardPro: React.FC = () => {
                 Add New Images (Optional - Up to 5 images total, 5MB each)
               </label>
               <MultiImageUpload
-                images={projectImages}
-                onImagesChange={setProjectImages}
+                key="edit-project-images"
+                images={editProjectImages}
+                onImagesChange={setEditProjectImages}
                 maxImages={5}
                 maxSizePerImage={5}
                 disabled={isSubmitting}
@@ -1647,7 +1643,15 @@ const SellerDashboardPro: React.FC = () => {
                             src={getImageUrl(image.url)}
                             alt={`${selectedProject.title} - Image ${idx + 1}`}
                             className="w-full h-48 object-cover rounded-lg"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                              const fallback = e.currentTarget.nextElementSibling;
+                              if (fallback) fallback.classList.remove('hidden');
+                            }}
                           />
+                          <div className="hidden w-full h-48 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
+                            <ImageIcon className="h-12 w-12 text-gray-400" />
+                          </div>
                           {image.isPrimary && (
                             <div className="absolute top-2 left-2 bg-blue-600 text-white text-xs px-2 py-1 rounded">
                               Primary

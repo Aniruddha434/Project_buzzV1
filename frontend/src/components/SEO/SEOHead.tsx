@@ -126,8 +126,35 @@ const addPerformanceMetaTags = () => {
  * Add security-related meta tags
  */
 const addSecurityMetaTags = () => {
-  addMetaTag('http-equiv', 'Content-Security-Policy',
-    "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' http://localhost:5000 https://project-buzzv1-2.onrender.com https://checkout.razorpay.com https://api.razorpay.com https://lumberjack.razorpay.com; frame-src 'self' https://api.razorpay.com https://checkout.razorpay.com;");
+  // Determine if we're in development
+  const isDevelopment = import.meta.env.DEV || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+  // Create environment-specific CSP
+  const imgSrc = isDevelopment
+    ? "'self' data: blob: https: http://localhost:5000 http://127.0.0.1:5000" // Allow HTTP localhost + blob URLs in development
+    : "'self' data: blob: https:"; // HTTPS + blob URLs in production
+
+  const connectSrc = isDevelopment
+    ? "'self' http://localhost:5000 http://127.0.0.1:5000 https://project-buzzv1-2.onrender.com https://checkout.razorpay.com https://api.razorpay.com https://lumberjack.razorpay.com"
+    : "'self' https://project-buzzv1-2.onrender.com https://checkout.razorpay.com https://api.razorpay.com https://lumberjack.razorpay.com";
+
+  const cspPolicy = `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src ${imgSrc}; connect-src ${connectSrc}; frame-src 'self' https://api.razorpay.com https://checkout.razorpay.com;`;
+
+  console.log(`🔒 CSP Policy (${isDevelopment ? 'Development' : 'Production'}):`, cspPolicy);
+
+  addMetaTag('http-equiv', 'Content-Security-Policy', cspPolicy);
+
+  // Add CSP violation event listener for debugging
+  if (isDevelopment && typeof window !== 'undefined') {
+    document.addEventListener('securitypolicyviolation', (e) => {
+      console.error('🚨 CSP Violation:', {
+        blockedURI: e.blockedURI,
+        violatedDirective: e.violatedDirective,
+        originalPolicy: e.originalPolicy,
+        disposition: e.disposition
+      });
+    });
+  }
 
   addMetaTag('http-equiv', 'X-Content-Type-Options', 'nosniff');
   // Note: X-Frame-Options should be set via HTTP headers, not meta tags

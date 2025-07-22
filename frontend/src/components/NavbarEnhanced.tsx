@@ -216,12 +216,21 @@ const NavbarEnhanced: React.FC = () => {
                         src={user.photoURL}
                         alt={user.displayName || 'User'}
                         className="h-8 w-8 rounded-full ring-2 ring-blue-500/20 object-cover"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          const fallback = e.currentTarget.nextElementSibling;
+                          if (fallback) fallback.classList.remove('hidden');
+                        }}
                       />
-                    ) : (
+                    ) : null}
+                    {!user.photoURL && (
                       <div className="h-8 w-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center shadow-lg">
                         <User className="h-4 w-4 text-white" />
                       </div>
                     )}
+                    <div className="hidden h-8 w-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center shadow-lg">
+                      <User className="h-4 w-4 text-white" />
+                    </div>
                     <div className="hidden lg:block text-left">
                       <div className="text-sm font-medium text-gray-900 dark:text-white">
                         {user.displayName || 'User'}

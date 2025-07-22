@@ -5,6 +5,7 @@ import Input from './ui/Input';
 import PaymentModal from './PaymentModal';
 import { NegotiationButton } from './NegotiationButton';
 import { projectService } from '../services/projectService';
+import { getImageUrl } from '../utils/imageUtils.js';
 
 interface ProjectImage {
   url: string;
@@ -179,9 +180,14 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
                 >
                   {currentImage?.url ? (
                     <img
-                      src={currentImage.url}
+                      src={getImageUrl(currentImage.url)}
                       alt={project.title}
                       className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                        const fallback = e.currentTarget.nextElementSibling;
+                        if (fallback) fallback.classList.remove('hidden');
+                      }}
                     />
                   ) : (
                     <div className="h-full flex items-center justify-center">
@@ -212,9 +218,12 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
                         }`}
                       >
                         <img
-                          src={image.url}
+                          src={getImageUrl(image.url)}
                           alt={`Preview ${index + 1}`}
                           className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                          }}
                         />
                       </button>
                     ))}

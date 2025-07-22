@@ -276,34 +276,43 @@ router.options('/images/:filename', (req, res) => {
   console.log(`🔄 CORS preflight for image: ${filename} from origin: ${origin || 'no-origin'}`);
 
   // Set comprehensive CORS headers for preflight
-  if (origin) {
-    // In development, allow all localhost origins
-    if (process.env.NODE_ENV !== 'production' && (origin.includes('localhost') || origin.includes('127.0.0.1'))) {
-      res.header('Access-Control-Allow-Origin', origin);
-    } else {
-      // Check against allowed origins or allow all in development
-      const allowedOrigins = [
-        'http://localhost:5173',
-        'http://localhost:5174',
-        'http://localhost:3000',
-        'http://127.0.0.1:5173',
-        'http://127.0.0.1:5174'
-      ];
+  if (process.env.NODE_ENV !== 'production') {
+    // In development, be very permissive
+    res.header('Access-Control-Allow-Origin', '*');
+  } else if (origin) {
+    // In production, check against allowed origins
+    const allowedOrigins = [
+      'http://localhost:5173',
+      'http://localhost:5174',
+      'http://localhost:3000',
+      'http://127.0.0.1:5173',
+      'http://127.0.0.1:5174',
+      'https://project-buzz-v.vercel.app',
+      'https://projectbuzz.vercel.app',
+      'https://projectbuzz.tech',
+      'https://www.projectbuzz.tech'
+    ];
 
-      if (allowedOrigins.includes(origin) || process.env.NODE_ENV !== 'production') {
-        res.header('Access-Control-Allow-Origin', origin);
-      } else {
-        res.header('Access-Control-Allow-Origin', '*');
-      }
+    if (allowedOrigins.includes(origin) || origin.includes('vercel.app') || origin.includes('projectbuzz')) {
+      res.header('Access-Control-Allow-Origin', origin);
+      console.log(`✅ CORS: Allowed origin ${origin}`);
+    } else {
+      res.header('Access-Control-Allow-Origin', '*');
+      console.log(`⚠️ CORS: Using wildcard for origin ${origin}`);
     }
   } else {
     res.header('Access-Control-Allow-Origin', '*');
+    console.log('🌐 CORS: No origin header, using wildcard');
   }
 
   res.header('Access-Control-Allow-Methods', 'GET, HEAD, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Cache-Control, Pragma');
   res.header('Access-Control-Allow-Credentials', 'false');
-  res.header('Access-Control-Max-Age', '86400'); // 24 hours cache
+  res.header('Access-Control-Max-Age', '86400'); // 24 hours
+
+  // Additional headers for better image serving
+  res.header('Cross-Origin-Resource-Policy', 'cross-origin');
+  res.header('Cross-Origin-Embedder-Policy', 'unsafe-none'); cache
   res.header('Access-Control-Expose-Headers', 'Content-Length, Content-Type, Last-Modified, ETag');
 
   console.log(`✅ CORS preflight response sent for ${filename}`);
@@ -318,24 +327,50 @@ router.get('/images/:filename', (req, res) => {
 
   console.log(`🖼️  Image request: ${filename} from origin: ${origin || 'no-origin'}`);
 
-  // Check if file exists first
-  if (!fs.existsSync(imagePath)) {
-    console.log(`❌ Image not found: ${imagePath}`);
-
-    // Set CORS headers even for 404 responses
+  // Set CORS headers FIRST, before any other processing
+  if (process.env.NODE_ENV !== 'production') {
+    // Development: Be very permissive
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, HEAD, OPTIONS');
+    res.header('Access-Control-Allow-Headers', '*');
+    res.header('Access-Control-Allow-Credentials', 'false');
+    console.log(`✅ CORS: Using wildcard for development image serving`);
+  } else {
+    // Production: More selective but still permissive for images
     if (origin) {
-      if (process.env.NODE_ENV !== 'production' && (origin.includes('localhost') || origin.includes('127.0.0.1'))) {
+      const allowedOrigins = [
+        'https://project-buzz-v.vercel.app',
+        'https://projectbuzz.vercel.app',
+        'https://projectbuzz.tech',
+        'https://www.projectbuzz.tech'
+      ];
+
+      if (allowedOrigins.includes(origin) || origin.includes('vercel.app') || origin.includes('projectbuzz')) {
         res.header('Access-Control-Allow-Origin', origin);
+        console.log(`✅ CORS: Allowed production origin ${origin}`);
       } else {
         res.header('Access-Control-Allow-Origin', '*');
+        console.log(`⚠️ CORS: Using wildcard for unknown origin ${origin}`);
       }
     } else {
       res.header('Access-Control-Allow-Origin', '*');
+      console.log(`🌐 CORS: No origin header, using wildcard`);
     }
+  }
 
+  // Additional CORS headers for images
+  res.header('Access-Control-Allow-Methods', 'GET, HEAD, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Cache-Control');
+  res.header('Access-Control-Max-Age', '86400');
+  res.header('Cross-Origin-Resource-Policy', 'cross-origin');
+
+  // Check if file exists
+  if (!fs.existsSync(imagePath)) {
+    console.log(`❌ Image not found: ${imagePath}`);
     return res.status(404).json({
       success: false,
-      message: 'Image not found'
+      message: 'Image not found',
+      filename: filename
     });
   }
 
@@ -343,6 +378,9 @@ router.get('/images/:filename', (req, res) => {
   if (process.env.NODE_ENV !== 'production') {
     // In development, be very permissive
     res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, HEAD, OPTIONS');
+    res.header('Access-Control-Allow-Headers', '*');
+    res.header('Access-Control-Allow-Credentials', 'false');
     console.log(`✅ CORS: Using wildcard for development image serving`);
   } else {
     // Production - be more selective
@@ -796,12 +834,46 @@ const conditionalUpload = (req, res, next) => {
     return multerMiddleware(req, res, (err) => {
       if (err) {
         console.log('❌ Multer middleware error:', err.message);
-        // If multer fails, continue without files but log the error
-        console.log('⚠️ Continuing without file upload support');
-        req.files = {}; // Ensure req.files exists but is empty
-        next();
+        console.log('Error code:', err.code);
+        console.log('Error field:', err.field);
+
+        // Handle specific multer errors
+        if (err.code === 'LIMIT_FILE_SIZE') {
+          return res.status(400).json({
+            success: false,
+            message: 'File too large. Please check file size limits.',
+            error: 'FILE_TOO_LARGE',
+            details: `Maximum file size exceeded. Limit: ${err.limit ? (err.limit / (1024 * 1024)).toFixed(1) + 'MB' : '100MB'}`
+          });
+        }
+
+        if (err.code === 'LIMIT_FILE_COUNT') {
+          return res.status(400).json({
+            success: false,
+            message: 'Too many files uploaded.',
+            error: 'TOO_MANY_FILES',
+            details: `Maximum ${err.limit} files allowed per field`
+          });
+        }
+
+        if (err.code === 'LIMIT_UNEXPECTED_FILE') {
+          return res.status(400).json({
+            success: false,
+            message: 'Unexpected file field.',
+            error: 'UNEXPECTED_FILE',
+            details: `Unexpected field: ${err.field}`
+          });
+        }
+
+        // For other multer errors, return error response
+        return res.status(400).json({
+          success: false,
+          message: 'File upload error: ' + err.message,
+          error: 'FILE_UPLOAD_ERROR'
+        });
       } else {
         console.log('✅ Multer middleware completed successfully');
+        console.log('Files received:', req.files ? Object.keys(req.files) : 'none');
         next();
       }
     });

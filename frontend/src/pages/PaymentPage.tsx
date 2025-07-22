@@ -291,7 +291,7 @@ const PaymentPage: React.FC = () => {
                 {project.images && project.images.length > 0 && (
                   <div className="w-20 h-20 rounded-lg overflow-hidden bg-gray-800 flex-shrink-0">
                     <OptimizedImage
-                      src={project.images[0]}
+                      src={project.images[0].url}
                       alt={project.title}
                       className="w-full h-full object-cover"
                       fallback="/placeholder-project.jpg"

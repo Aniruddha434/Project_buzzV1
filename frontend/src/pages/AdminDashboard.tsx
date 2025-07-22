@@ -608,6 +608,9 @@ const AdminDashboard: FC = () => {
                                     className="h-10 w-10 rounded-full object-cover"
                                     src={user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || user.email || 'User')}&background=random`}
                                     alt={user.displayName || user.email || 'User'}
+                                    onError={(e) => {
+                                      e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || user.email || 'User')}&background=6366f1&color=ffffff`;
+                                    }}
                                   />
                                 </div>
                                 <div className="ml-4">

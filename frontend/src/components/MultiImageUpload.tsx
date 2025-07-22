@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Upload, X, Image as ImageIcon, Star, Move, Eye } from 'lucide-react';
 import Button from './ui/Button';
 import Card from './ui/Card';
@@ -32,6 +32,18 @@ const MultiImageUpload: React.FC<MultiImageUploadProps> = ({
   const [error, setError] = useState<string>('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Cleanup effect to revoke object URLs when component unmounts
+  useEffect(() => {
+    return () => {
+      // Cleanup all object URLs to prevent memory leaks
+      images.forEach(image => {
+        if (image.preview) {
+          URL.revokeObjectURL(image.preview);
+        }
+      });
+    };
+  }, [images]);
+
   const validateFile = (file: File): string | null => {
     // Check file type
     if (!acceptedTypes.includes(file.type)) {
@@ -53,43 +65,64 @@ const MultiImageUpload: React.FC<MultiImageUploadProps> = ({
 
   const handleFiles = (files: FileList) => {
     setError('');
-    
-    const newImages: ImageFile[] = [];
-    const currentCount = images.length;
-    
-    // Check if adding these files would exceed the limit
-    if (currentCount + files.length > maxImages) {
-      setError(`Cannot add ${files.length} images. Maximum ${maxImages} images allowed. Current: ${currentCount}`);
-      return;
-    }
 
-    Array.from(files).forEach(file => {
-      const validationError = validateFile(file);
-      if (validationError) {
-        setError(validationError);
+    try {
+      const newImages: ImageFile[] = [];
+      const currentCount = images.length;
+
+      // Check if adding these files would exceed the limit
+      if (currentCount + files.length > maxImages) {
+        setError(`Cannot add ${files.length} images. Maximum ${maxImages} images allowed. Current: ${currentCount}`);
         return;
       }
 
-      const imageFile: ImageFile = {
-        file,
-        preview: URL.createObjectURL(file),
-        id: generateImageId()
-      };
-      
-      newImages.push(imageFile);
-    });
+      let hasErrors = false;
+      Array.from(files).forEach(file => {
+        const validationError = validateFile(file);
+        if (validationError) {
+          setError(validationError);
+          hasErrors = true;
+          return;
+        }
 
-    if (newImages.length > 0) {
-      onImagesChange([...images, ...newImages]);
+        try {
+          const imageFile: ImageFile = {
+            file,
+            preview: URL.createObjectURL(file),
+            id: generateImageId()
+          };
+
+          newImages.push(imageFile);
+        } catch (error) {
+          console.error('Error creating object URL for file:', file.name, error);
+          setError(`Failed to process file: ${file.name}`);
+          hasErrors = true;
+        }
+      });
+
+      if (newImages.length > 0 && !hasErrors) {
+        onImagesChange([...images, ...newImages]);
+      }
+    } catch (error) {
+      console.error('Error handling files:', error);
+      setError('Failed to process files. Please try again.');
     }
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      handleFiles(e.target.files);
+    try {
+      if (e.target.files && e.target.files.length > 0) {
+        handleFiles(e.target.files);
+      }
+    } catch (error) {
+      console.error('Error handling file selection:', error);
+      setError('Failed to process selected files. Please try again.');
+    } finally {
+      // Always reset input value to allow selecting the same file again
+      if (e.target) {
+        e.target.value = '';
+      }
     }
-    // Reset input value to allow selecting the same file again
-    e.target.value = '';
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -116,13 +149,23 @@ const MultiImageUpload: React.FC<MultiImageUploadProps> = ({
   };
 
   const removeImage = (imageId: string) => {
-    const updatedImages = images.filter(img => img.id !== imageId);
-    onImagesChange(updatedImages);
-    
-    // Revoke object URL to prevent memory leaks
-    const imageToRemove = images.find(img => img.id === imageId);
-    if (imageToRemove) {
-      URL.revokeObjectURL(imageToRemove.preview);
+    try {
+      const updatedImages = images.filter(img => img.id !== imageId);
+      onImagesChange(updatedImages);
+
+      // Revoke object URL to prevent memory leaks
+      const imageToRemove = images.find(img => img.id === imageId);
+      if (imageToRemove) {
+        URL.revokeObjectURL(imageToRemove.preview);
+      }
+
+      // Clear any existing errors when successfully removing an image
+      if (error) {
+        setError('');
+      }
+    } catch (error) {
+      console.error('Error removing image:', error);
+      setError('Failed to remove image. Please try again.');
     }
   };
 
@@ -133,7 +176,11 @@ const MultiImageUpload: React.FC<MultiImageUploadProps> = ({
     onImagesChange(updatedImages);
   };
 
-  const openFileDialog = () => {
+  const openFileDialog = (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     if (!disabled && fileInputRef.current) {
       fileInputRef.current.click();
     }
@@ -154,7 +201,11 @@ const MultiImageUpload: React.FC<MultiImageUploadProps> = ({
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
-        onClick={openFileDialog}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          openFileDialog(e);
+        }}
       >
         <input
           ref={fileInputRef}
@@ -308,7 +359,11 @@ const MultiImageUpload: React.FC<MultiImageUploadProps> = ({
         <Button
           type="button"
           variant="outline"
-          onClick={openFileDialog}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            openFileDialog(e);
+          }}
           disabled={disabled}
           leftIcon={<ImageIcon className="h-4 w-4" />}
           className="w-full"
