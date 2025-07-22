@@ -6,6 +6,7 @@ import { NegotiationButton } from './NegotiationButton';
 import ShareModal from './ShareModal';
 import OptimizedImage from './OptimizedImage';
 import { getImageUrl } from '../utils/imageUtils.js';
+
 import {
   formatProjectPrice,
   formatCompactPrice,
@@ -244,9 +245,11 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                 lazy={true}
                 responsive={true}
                 quality="medium"
+                onLoad={() => {
+                  console.log(`✅ OptimizedImage loaded successfully: ${project.title}`);
+                }}
                 onError={() => {
-                  // Handle error by showing fallback
-                  console.warn(`Failed to load image for project ${project.title}`);
+                  console.error(`❌ OptimizedImage failed to load: ${project.title}`);
                 }}
               />
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />

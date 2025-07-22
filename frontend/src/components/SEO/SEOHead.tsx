@@ -131,8 +131,8 @@ const addSecurityMetaTags = () => {
 
   // Create environment-specific CSP
   const imgSrc = isDevelopment
-    ? "'self' data: https: http://localhost:5000 http://127.0.0.1:5000" // Allow HTTP localhost in development
-    : "'self' data: https:"; // HTTPS only in production
+    ? "'self' data: blob: https: http://localhost:5000 http://127.0.0.1:5000" // Allow HTTP localhost + blob URLs in development
+    : "'self' data: blob: https:"; // HTTPS + blob URLs in production
 
   const connectSrc = isDevelopment
     ? "'self' http://localhost:5000 http://127.0.0.1:5000 https://project-buzzv1-2.onrender.com https://checkout.razorpay.com https://api.razorpay.com https://lumberjack.razorpay.com"
