@@ -4,20 +4,16 @@
 
 The image loading issue was **NOT a CORS problem** - it was a **Content Security Policy (CSP)** violation!
 
-### **Error Messages:**
+### **Error Message:**
 
 ```
-1. Refused to load the image 'http://localhost:5000/api/projects/images/...'
-   because it violates the following Content Security Policy directive: "img-src 'self' data: https:"
-
-2. Refused to load the image 'blob:<URL>'
-   because it violates the following Content Security Policy directive: "img-src 'self' data: https: http://localhost:5000"
+Refused to load the image 'http://localhost:5000/api/projects/images/...'
+because it violates the following Content Security Policy directive: "img-src 'self' data: https:"
 ```
 
-### **Problems:**
+### **Problem:**
 
-1. The CSP policy only allowed HTTPS images (`https:`), but our development backend serves images over HTTP (`http://localhost:5000`)
-2. The CSP policy was missing `blob:` URLs, which are used for dynamically generated images and file previews
+The CSP policy only allowed HTTPS images (`https:`), but our development backend serves images over HTTP (`http://localhost:5000`).
 
 ---
 
@@ -28,19 +24,19 @@ The image loading issue was **NOT a CORS problem** - it was a **Content Security
 **Before:**
 
 ```javascript
-img-src 'self' data: https:  // ❌ Only HTTPS images, no blob URLs
+img-src 'self' data: https:  // ❌ Only HTTPS images allowed
 ```
 
 **After:**
 
 ```javascript
-// Environment-aware CSP with blob URL support
+// Environment-aware CSP
 const isDevelopment =
   import.meta.env.DEV || window.location.hostname === "localhost";
 
 const imgSrc = isDevelopment
-  ? "'self' data: blob: https: http://localhost:5000 http://127.0.0.1:5000" // ✅ Allow HTTP localhost + blob URLs in dev
-  : "'self' data: blob: https:"; // ✅ HTTPS + blob URLs in production
+  ? "'self' data: https: http://localhost:5000 http://127.0.0.1:5000" // ✅ Allow HTTP localhost in dev
+  : "'self' data: https:"; // ✅ HTTPS only in production
 ```
 
 ### **2. Backend CSP Configuration (server.js)** ✅
@@ -85,20 +81,18 @@ document.addEventListener("securitypolicyviolation", (e) => {
 1. Open browser to `http://localhost:5174` (or current port)
 2. Open Developer Tools → Console
 3. Look for: `🔒 CSP Policy (Development): ...`
-4. Verify it includes: `img-src 'self' data: blob: https: http://localhost:5000`
+4. Verify it includes: `img-src 'self' data: https: http://localhost:5000`
 
 ### **Step 2: Test Image Loading**
 
 1. Navigate to `/market` page
 2. Check if project images load successfully
-3. Test file upload previews (should use blob URLs)
-4. No more "Refused to load the image" errors should appear
+3. No more "Refused to load the image" errors should appear
 
 ### **Step 3: Verify CSP Violation Listener**
 
 1. If any CSP violations occur, they will be logged as: `🚨 CSP Violation:`
-2. Check that no more blob URL violations appear
-3. This helps debug any remaining issues
+2. This helps debug any remaining issues
 
 ---
 

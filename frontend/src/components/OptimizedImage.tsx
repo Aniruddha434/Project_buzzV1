@@ -31,17 +31,8 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
   const [inView, setInView] = useState(!lazy);
-  const [retryCount, setRetryCount] = useState(0);
   const imgRef = useRef<HTMLImageElement>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
-  const maxRetries = 2;
-
-  // Reset states when src changes
-  useEffect(() => {
-    setLoaded(false);
-    setError(false);
-    setRetryCount(0);
-  }, [src]);
 
   // Intersection Observer for lazy loading
   useEffect(() => {
@@ -94,39 +85,13 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   };
 
   const handleLoad = () => {
-    console.log(`✅ OptimizedImage loaded successfully: ${src}`);
     setLoaded(true);
-    setError(false); // Reset error state on successful load
     onLoad?.();
   };
 
-  const handleError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    const imgElement = e.currentTarget;
-    console.error(`❌ OptimizedImage failed to load (attempt ${retryCount + 1}): ${src}`, {
-      naturalWidth: imgElement.naturalWidth,
-      naturalHeight: imgElement.naturalHeight,
-      complete: imgElement.complete,
-      currentSrc: imgElement.currentSrc,
-      retryCount
-    });
-
-    // Retry logic
-    if (retryCount < maxRetries) {
-      console.log(`🔄 Retrying image load (${retryCount + 1}/${maxRetries}): ${src}`);
-      setRetryCount(prev => prev + 1);
-      setError(false);
-
-      // Force reload after a short delay
-      setTimeout(() => {
-        if (imgRef.current) {
-          imgRef.current.src = getImageUrl(src) + `?retry=${retryCount + 1}`;
-        }
-      }, 500);
-    } else {
-      console.error(`❌ OptimizedImage failed after ${maxRetries} retries: ${src}`);
-      setError(true);
-      onError?.();
-    }
+  const handleError = () => {
+    setError(true);
+    onError?.();
   };
 
   const imageSources = generateImageSources(src);
@@ -206,11 +171,10 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
       
       {/* Error state */}
       {error && (
-        <div className="absolute inset-0 bg-gray-900 flex items-center justify-center text-gray-400 text-sm border border-gray-800 rounded">
-          <div className="text-center p-4">
-            <div className="mb-2 text-2xl">📷</div>
-            <div className="text-xs">Image unavailable</div>
-            <div className="text-xs text-gray-500 mt-1">Retried {retryCount} times</div>
+        <div className="absolute inset-0 bg-gray-100 flex items-center justify-center text-gray-500 text-sm">
+          <div className="text-center">
+            <div className="mb-2">📷</div>
+            <div>Failed to load image</div>
           </div>
         </div>
       )}
