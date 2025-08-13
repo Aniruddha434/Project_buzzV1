@@ -4,58 +4,53 @@ Below is the system architecture in Mermaid format.
 
 ```mermaid
 graph LR
-    subgraph Context
-        User["Users/Clients"]
+    subgraph User_Interface
+        FRONTEND_APP["React App Vite TS"]
     end
 
-    subgraph Frontend
-        ReactApp["React Frontend"]
-        style ReactApp fill:#e1f5fe
-    end
-
-    subgraph Backend_Services
-        API_Gateway["Express.js API Gateway"]
-        AuthService["Passport.js Auth Service"]
-        PaymentService["Razorpay Payment Service"]
-        FileService["Multer File Upload Service"]
-        style API_Gateway fill:#f3e5f5
-        style AuthService fill:#f3e5f5
-        style PaymentService fill:#f3e5f5
-        style FileService fill:#f3e5f5
-
+    subgraph Application_Backend
+        API_SERVER["Node.js Express API"]
+        AUTH_SERVICE["Auth Service JWT Bcrypt"]
+        PAYMENT_SERVICE["Payment Service Razorpay Logic"]
+        EMAIL_SERVICE["Email Service Nodemailer"]
+        FILE_UPLOAD_SERVICE["File Upload Service Multer"]
+        MIDDLEWARE["Middleware Helmet CORS Rate Limit"]
     end
 
     subgraph Data_Stores
-        MongoDB["MongoDB"]
-        Redis["Redis Cache"]
-        style MongoDB fill:#e8f5e8
-        style Redis fill:#e8f5e8
+        MONGODB_DB["MongoDB Atlas Database"]
+        REDIS_CACHE["Redis Cache"]
     end
 
     subgraph External_Services
-        GoogleOAuth["Google OAuth2.0"]
-        NodemailerService["Nodemailer Email Service"]
-        style GoogleOAuth fill:#e0f7fa
-        style NodemailerService fill:#e0f7fa
+        RAZORPAY_GATEWAY["Razorpay Payment Gateway"]
     end
 
-    subgraph CI_CD
-        GitHubActions["GitHub Actions"]
-        style GitHubActions fill:#ffe0b2
+    subgraph Deployment_CI_CD
+        GITHUB_ACTIONS["GitHub Actions CI CD"]
+        VERCEL_PLATFORM["Vercel Deployment"]
+        RENDER_PLATFORM["Render Deployment"]
+        DOCKER_CONTAINERS["Docker Containers"]
     end
 
+    USER_BROWSER["User Browser"] -->|HTTP| FRONTEND_APP
+    FRONTEND_APP -->|HTTP REST API| API_SERVER
 
-    User -->|HTTP| ReactApp
-    ReactApp -->|HTTP/REST| API_Gateway
-    API_Gateway -->|HTTP| AuthService
-    API_Gateway -->|HTTP| PaymentService
-    API_Gateway -->|HTTP| FileService
-    API_Gateway -->|Mongoose| MongoDB
-    API_Gateway -->|Cache| Redis
-    AuthService -->|OAuth2| GoogleOAuth
-    PaymentService -->|API| Razorpay
-    FileService -->|API| Multer
-    API_Gateway -->|Email| NodemailerService
-    GitHubActions -->|Deployment| API_Gateway
-    GitHubActions -->|Deployment| ReactApp
+    API_SERVER -->|Internal Call| AUTH_SERVICE
+    API_SERVER -->|Internal Call| PAYMENT_SERVICE
+    API_SERVER -->|Internal Call| EMAIL_SERVICE
+    API_SERVER -->|Internal Call| FILE_UPLOAD_SERVICE
+    API_SERVER -->|Applies| MIDDLEWARE
+
+    API_SERVER -->|Mongoose Driver| MONGODB_DB
+    API_SERVER -->|Redis Client| REDIS_CACHE
+
+    PAYMENT_SERVICE -->|HTTP API| RAZORPAY_GATEWAY
+
+    GITHUB_ACTIONS -->|Deploy Frontend| VERCEL_PLATFORM
+    GITHUB_ACTIONS -->|Deploy Backend| RENDER_PLATFORM
+    GITHUB_ACTIONS -->|Build & Push| DOCKER_CONTAINERS
+
+    VERCEL_PLATFORM -->|Hosts| FRONTEND_APP
+    RENDER_PLATFORM -->|Hosts| API_SERVER
 ```
